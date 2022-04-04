@@ -55,12 +55,12 @@ class FetchListScreen extends Component {
       getStudentsData = (querySnapshot) => {
         const users = [];
         querySnapshot.forEach((res) => {
-          const { FirstName, LastName} = res.data();
+          const { firstName, lastName} = res.data();
           
           users.push({
             key: res.id,
-            FirstName,
-            LastName
+            firstName,
+            lastName
           });
         });
         
@@ -89,8 +89,8 @@ class FetchListScreen extends Component {
                        key={i}           
                        bottomDivider>
                       <ListItem.Content>
-                        <ListItem.Title>{res.FirstName} </ListItem.Title>
-                        <ListItem.Subtitle>{res.LastName}</ListItem.Subtitle>
+                        <ListItem.Title>{res.firstName} </ListItem.Title>
+                        <ListItem.Subtitle>{res.lastName}</ListItem.Subtitle>
                       </ListItem.Content>
                       <ListItem.Chevron 
                          color="black" 
