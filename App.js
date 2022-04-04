@@ -9,12 +9,11 @@ export default function App() {
   return (
     <View style = {styles.container}> 
     <FetchListScreen/>
-    <NavigationContainer><View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <MainScreen/> 
+    <NavigationContainer>
       <StatusBar style="auto" />
      </NavigationContainer>
     </View>
+  
       );
 }
 
