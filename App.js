@@ -3,8 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import FetchListScreen from './components/fetchlist_screen.js'
-
-
+import  MainScreen from './screens/MainScreen.jsx';
 
 export default function App() {
   return (
@@ -12,16 +11,12 @@ export default function App() {
     <FetchListScreen/>
     <NavigationContainer><View style={styles.container}>
       <Text>Open up App.js to start working on your app!</Text>
+      <MainScreen/> 
       <StatusBar style="auto" />
+     </NavigationContainer>
     </View>
-    </NavigationContainer>
-    </View>
-    
       );
 }
-
-
-
 
 const styles = StyleSheet.create({
   container: {
