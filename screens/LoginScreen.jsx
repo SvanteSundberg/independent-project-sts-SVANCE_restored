@@ -1,39 +1,63 @@
-import { StyleSheet, Text, TextInput, SafeAreaView, Button } from "react-native";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-
+import { StyleSheet, Text, TextInput, KeyboardAvoidingView, Button } from "react-native";
+import { useState } from "react";
+import { auth } from "../config/firebase";
 
 function LoginScreen(props) {
-    const auth = getAuth();
-    signInWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
-    // Signed in 
-        const user = userCredential.user;
-    // ...
-    })
-    .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-    });
-    // https://github.com/firebase/snippets-web/blob/509769a817d7437616bcfcb816f783b29aaca843/snippets/auth-next/email/auth_signin_password.js#L8-L20
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+    
+    const handleSignUp = () => {
+        auth
+        .createUserWithEmailAndPassword(email, password)
+        .then (userCredentials => {
+            const user = userCredentials.user;
+            console.log("Created user with", user.email);
+        })
+        .catch(error => alert(error.message))
+    }
+
+    const handleLogin = () => {
+        auth
+        .signInWithEmailAndPassword(email, password)
+        .then (userCredentials => {
+            const user = userCredentials.user;
+            console.log("Logged in with", user.email);
+        })
+        .catch(error => alert(error.message))
+    }
+
+    const handleSignout = () => {
+        auth
+        .signOut
+    }
 
     return (
-        <SafeAreaView>
+        <KeyboardAvoidingView
+            behavior="padding">
             <Text style={styles.header}> SIGN IN</Text> 
-            <Text style={styles.text}> Username </Text>
+            <Text> Email: {auth.currentUser?.email}</Text>
+            <Text style={styles.text}> Email </Text>
             <TextInput 
                 style={styles.textbox} 
-                placeholder={"Name"}
-                onChangeText={(name)=> setName(name)}/>
+                value={email}
+                onChangeText = {email => setEmail(email)}/>
             <Text style={styles.text}> Password </Text>
             <TextInput style={styles.textbox} 
-                maxLength={5}/>
+                        value={password}
+                        onChangeText = {password => setPassword(password)}/>
+            <Text> {password} </Text>
 
             <Text style={styles.header}> Not a member?
-            <Button title={'Create account'}/>
             </Text> 
 
-            <Button style={styles.loginbutton} title={'Continue'}/>
-        </SafeAreaView>
+            <Button title={'Create account'}
+                    onPress={handleSignUp}/>
+            <Button style={styles.loginbutton} 
+                    title={'Continue'}
+                    onPress={handleLogin}/>
+            <Button title={'Sign out'}
+                    onPress={handleSignout}/>
+        </KeyboardAvoidingView>
     );
 }
 
