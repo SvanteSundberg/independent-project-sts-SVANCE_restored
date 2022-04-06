@@ -3,7 +3,6 @@ import React from 'react';
 import AppNavigator from './AppNavigator.jsx';
 import { Provider as PaperProvider } from 'react-native-paper';
 
-
 export default function App() {
   return (
   <PaperProvider>
@@ -17,7 +16,7 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: 'blue',
     alignItems: 'center',
     justifyContent: 'center',
   },
