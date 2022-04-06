@@ -21,7 +21,7 @@ export default function MainScreen() {
         style={styles.image}> 
       <Text>Mainscreen</Text>
       
-      <Image source={require('../assets/sportaLogo.png')} style={styles.logo}/>
+      <Image source={require('../assets/sportaLogoBlue.png')} style={styles.logo}/>
       <Text>[insert logo]</Text>
       
       <Button style={[styles.button, styles.loginBtn]} mode="contained" onPress= {handleOnPress}>
@@ -63,6 +63,7 @@ const styles = StyleSheet.create({
   },
 
   logo: {
-    
+    height:120,
+    width:'100%',
   }
 });
