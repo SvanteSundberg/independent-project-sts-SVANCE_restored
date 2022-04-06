@@ -11,7 +11,7 @@ export default function MainScreen() {
   
   const navigation= useNavigation();
   const handleOnPress = () =>  navigation.navigate("LoginScreen")
-  
+  const handleOnPress1 = () =>  navigation.navigate("RegisterScreen")
   //<VectorImage source={require('../assets/sporta_logo_blue_filled 1.svg')} /> funkar ej
   //<Image source={require('../assets/sportaLogo.png')} style={styles.logo}/>
   return (
@@ -27,7 +27,7 @@ export default function MainScreen() {
       <Button style={[styles.button, styles.loginBtn]} mode="contained" onPress= {handleOnPress}>
         Sign in
       </Button>
-      <Button style={[styles.button, styles.registerBtn]} mode="outlined" compact="true" >
+      <Button style={[styles.button, styles.registerBtn]} mode="outlined" compact="true" onPress={handleOnPress1} >
         Register
       </Button>
       </ImageBackground>
