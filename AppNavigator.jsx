@@ -3,13 +3,15 @@ import { NavigationContainer } from "@react-navigation/native";
 import  StartScreen from './screens/StartScreen.jsx';
 import LoginScreen from './screens/LoginScreen.jsx';
 import RegisterScreen from './screens/RegisterScreen.jsx';
+import nyStart from './screens/nyStart.jsx'
+import ResetPassword from './screens/ResetPassword.jsx'
 const {Navigator, Screen}= createNativeStackNavigator();
 
 const AppNavigator = () => (
     <NavigationContainer>
-        <Navigator  initialRouteName="StartScreen" >
-            <Screen name="StartScreen" 
-                    component={StartScreen} 
+        <Navigator  initialRouteName="nyStart" >
+            <Screen name="nyStart" 
+                    component={nyStart} 
                     options={{headerShown: false}}>
             </Screen>
             
@@ -25,7 +27,16 @@ const AppNavigator = () => (
                     title:"Sign in", }}>
             </Screen>
 
-            
+
+
+
+
+            <Screen name="ResetPassword" 
+                    component={ResetPassword} 
+                    options={{
+                    title:"Reset", }}>
+            </Screen>
+
         </Navigator>
     </NavigationContainer>
 )
