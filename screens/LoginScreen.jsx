@@ -1,20 +1,12 @@
-import { StyleSheet, Text, TextInput, KeyboardAvoidingView, Button } from "react-native";
+import { StyleSheet, Text, KeyboardAvoidingView, ImageBackground, Image, ScrollView } from "react-native";
 import { useState } from "react";
+import { Button, TextInput } from 'react-native-paper';
 import { auth } from "../config/firebase";
 
 function LoginScreen(props) {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     
-    const handleSignUp = () => {
-        auth
-        .createUserWithEmailAndPassword(email, password)
-        .then (userCredentials => {
-            const user = userCredentials.user;
-            console.log("Created user with", user.email);
-        })
-        .catch(error => alert(error.message))
-    }
 
     const handleLogin = () => {
         auth
@@ -26,60 +18,76 @@ function LoginScreen(props) {
         .catch(error => alert(error.message))
     }
 
-    const handleSignout = () => {
-        auth
-        .signOut
-    }
 
     return (
-        <KeyboardAvoidingView
-            behavior="padding">
+        
+        <KeyboardAvoidingView  style={styles.pos}>
+            <ImageBackground source={{
+        uri:'https://cdn.discordapp.com/attachments/955769691975065633/957929103665811456/photo-1562552052-af5955fe5ba2.png'}}  
+        style={styles.image}> 
             <Text style={styles.header}> SIGN IN</Text> 
-            <Text> Email: {auth.currentUser?.email}</Text>
-            <Text style={styles.text}> Email </Text>
-            <TextInput 
-                style={styles.textbox} 
+            <Image source={require('../assets/sportaLogo.png')} style={styles.logo}/>
+            <TextInput style={styles.textinput}
+                label= "Email"
+                mode="outlined"
+                activeOutlineColor="hotpink"
+                placeholder="Email"
                 value={email}
                 onChangeText = {email => setEmail(email)}/>
-            <Text style={styles.text}> Password </Text>
-            <TextInput style={styles.textbox} 
+    
+            <TextInput style={styles.textinput} secureTextEntry={true} 
+                         label= "Password"
+                         mode="outlined"
+                         activeOutlineColor="hotpink"
+                         placeholder="Password"
                         value={password}
-                        onChangeText = {password => setPassword(password)}/>
-            <Text> {password} </Text>
+                        onChangeText = {password => setPassword(password)}/> 
 
-            <Text style={styles.header}> Not a member?
-            </Text> 
 
-            <Button title={'Create account'}
-                    onPress={handleSignUp}/>
-            <Button style={styles.loginbutton} 
-                    title={'Continue'}
-                    onPress={handleLogin}/>
-            <Button title={'Sign out'}
-                    onPress={handleSignout}/>
-        </KeyboardAvoidingView>
+            <Button style={[styles.button, styles.loginbutton]} 
+                     mode="contained"
+                    onPress={handleLogin} >
+                 Log in
+              </Button>
+              </ImageBackground>
+              </KeyboardAvoidingView>
+        
     );
 }
 
 const styles = StyleSheet.create({
+
+    pos:{
+        alignItems: 'center',
+        justifyContent: 'center',
+
+    },
+    
     header: {
         fontSize: 20,
+        marginBottom: 30,
+       
+        
     },
-    loginbutton: {
-        backgroundColor:'blue',
+     
+    button:{
+        width:100,
+        margin:10,
     },
-    text: {
-        marginTop:20,
-        marginBottom:3,
+    loginBtn:{
+
     },
-    textbox: {
-        borderColor: 'grey',
-        height: '11%',
-        width: 200,
-        borderWidth: 1,
-        padding: 10,
-        borderRadius:10,
+
+      image: {
+        width:'100%',
+        height:'100%',
+        resizeMode:'cover',
+        
       },
+      textinput:{
+          margin: 10,
+          
+      }
 });
 
 export default LoginScreen;
