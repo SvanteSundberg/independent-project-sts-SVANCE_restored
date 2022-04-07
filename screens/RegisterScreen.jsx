@@ -19,11 +19,16 @@ import { useState } from "react";
       else {
         auth
         .createUserWithEmailAndPassword(email, password)
+        
         .then (userCredentials => {
             const user = userCredentials.user;
             console.log("Created user with", user.email);
+            user.sendEmailVerification();
+            auth.signOut();
+            alert("Email sent");
         })
         .catch(error => alert(error.message))
+
       }
     }
 
