@@ -9,10 +9,10 @@ import { useState } from "react";
 
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-    const [repeatPassword, setRepeatpassword] = useState('')
+    const [confirmPassword, setConfirmpassword] = useState('')
     
     const handleSignUp = () => {
-      if(password!=repeatPassword){
+      if(password!=confirmPassword){
         return alert('Passwords do not match')
       }
       
@@ -29,28 +29,33 @@ import { useState } from "react";
 
     return (
         <SafeAreaView style={styles.container}>
+
         <ImageBackground source={{
-        uri:'https://cdn.discordapp.com/attachments/955769691975065633/957929103665811456/photo-1562552052-af5955fe5ba2.png'}}  
-        style={styles.image}>
+                         uri:'https://cdn.discordapp.com/attachments/955769691975065633/957929103665811456/photo-1562552052-af5955fe5ba2.png'}}  
+                         style={styles.image}>
               
        <Text> Create an account </Text>
-       <TextInput mode="outlined" label="Email" style={styles.input}
-       value={email}
-       onChangeText = {email => setEmail(email)}
+       <TextInput mode="outlined" 
+                  label="Email" 
+                  style={styles.input}
+                  value={email}
+                  onChangeText = {email => setEmail(email)}
        />
        
-       <TextInput mode="outlined" label="Password" style={styles.input} secureTextEntry={true}
-       value={password}
-       onChangeText = {password => setPassword(password)}
+       <TextInput mode="outlined" 
+                  label="Password" 
+                  style={styles.input} 
+                  secureTextEntry={true}
+                  value={password}
+                  onChangeText = {password => setPassword(password)}
        /> 
        
-      <TextInput 
-      mode="outlined" 
-      label="Repeat password" 
-      style={styles.input} 
-      secureTextEntry={true}
-      value={repeatPassword}
-      onChangeText = {repeatPassword => setRepeatpassword(repeatPassword)}
+      <TextInput mode="outlined" 
+                 label="Confirm password" 
+                 style={styles.input} 
+                 secureTextEntry={true}
+                 value={confirmPassword}
+                 onChangeText = {confirmPassword => setConfirmpassword(confirmPassword)}
       />
       <Button title={'Create account'}
               onPress={handleSignUp}
@@ -87,6 +92,7 @@ const styles = StyleSheet.create({
     button:{
       width:200,
       color: "#fff",
+      alignContent:"center"
 
     }
   });
