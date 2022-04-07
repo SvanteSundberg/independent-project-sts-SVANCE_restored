@@ -10,8 +10,8 @@ import { Button } from 'react-native-paper';
 export default function MainScreen() {
   
   const navigation= useNavigation();
-  const handleOnPress = () =>  navigation.navigate("LoginScreen")
-  
+  const handleLoginOnPress = () =>  navigation.navigate("LoginScreen")
+  const handleRegisterOnPress = () =>  navigation.navigate("RegisterScreen")
   //<VectorImage source={require('../assets/sporta_logo_blue_filled 1.svg')} /> funkar ej
   //<Image source={require('../assets/sportaLogo.png')} style={styles.logo}/>
   return (
@@ -24,10 +24,10 @@ export default function MainScreen() {
       <Image source={require('../assets/sportaLogoBlue.png')} style={styles.logo}/>
       <Text>[insert logo]</Text>
       
-      <Button style={[styles.button, styles.loginBtn]} mode="contained" onPress= {handleOnPress}>
+      <Button style={[styles.button, styles.loginBtn]} mode="contained" onPress= {handleLoginOnPress}>
         Sign in
       </Button>
-      <Button style={[styles.button, styles.registerBtn]} mode="outlined" compact="true" >
+      <Button style={[styles.button, styles.registerBtn]} mode="outlined" compact="true" onPress={handleRegisterOnPress} >
         Register
       </Button>
       </ImageBackground>
