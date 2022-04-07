@@ -3,9 +3,10 @@ import React from 'react';
 import { useState } from "react";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text,  ImageBackground, Image, KeyboardAvoidingView } from 'react-native';
+import { StyleSheet, Text,  ImageBackground, Image, KeyboardAvoidingView, View, TouchableOpacity } from 'react-native';
 import { Button,  TextInput, HelperText } from 'react-native-paper';
 import { auth } from "../config/firebase";
+
 //import VectorImage from 'react-native-vector-image';
 
 
@@ -34,16 +35,23 @@ export default function MainScreen() {
   //<VectorImage source={require('../assets/sporta_logo_blue_filled 1.svg')} /> funkar ej
   //<Image source={require('../assets/sportaLogo.png')} style={styles.logo}/>
   return (
-<KeyboardAvoidingView style={styles.test}>
+<KeyboardAvoidingView style={styles.container}>     
+<SafeAreaView  >
     
          
          
      <ImageBackground source={{
         uri:'https://cdn.discordapp.com/attachments/955769691975065633/957929103665811456/photo-1562552052-af5955fe5ba2.png'}}  
-        style={styles.image}> 
+        style={styles.backgroundImage}
+        resizeMode="cover"> 
+    <View style={{alignItems:'center'}}>
       <Text>ny startsida</Text>
-      <Text style={styles.header}> SIGN IN</Text> 
-            <Image source={require('../assets/sportaLogo.png')} style={styles.logo}/>
+      
+            <Image source={require('../assets/sportaLogo.png')}  style={styles.logo}/>
+            </View>
+
+            <View style={styles.test}> 
+            <Text style={{marginLeft:10, fontWeight:'bold'}}> SIGN IN</Text> 
             <TextInput style={styles.textinput}
                 label= "Email"
                 mode="outlined"
@@ -65,64 +73,81 @@ export default function MainScreen() {
 
             <Button  mode="contained"
                      title="Left button"
-                    onPress={handleLogin} >
+                    onPress={handleLogin}
+                    style={styles.loginBtn} >
                  Log in
               </Button>
-            
-              <Text style = {styles.forgotPasswordText}>Forgot your password? <Text onPress={handleForgotOnPress} style = {{ color: 'blue' }}>Press here</Text></Text> 
+
               
+            <View style = {styles.forgotPasswordText}>
+              <Text>Forgot your password?   
+              <Text onPress={handleForgotOnPress} style = {styles.pressHere}> Press here</Text>
+              </Text>
+
+              <Text style={{marginTop:20, fontSize:15}}>OR</Text> 
+            </View>
             
       
       
       
-      <Button style={[styles.button, styles.registerBtn]} mode="outlined" compact="true" onPress={handleRegisterOnPress} >
+      <Button style={styles.registerBtn} mode="outlined" compact="true" onPress={handleRegisterOnPress} >
         Register
       </Button>
+      </View>
       </ImageBackground>
       
     
-    </KeyboardAvoidingView>
+    </SafeAreaView>
+    </KeyboardAvoidingView> 
   );
 }
 
 const styles = StyleSheet.create({
-  test: {
+  container: {
     flex: 1,
     backgroundColor: '#fff',
-    alignItems: 'center',
     justifyContent: 'center',
   },
-  button:{
-    width:100,
-    margin:10,
-  },
+  
   registerBtn:{
-    backgroundColor: "#fff"
+    backgroundColor: "#fff",
+    width:200,
+    alignSelf:'center'
   },
   loginBtn:{
-
+    width:200,
+    alignSelf:'center'
   },
    
-  image: {
+  backgroundImage: {
     width:'100%',
-    height:'100%',
-    resizeMode:'cover',
-    
+    height:'100%',  
   },
 
   logo: {
     height:120,
-    width:'100%',
+    width:150,
     
   },
-  textinput:{
+  textinput:{ 
     margin: 10,
     
 },
 forgotPasswordText:{
+    alignItems:'center',
     margin:10,
+    color:'#fff'
+},
+test:{
     justifyContent:'center',
-    alignItems: 'center'
+    flex:2,
+},
+
+pressHere:{
+     color: 'blue',
+     textDecorationLine: 'underline', 
 }
+
+
 
 });

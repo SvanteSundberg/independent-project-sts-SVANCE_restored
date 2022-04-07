@@ -6,16 +6,13 @@ import { auth } from "../config/firebase";
 const ResetPassword = () => {
 
     const [email, setEmail] = useState('');
-    const [showLoading, setShowLoading] = useState(false);
 
     const reset = async() => {
-        setShowLoading(true);
         try {
             await auth.sendPasswordResetEmail(email);
-            console.log('email sent');
-            setShowLoading(false);
-        } catch (e) {
-            setShowLoading(false);
+            console.log('email sent');    
+        } 
+        catch (e) {
             Alert.alert(
                 e.message
             );
@@ -30,6 +27,9 @@ const ResetPassword = () => {
                     placeholder='Your Email'
                     value={email}
                     onChangeText={setEmail}
+                    mode="outlined"
+                    activeOutlineColor="hotpink"
+                
                 />
                         <Button
                     style={styles.textInput}
