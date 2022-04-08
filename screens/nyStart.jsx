@@ -7,17 +7,11 @@ import { StyleSheet, Text,  ImageBackground, Image, KeyboardAvoidingView, View, 
 import { Button,  TextInput, HelperText } from 'react-native-paper';
 import { auth } from "../config/firebase";
 
-//import VectorImage from 'react-native-vector-image';
-
 
 export default function MainScreen() {
 
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-    
-    const onPressText = () => {
-        console.log("text pressed");
-      };
 
     const handleLogin = () => {
         auth
@@ -44,8 +38,8 @@ export default function MainScreen() {
         uri:'https://cdn.discordapp.com/attachments/955769691975065633/957929103665811456/photo-1562552052-af5955fe5ba2.png'}}  
         style={styles.backgroundImage}
         resizeMode="cover"> 
-    <View style={{alignItems:'center'}}>
-      <Text>ny startsida</Text>
+    <View style={styles.logoAndText}>
+      <Text>Welcome to</Text>
       
             <Image source={require('../assets/sportaLogo.png')}  style={styles.logo}/>
             </View>
@@ -125,8 +119,9 @@ const styles = StyleSheet.create({
   },
 
   logo: {
-    height:120,
-    width:150,
+    height:150,
+    width:250,
+    resizeMode: "contain",
     
   },
   textinput:{ 
@@ -140,12 +135,20 @@ forgotPasswordText:{
 },
 test:{
     justifyContent:'center',
-    flex:2,
+    flex:3,
 },
 
 pressHere:{
      color: 'blue',
      textDecorationLine: 'underline', 
+},
+
+logoAndText:{
+  alignItems:'center',
+  flex:1,
+  justifyContent:'space-around',
+  marginTop:100
+
 }
 
 
