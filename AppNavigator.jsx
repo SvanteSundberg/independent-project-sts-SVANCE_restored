@@ -36,7 +36,7 @@ const AppNavigator = () => (
             <Screen name="ResetPassword" 
                     component={ResetPassword} 
                     options={{
-                    title:"Reset", }}>
+                    title:null, }}>
             </Screen> 
 
             <Screen name="TimelineScreen"
