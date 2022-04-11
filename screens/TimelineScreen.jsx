@@ -19,7 +19,7 @@ for (let element of Object.entries(array1)) {
     const [bigpost, setbigpost] = React.useState(false);
     const [checked, setChecked] = React.useState(false);
     results.push(
-    <View style ={styles.allposts}>
+    <View style ={styles.allposts} key = {element[0]}>
       <SafeAreaView>
          
             {bigpost?(
