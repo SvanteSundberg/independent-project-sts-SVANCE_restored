@@ -19,7 +19,7 @@ export default function MainScreen() {
         .then (userCredentials => {
             const user = userCredentials.user;
             console.log("Logged in with", user.email);
-            navigation.navigate("TimelineScreen")
+            navigation.navigate("HomeScreen")
         })
         .catch(error => alert(error.message))
         
