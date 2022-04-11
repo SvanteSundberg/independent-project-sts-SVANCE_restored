@@ -3,13 +3,14 @@ import { Button, TextInput } from 'react-native-paper';
 import { ImageBackground } from "react-native";
 import { auth } from "../config/firebase";
 import { useState } from "react";
-
+import { useNavigation } from '@react-navigation/native';
 
     function RegisterScreen(props) {
 
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmpassword] = useState('')
+    const navigation= useNavigation();
     
     const handleSignUp = () => {
       if(password!=confirmPassword){
@@ -26,6 +27,7 @@ import { useState } from "react";
             user.sendEmailVerification();
             auth.signOut();
             alert("Email sent");
+            navigation.navigate("StartScreen")
         })
         .catch(error => alert(error.message))
 

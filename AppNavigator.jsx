@@ -6,7 +6,7 @@ import CreateEventScreen from "./screens/CreateEventScreen.jsx";
 import TimelineScreen from "./screens/TimelineScreen.jsx";
 import RegisterScreen from './screens/RegisterScreen.jsx';
 import ResetPassword from './screens/ResetPassword.jsx'
-
+import CreateprofileScreen from './screens/CreateprofileScreen.jsx'
 
 
 
@@ -41,6 +41,10 @@ const AppNavigator = () => (
 
             <Screen name="TimelineScreen"
                 component={TimelineScreen}>
+            </Screen>
+
+            <Screen name="CreateprofileScreen"
+                component={CreateprofileScreen}>
             </Screen>
 
             <Screen name="CreateEventScreen"
