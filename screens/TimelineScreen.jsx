@@ -1,9 +1,8 @@
-import { StyleSheet,View, Text, TextInput, SafeAreaView, Button, TouchableOpacity, ScrollView } from "react-native";
+import { StyleSheet,View, Text, TextInput, SafeAreaView, Button, TouchableOpacity, ScrollView, Dimensions } from "react-native";
 import * as React from 'react';
 import { Checkbox } from 'react-native-paper';
 import { IconButton, Colors } from 'react-native-paper';
- 
- 
+import { useNavigation } from '@react-navigation/native'; 
  
 const Timeline = () => {
     const array1 = {Nils:"jag vill spela fotboll",
@@ -13,7 +12,8 @@ const Timeline = () => {
                     Alice: "jag vill spela volyboll",
                     Emelie: "jag vill springa"};
     const results = [];
-       
+
+const navigation= useNavigation();
    
 for (let element of Object.entries(array1)) {
     const [bigpost, setbigpost] = React.useState(false);
@@ -65,7 +65,7 @@ for (let element of Object.entries(array1)) {
    
 ); */
  
-    return (<View>
+    return (<View style={styles.main}>
         <SafeAreaView><Text style={styles.header}>Aktiviteter</Text></SafeAreaView>
         <ScrollView>{results}</ScrollView>
     <SafeAreaView style ={styles.createEvent}>
@@ -73,8 +73,8 @@ for (let element of Object.entries(array1)) {
     <IconButton
   icon="pencil-circle"
   color={Colors.black}
-  size={40}
-  onPress={() => console.log('Pressed')}
+  size={80}
+  onPress={() => navigation.navigate("CreateEventScreen")}
 />
  
   </SafeAreaView>
@@ -96,6 +96,10 @@ for (let element of Object.entries(array1)) {
  
  
 const styles = StyleSheet.create({
+  main:{
+    flex:1,
+  },
+
     header:{
         fontSize:30,
         maxHeight:50,
@@ -110,8 +114,10 @@ const styles = StyleSheet.create({
             borderColor:"black",
     },
     createEvent:{
-        marginLeft:320,
-        marginTop:700,
+        // marginLeft:'10%',
+        // marginTop:'10%',
+        bottom:40,
+        right:-5,
         position: 'absolute',
     },
     profile:{
@@ -122,12 +128,12 @@ const styles = StyleSheet.create({
    
     allposts:{
         alignItems: 'center',
-    justifyContent: 'center',
+      justifyContent: 'center',
     },
     smallposts:{
         alignItems: 'center',
         justifyContent: 'center',
-            width:250,
+        width: Dimensions.get('window').width -10,
             height:100,
             marginTop:5,
             padding:5,
@@ -138,7 +144,7 @@ const styles = StyleSheet.create({
     posts:{
         alignItems: 'center',
     justifyContent: 'center',
-        width:250,
+    width: Dimensions.get('window').width -10,
         height:200,
         marginTop:5,
         padding:5,
