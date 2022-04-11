@@ -3,8 +3,11 @@ import { StyleSheet, View, Text, Alert } from 'react-native';
 import { Button, TextInput} from 'react-native-paper';
 import { auth } from "../config/firebase";
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { useTheme } from 'react-native-paper';
 
-const ResetPassword = () => {
+const ResetPassword = (props) => {
+
+    const { btnStyle } = useTheme();
     
     const [isSent, setIsSent]= useState(false);
     const [email, setEmail] = useState('');
@@ -43,7 +46,7 @@ const ResetPassword = () => {
                     mode="outlined"
                     activeOutlineColor="hotpink"/>
                     <Button
-                    style={styles.btn}
+                    style={{width: btnStyle.width, alignSelf: btnStyle.alignSelf}}
                     mode="contained"
                     onPress={() => reset()}> 
                     Reset
@@ -71,7 +74,8 @@ const ResetPassword = () => {
         justifyContent:'center'
     },
     textInput:{
-        margin:20
+        margin:20,
+        
     },
     btn:{
         width:200,
