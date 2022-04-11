@@ -20,7 +20,7 @@ export default function MainScreen() {
             const user = userCredentials.user;
             if(user.emailVerified){
             console.log("Logged in with", user.email);
-            navigation.navigate("TimelineScreen")
+            navigation.navigate("HomeScreen")
             }
             else{
               alert('Please verify your email before signing in')
