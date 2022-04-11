@@ -5,8 +5,8 @@ import LoginScreen from './screens/LoginScreen.jsx';
 import CreateEventScreen from "./screens/CreateEventScreen.jsx";
 import TimelineScreen from "./screens/TimelineScreen.jsx";
 import RegisterScreen from './screens/RegisterScreen.jsx';
-import nyStart from './screens/nyStart.jsx'
 import ResetPassword from './screens/ResetPassword.jsx'
+
 
 
 
@@ -15,9 +15,9 @@ const {Navigator, Screen}= createNativeStackNavigator();
 const AppNavigator = () => (
     <NavigationContainer>
 
-        <Navigator  initialRouteName="nyStart" >
-            <Screen name="nyStart" 
-                    component={nyStart} 
+        <Navigator  initialRouteName="StartScreen" >
+            <Screen name="StartScreen" 
+                    component={StartScreen} 
                     options={{headerShown: false}}>
             </Screen>
             
@@ -44,7 +44,14 @@ const AppNavigator = () => (
             </Screen>
 
             <Screen name="CreateEventScreen"
-                component={CreateEventScreen}>
+                component={CreateEventScreen}
+                options={{
+                title: "Create Event",
+                headerTintColor: 'black',
+                headerTitleStyle: {
+                    fontWeight: 'bold',
+                },
+                }}>
 
             </Screen>
 

@@ -1,3 +1,4 @@
+
 import { StyleSheet, Text, View, ScrollView, Modal, Image, TouchableHighlight, Pressable, KeyboardAvoidingView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useForm } from "react-hook-form";
@@ -7,18 +8,15 @@ import colors from '../config/colors.js';
 import firebase from '../config/firebase';
 import { setStatusBarNetworkActivityIndicatorVisible } from "expo-status-bar";
 import { DatePicker } from "react-native-common-date-picker";
-// import { useNavigation } from '@react-navigation/native'; //uncomment to use navigation
+import { useNavigation } from '@react-navigation/native'; //uncomment to use navigation
 
 function CreateEventScreen(props) {
-
     const [title, setTitle] = React.useState("");
     const [description, setDescription] = React.useState("");
     const [place, setPlace] = React.useState("");
     const [date, setDate] = React.useState("");
     const [noPeople, setNoPeople] = React.useState("");
-
-    // const navigation= useNavigation(); //uncomment to use navigation
-
+    const navigation= useNavigation(); //uncomment to use navigation
     const pressSend = () => {
         checkInput();
     }
@@ -28,7 +26,7 @@ function CreateEventScreen(props) {
             alert('Please fill out all fields');
             return;
         }
-        //  sendEvent(); //uncomment to send to database
+        //sendEvent(); //uncomment to send to database
         toggleModal();
     };
     const toggleModal = () => {
@@ -45,12 +43,10 @@ function CreateEventScreen(props) {
 
 
 
-
     return (
         <SafeAreaView style={styles.main}>
             <ScrollView style={styles.ScrollView} nestedScrollEnabled={true}>
-                <Text style={styles.header}> CREATE EVENT </Text>
-
+                {/* <Text style={styles.header}> CREATE EVENT </Text> */}
 
 
                 <View style={styles.form}>
@@ -60,7 +56,7 @@ function CreateEventScreen(props) {
                         value={title}
                         onChangeText={title => setTitle(title)}
                         mode='outlined'
-                        activeOutlineColor='hotpink'
+                        activeOutlineColor={colors.accentColor}
                         placeholder="Title of your event"
                     />
                     <TextInput
@@ -68,7 +64,7 @@ function CreateEventScreen(props) {
                         value={description}
                         onChangeText={description => setDescription(description)}
                         mode='outlined'
-                        activeOutlineColor='hotpink'
+                        activeOutlineColor={colors.accentColor}
                         placeholder="Describe your event in a few words"
                         maxLength={100}
                     />
@@ -77,50 +73,34 @@ function CreateEventScreen(props) {
                         value={place}
                         onChangeText={place => setPlace(place)}
                         mode='outlined'
-                        activeOutlineColor='hotpink'
+                        activeOutlineColor={colors.accentColor}
                         placeholder="Where does the event take place?"
-                    />
-                    <TextInput
-                        label='Date'
-                        value={date}
-                        onChangeText={date => setDate(date)}
-                        mode='outlined'
-                        activeOutlineColor='hotpink'
-                        placeholder="When does the event take place?"
                     />
                     <TextInput
                         label='Number of people'
                         value={noPeople}
                         onChangeText={noPeople => setNoPeople(noPeople)}
                         mode='outlined'
-                        activeOutlineColor='hotpink'
+                        activeOutlineColor={colors.accentColor}
                         placeholder="How many people are you looking for?"
                         keyboardType={'numeric'}
                         maxLength={2}
-
                     />
-
                     <DatePicker
                         backgroundColor="white"
-
-                        minDate='2022-04-01'
+                        minDate= {new Date()} //'2022-04-01'
                         maxDate='2022-07-01'
                         monthDisplayMode={'en-short'}
                         titleText="Choose a date for the event"
                         cancelText=""
                         rows={5}
-                        selectedRowBackgroundColor="#C2E1C2"
+                        selectedRowBackgroundColor={colors.accentColor}s//"#C2E1C2"
                         width={350}
-
-                        confirm={(date) => {
-                            console.log(date);
-                        }}
+                        confirm={date => {setDate(date)}}
                     />
-
                     <Button style={[styles.button, styles.createEventButton]} title="send" mode="contained" onPress={pressSend}>
-                        Create Event
+                        <Text style={styles.buttonText}> Create Event </Text>
                     </Button>
-
                     <Modal
                         animationType={"fade"}
                         visible={isVisible}
@@ -130,35 +110,27 @@ function CreateEventScreen(props) {
                             <View style={styles.modalView}>
                                 <Image source={require('../assets/green-checkmark.png')} style={styles.modalLogo} />
                                 <Text style={styles.modalText}>You successfully created an event!</Text>
-
                                 <Button
                                     style={[styles.button, styles.modalButton]}
-                                    onPress={() => toggleModal()}// navigation.navigate("TimelineScreen")} //comment/uncomment for navigation
+                                    onPress={() => navigation.navigate("TimelineScreen")} //toggleModal() comment/uncomment for navigation
                                 >
                                     <Text style={styles.buttonText}>
                                         Back To Timeline</Text>
                                 </Button>
-
                             </View>
                         </View>
-
                     </Modal>
                 </View>
-
             </ScrollView>
         </SafeAreaView>
     );
 }
-
 const styles = StyleSheet.create({
     main: {
         flex: 1,
         backgroundColor: '#fff',
         alignItems: 'center',
-    },
-    header: {
-        fontSize: 20,
-        backgroundColor: colors.backgroundColor,
+        justifyContent:'center'
     },
     ScrollView: {
         flex: 1,
@@ -166,15 +138,17 @@ const styles = StyleSheet.create({
     },
     form: {
         flex: 1,
-        padding: 10,
-
+        padding: 15,
     },
     buttonText: {
         color: 'white',
+        fontSize: 20,
     },
     button: {
         width: 300,
+        height: 50,
         margin: 10,
+        alignSelf:'center',
     },
     modalButton: {
         backgroundColor: colors.accentColor,
@@ -182,10 +156,8 @@ const styles = StyleSheet.create({
     },
     createEventButton: {
         backgroundColor: colors.accentColor,
-
     },
     input: {
-
     },
     centerView: {
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -217,5 +189,4 @@ const styles = StyleSheet.create({
         color: 'black',
     }
 });
-
 export default CreateEventScreen;
