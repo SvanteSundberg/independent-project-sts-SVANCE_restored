@@ -44,6 +44,19 @@ function CreateEventScreen(props) {
         createdAt: firebase.database.ServerValue.TIMESTAMP
     });
 
+    const setMaxDate = (monthInterval) => {
+        let current_datetime = new Date()
+        current_datetime.setMonth(current_datetime.getMonth()+monthInterval);
+        let formatted_date;
+        if(current_datetime.getMonth() < 10) {
+        formatted_date = current_datetime.getFullYear() + "-0" + (current_datetime.getMonth() + 1) + "-" + current_datetime.getDate();
+        }
+        else {
+        formatted_date = current_datetime.getFullYear() + "-" + (current_datetime.getMonth() + 1) + "-" + current_datetime.getDate();
+        }
+        return formatted_date;
+    }
+
 
 
     return (
@@ -97,7 +110,7 @@ function CreateEventScreen(props) {
                                 <DatePicker
                                     backgroundColor="white"
                                     minDate={new Date()} //'2022-04-01'
-                                    maxDate='2022-07-31'
+                                    maxDate={setMaxDate(3)}
                                     monthDisplayMode={'en-short'}
                                     cancelText=""
                                     rows={5}
