@@ -1,5 +1,5 @@
 
-import { StyleSheet, Text, View, ScrollView, Modal, Image, TouchableHighlight, Pressable, KeyboardAvoidingView, Dimensions } from "react-native";
+import { StyleSheet, Text, View, ScrollView, Modal, Image, TouchableHighlight, Pressable, KeyboardAvoidingView, Dimensions, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useForm } from "react-hook-form";
 import { TextInput, Button, Portal, Provider } from "react-native-paper";
@@ -9,12 +9,32 @@ import firebase from '../config/firebase';
 import { setStatusBarNetworkActivityIndicatorVisible } from "expo-status-bar";
 import { DatePicker } from "react-native-common-date-picker";
 import { useNavigation } from '@react-navigation/native'; //uncomment to use navigation
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 function CreateEventScreen(props) {
     const [title, setTitle] = React.useState("");
     const [description, setDescription] = React.useState("");
     const [place, setPlace] = React.useState("");
-    const [date, setDate] = React.useState("");
+    const [date, setDate] = React.useState(new Date().getFullYear() + '-' + (new Date().getMonth() + 1) + '-' + new Date().getDate());
+    const [time, setTime] = React.useState(new Date());
+    const [finalTime, setFinalTime] = React.useState("");
+    const [mode, setMode] = React.useState('time');
+    const [show, setShow] = React.useState(false);
+
+    const changeTime = (event, selectedDate) => {
+        const currentDate = selectedDate || time;
+        setShow(Platform.OS === 'ios');
+        setTime(currentDate);
+        setFinalTime((time.getHours()+':'+time.getMinutes()).toString());
+    };
+    const showMode = currentMode => {
+        setShow(true);
+        setMode(currentMode);
+    };
+    const showTimepicker = () => {
+        showMode('time');
+    };
+
     const [noPeople, setNoPeople] = React.useState("");
     const [dateOpen, setdateOpen] = React.useState("false");
 
@@ -24,35 +44,47 @@ function CreateEventScreen(props) {
         checkInput();
     }
     const [isVisible, setVisible] = React.useState(false);
+
+
     const checkInput = () => {
-        if (!title.trim() || !description.trim() || !place.trim() || !date.trim() || !noPeople.trim()) {
+        if (!title.trim() || !description.trim() || !place.trim()|| !finalTime.trim() || !date.trim() || !noPeople.trim()) {
             alert('Please fill out all fields');
             return;
         }
         //sendEvent(); //uncomment to send to database
         toggleModal();
+        console.log('hallå');
+        setTitle("");
+        setDescription("");
+        setPlace(""),
+        setNoPeople("");
+        setDate(new Date().getFullYear() + '-' + (new Date().getMonth() + 1) + '-' + new Date().getDate());
+        setTime(new Date());
     };
     const toggleModal = () => {
         setVisible(!isVisible);
     };
-    const sendEvent = () => firebase.firestore().collection('events').add({
+    const sendEvent = () =>
+        firebase.firestore().collection('events').add({
         title: title,
         description: description,
         place: place,
         date: date,
+        time: finalTime,
         noPeople: noPeople,
         createdAt: firebase.database.ServerValue.TIMESTAMP
     });
 
+
     const setMaxDate = (monthInterval) => {
         let current_datetime = new Date()
-        current_datetime.setMonth(current_datetime.getMonth()+monthInterval);
+        current_datetime.setMonth(current_datetime.getMonth() + monthInterval);
         let formatted_date;
-        if(current_datetime.getMonth() < 10) {
-        formatted_date = current_datetime.getFullYear() + "-0" + (current_datetime.getMonth() + 1) + "-" + current_datetime.getDate();
+        if (current_datetime.getMonth() < 10) {
+            formatted_date = current_datetime.getFullYear() + "-0" + (current_datetime.getMonth() + 1) + "-" + current_datetime.getDate();
         }
         else {
-        formatted_date = current_datetime.getFullYear() + "-" + (current_datetime.getMonth() + 1) + "-" + current_datetime.getDate();
+            formatted_date = current_datetime.getFullYear() + "-" + (current_datetime.getMonth() + 1) + "-" + current_datetime.getDate();
         }
         return formatted_date;
     }
@@ -102,15 +134,17 @@ function CreateEventScreen(props) {
                         keyboardType={'numeric'}
                         maxLength={2}
                     />
-                    <Button style={styles.dateButton} onPress={() => setdateOpen(true)}><Text style={styles.dateText}>Date: {date}</Text></Button>
+                    <Button style={styles.dateButton} uppercase={false} onPress={() => setdateOpen(true)}><Text style={styles.dateText}>Date: {date}</Text></Button>
                     <Modal
                         visible={dateOpen}>
                         <View style={styles.centerView}>
                             <View style={styles.modalView}>
+
                                 <DatePicker
                                     backgroundColor="white"
                                     minDate={new Date()} //'2022-04-01'
                                     maxDate={setMaxDate(3)}
+                                    //defaultDate={new Date()}
                                     monthDisplayMode={'en-short'}
                                     cancelText=""
                                     rows={5}
@@ -125,6 +159,23 @@ function CreateEventScreen(props) {
                             </View>
                         </View>
                     </Modal>
+
+                    <View>
+                        <Button style={styles.dateButton} uppercase={false} onPress={showTimepicker}><Text style={styles.dateText}>Time: {time.getHours()+':'+time.getMinutes()}</Text></Button>
+                    </View>
+                    {show && (
+                        <DateTimePicker
+                            style={styles.timePicker}
+                            timeZoneOffsetInMinutes={0}
+                            value={time}
+                            mode={'time'}
+                            is24Hour={true}
+                            display="default"
+                            onChange={changeTime}
+                        />
+                    )}
+
+
                     <Button style={[styles.button, styles.createEventButton]} title="send" mode="contained" onPress={pressSend}>
                         <Text style={styles.buttonText}> Create Event </Text>
                     </Button>
@@ -179,17 +230,16 @@ const styles = StyleSheet.create({
     },
     dateButton: {
         backgroundColor: '#F6F6F6',
-        width: Dimensions.get('window').width -30,
+        width: Dimensions.get('window').width - 30,
         height: 40,
         marginTop: 5,
         borderWidth: 1,
         borderColor: '#787878',
-        alignSelf:'center',
+        alignSelf: 'center',
     },
-    dateText:{
-        color:'#787878',
-        alignSelf:'center',
-
+    dateText: {
+        color: '#787878',
+        textAlign: 'left',
     },
     modalButton: {
         backgroundColor: colors.accentColor,
