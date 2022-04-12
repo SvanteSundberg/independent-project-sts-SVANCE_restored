@@ -10,27 +10,35 @@ function CreateprofileScreen(props) {
    const [age, setAge] = useState('');
    const [descrip, setDescrip] = useState('');
    const sports = ["soccer", "padel", "basketball"];
-   const [checked, setChecked] = useState(sports.map(() => false));
    const [photo, setPhoto] = useState(null);
    const [selectedSports, chooseSports] = useState([]);
 
    const auth = getAuth();
    const user = auth.currentUser;
 
+   //useEffect(() => {
+        //getUserInfo();
+    //}, []);
+
+    const getUserInfo = async()=> {
+        const response =firebase.firestore().collection('users');
+        const info =await response.doc(user.uid).get();
+        if (info.exists){
+            setName(info.get("name"));
+            setAge(info.get("age"));
+            setDescrip(info.get("bio"));
+            chooseSports(info.get("sports"));
+        }
+      };
+
    const updateUserInfo = () => {
-   let mySports = [...selectedSports];
-   for (let index = 0; index < sports.length; index++) {
-       if (checked[index]){
-           mySports.push(sport[index])
-       }
-    }
-    chooseSports(mySports);
     firebase.firestore().collection('users').doc(user.uid).set({
         name: name,
         age: age,
         description: descrip,
-        sports: sports,
+        sports: selectedSports,
         });
+    //getUserInfo();
     }
 
 
@@ -46,6 +54,8 @@ function CreateprofileScreen(props) {
          setPhoto(result.uri);
        }
      };
+
+     console.log(selectedSports);
  
    return (
        <SafeAreaView style={styles.container}>
@@ -104,19 +114,25 @@ function CreateprofileScreen(props) {
            <Text
                style={styles.header}> Which sports are you interested in? </Text>
  
-           {sports.map((sport, index) => (    
+           {sports.map((sport) => (    
            <Checkbox.Item
                uncheckedColor="black"
                color="blue"
                key={sport}
                label={sport}
-               status={checked[index] ? 'checked' : 'unchecked'}
+               status={selectedSports.includes(sport) ? 'checked' : 'unchecked'}
  
  
                onPress={() => {
-                   let updateChecked = [...checked];
-                   updateChecked[index]=!updateChecked[index];
-                   setChecked(updateChecked);
+                   let updateSports = [...selectedSports]
+                   const sportIndex = updateSports.indexOf(sport);
+                   if (sportIndex > -1){
+                       updateSports.splice(sportIndex, 1);
+                   }
+                   else {
+                       updateSports.push(sport)
+                   }
+                   chooseSports(updateSports);
                }}
                >
                   
