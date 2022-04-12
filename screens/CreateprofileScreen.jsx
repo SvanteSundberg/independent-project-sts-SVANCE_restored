@@ -2,8 +2,9 @@ import { SafeAreaView, View, Text, TouchableOpacity, Image, ScrollView, StyleShe
 import {useState, useEffect} from 'react';
 import { TextInput, Checkbox, Button } from 'react-native-paper';
 import * as ImagePicker from 'expo-image-picker';
-import { getAuth } from "firebase/auth";
+import { getAuth, signOut } from "firebase/auth";
 import firebase from '../config/firebase';
+import { useNavigation } from '@react-navigation/native';
  
 function CreateprofileScreen(props) {
    const [name, setName] = useState('');
@@ -12,13 +13,14 @@ function CreateprofileScreen(props) {
    const sports = ["soccer", "padel", "basketball"];
    const [photo, setPhoto] = useState(null);
    const [selectedSports, chooseSports] = useState([]);
+   const navigation= useNavigation();
 
    const auth = getAuth();
    const user = auth.currentUser;
 
-   //useEffect(() => {
-        //getUserInfo();
-    //}, []);
+   useEffect(() => {
+        getUserInfo();
+    }, []);
 
     const getUserInfo = async()=> {
         const response =firebase.firestore().collection('users');
@@ -28,17 +30,21 @@ function CreateprofileScreen(props) {
             setAge(info.get("age"));
             setDescrip(info.get("bio"));
             chooseSports(info.get("sports"));
+            setPhoto(info.get("photo"));
+        }
+        else {
         }
       };
 
    const updateUserInfo = () => {
-    firebase.firestore().collection('users').doc(user.uid).set({
-        name: name,
-        age: age,
-        description: descrip,
-        sports: selectedSports,
-        });
-    //getUserInfo();
+        firebase.firestore().collection('users').doc(user.uid).set({
+            name: name,
+            age: age,
+            bio: descrip,
+            sports: selectedSports,
+            photo: photo
+            });
+        getUserInfo();
     }
 
 
@@ -55,7 +61,15 @@ function CreateprofileScreen(props) {
        }
      };
 
-     console.log(selectedSports);
+     const handleSignOut = async() => {
+        signOut(auth).then(() => {
+            navigation.navigate("StartScreen")
+
+          }).catch((error) => {
+            console.log("Sign-out not successful");
+          });
+
+     }
  
    return (
        <SafeAreaView style={styles.container}>
@@ -65,7 +79,7 @@ function CreateprofileScreen(props) {
                style={styles.logga}/>
  
            <Text style={styles.header}>
-               FILL IN YOUR DETAILS
+            FILL IN YOUR DETAILS
            </Text>
  
            <TouchableOpacity onPress={pickImage} style={styles.container}>
@@ -73,6 +87,10 @@ function CreateprofileScreen(props) {
            {!photo && <Image source={require("../assets/icon-user.png")} style = {styles.userIcon}/>}
  
            <Text> Upload image</Text>
+           <Button onPress={handleSignOut}> Sign out</Button>
+           <Button> Edit Profile
+           
+           </Button>
            </TouchableOpacity>
  
  
@@ -111,8 +129,9 @@ function CreateprofileScreen(props) {
                >       
            </TextInput>
  
-           <Text
-               style={styles.header}> Which sports are you interested in? </Text>
+            <Text
+               style={styles.header}> My favorite sports </Text> 
+           
  
            {sports.map((sport) => (    
            <Checkbox.Item
@@ -141,7 +160,7 @@ function CreateprofileScreen(props) {
            </View>
 
            <Button
-           onPress={updateUserInfo}> Save Information</Button>
+              onPress={updateUserInfo} > Save Information </Button> 
            </ScrollView>
  
  
