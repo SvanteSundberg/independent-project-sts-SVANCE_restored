@@ -1,5 +1,5 @@
 
-import { StyleSheet, Text, View, ScrollView, Modal, Image, TouchableHighlight, Pressable, KeyboardAvoidingView } from "react-native";
+import { StyleSheet, Text, View, ScrollView, Modal, Image, TouchableHighlight, Pressable, KeyboardAvoidingView, Dimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useForm } from "react-hook-form";
 import { TextInput, Button, Portal, Provider } from "react-native-paper";
@@ -16,7 +16,10 @@ function CreateEventScreen(props) {
     const [place, setPlace] = React.useState("");
     const [date, setDate] = React.useState("");
     const [noPeople, setNoPeople] = React.useState("");
-    const navigation= useNavigation(); //uncomment to use navigation
+    const [dateOpen, setdateOpen] = React.useState("false");
+
+    const navigation = useNavigation(); //uncomment to use navigation
+
     const pressSend = () => {
         checkInput();
     }
@@ -86,18 +89,29 @@ function CreateEventScreen(props) {
                         keyboardType={'numeric'}
                         maxLength={2}
                     />
-                    <DatePicker
-                        backgroundColor="white"
-                        minDate= {new Date()} //'2022-04-01'
-                        maxDate='2022-07-01'
-                        monthDisplayMode={'en-short'}
-                        titleText="Choose a date for the event"
-                        cancelText=""
-                        rows={5}
-                        selectedRowBackgroundColor={colors.accentColor}s//"#C2E1C2"
-                        width={350}
-                        confirm={date => {setDate(date)}}
-                    />
+                    <Button style={styles.dateButton} onPress={() => setdateOpen(true)}><Text style={styles.dateText}>Date: {date}</Text></Button>
+                    <Modal
+                        visible={dateOpen}>
+                        <View style={styles.centerView}>
+                            <View style={styles.modalView}>
+                                <DatePicker
+                                    backgroundColor="white"
+                                    minDate={new Date()} //'2022-04-01'
+                                    maxDate='2022-07-31'
+                                    monthDisplayMode={'en-short'}
+                                    cancelText=""
+                                    rows={5}
+                                    selectedRowBackgroundColor={colors.accentColor} s//"#C2E1C2"
+                                    width={350}
+                                    toolBarPosition='bottom'
+                                    toolBarConfirmStyle={{ color: colors.accentColor }}
+                                    confirmText='Select'
+                                    onValueChange={date => setDate(date)}
+                                    confirm={dateOpen => setdateOpen(false)}//{dateOpen=>setdateOpen(false)}//{date => {setDate(date)}} // setDate(date)}
+                                />
+                            </View>
+                        </View>
+                    </Modal>
                     <Button style={[styles.button, styles.createEventButton]} title="send" mode="contained" onPress={pressSend}>
                         <Text style={styles.buttonText}> Create Event </Text>
                     </Button>
@@ -130,7 +144,7 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#fff',
         alignItems: 'center',
-        justifyContent:'center'
+        justifyContent: 'center'
     },
     ScrollView: {
         flex: 1,
@@ -148,11 +162,27 @@ const styles = StyleSheet.create({
         width: 300,
         height: 50,
         margin: 10,
+        alignSelf: 'center',
+    },
+    dateButton: {
+        backgroundColor: '#F6F6F6',
+        width: Dimensions.get('window').width -30,
+        height: 40,
+        marginTop: 5,
+        borderWidth: 1,
+        borderColor: '#787878',
         alignSelf:'center',
+    },
+    dateText:{
+        color:'#787878',
+        alignSelf:'center',
+
     },
     modalButton: {
         backgroundColor: colors.accentColor,
         shadowColor: 'white',
+        alignSelf: 'flex-start',
+
     },
     createEventButton: {
         backgroundColor: colors.accentColor,
