@@ -18,8 +18,14 @@ export default function MainScreen() {
         .signInWithEmailAndPassword(email, password)
         .then (userCredentials => {
             const user = userCredentials.user;
+            if(user.emailVerified){
             console.log("Logged in with", user.email);
-            navigation.navigate("TimelineScreen")
+            navigation.navigate("HomeScreen")
+            }
+            else{
+              alert('Please verify your email before signing in')
+              auth.signOut();
+            }
         })
         .catch(error => alert(error.message))
         
@@ -28,8 +34,7 @@ export default function MainScreen() {
   const navigation= useNavigation();
   const handleForgotOnPress = () =>  navigation.navigate("ResetPassword")
   const handleRegisterOnPress = () =>  navigation.navigate("RegisterScreen")
-  //<VectorImage source={require('../assets/sporta_logo_blue_filled 1.svg')} /> funkar ej
-  //<Image source={require('../assets/sportaLogo.png')} style={styles.logo}/>
+
   return (
 <KeyboardAvoidingView style={styles.container}>     
 <SafeAreaView  >
