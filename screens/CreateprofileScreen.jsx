@@ -14,13 +14,14 @@ function CreateprofileScreen(props) {
    const [photo, setPhoto] = useState(null);
    const [selectedSports, chooseSports] = useState([]);
    const navigation= useNavigation();
+   const [editMode, setEditMode] = useState('false');
 
    const auth = getAuth();
    const user = auth.currentUser;
 
-   useEffect(() => {
-        getUserInfo();
-    }, []);
+   //useEffect(() => {
+        //getUserInfo();
+    //}, []);
 
     const getUserInfo = async()=> {
         const response =firebase.firestore().collection('users');
@@ -33,6 +34,7 @@ function CreateprofileScreen(props) {
             setPhoto(info.get("photo"));
         }
         else {
+            setEditMode('true');
         }
       };
 
@@ -70,6 +72,8 @@ function CreateprofileScreen(props) {
           });
 
      }
+
+     console.log(editMode);
  
    return (
        <SafeAreaView style={styles.container}>
@@ -78,9 +82,9 @@ function CreateprofileScreen(props) {
                source={require("../assets/sportaLogo.png")}
                style={styles.logga}/>
  
-           <Text style={styles.header}>
+           {editMode && <Text style={styles.header}>
             FILL IN YOUR DETAILS
-           </Text>
+           </Text>}
  
            <TouchableOpacity onPress={pickImage} style={styles.container}>
            {photo && <Image source={{ uri: photo }} style = {styles.userIcon} />}
@@ -88,9 +92,7 @@ function CreateprofileScreen(props) {
  
            <Text> Upload image</Text>
            <Button onPress={handleSignOut}> Sign out</Button>
-           <Button> Edit Profile
-           
-           </Button>
+           <Button onPress= {() => (setEditMode(!editMode))}> Edit Profile</Button>
            </TouchableOpacity>
  
  
