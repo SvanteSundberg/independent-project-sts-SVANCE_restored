@@ -1,7 +1,9 @@
-import { SafeAreaView, View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
-import {useState} from 'react';
-import { TextInput, Checkbox } from 'react-native-paper';
+import { SafeAreaView, View, Text, TouchableOpacity, Image, ScrollView, StyleSheet } from "react-native";
+import {useState, useEffect} from 'react';
+import { TextInput, Checkbox, Button } from 'react-native-paper';
 import * as ImagePicker from 'expo-image-picker';
+import { getAuth } from "firebase/auth";
+import firebase from '../config/firebase';
  
 function CreateprofileScreen(props) {
    const [name, setName] = useState('');
@@ -10,7 +12,28 @@ function CreateprofileScreen(props) {
    const sports = ["soccer", "padel", "basketball"];
    const [checked, setChecked] = useState(sports.map(() => false));
    const [photo, setPhoto] = useState(null);
- 
+   const [selectedSports, chooseSports] = useState([]);
+
+   const auth = getAuth();
+   const user = auth.currentUser;
+
+   const updateUserInfo = () => {
+   let mySports = [...selectedSports];
+   for (let index = 0; index < sports.length; index++) {
+       if (checked[index]){
+           mySports.push(sport[index])
+       }
+    }
+    chooseSports(mySports);
+    firebase.firestore().collection('users').doc(user.uid).set({
+        name: name,
+        age: age,
+        description: descrip,
+        sports: sports,
+        });
+    }
+
+
    const pickImage = async () => {
        let result = await ImagePicker.launchImageLibraryAsync({
          mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -26,6 +49,7 @@ function CreateprofileScreen(props) {
  
    return (
        <SafeAreaView style={styles.container}>
+           <ScrollView style={styles.scroll}>
            <Image
                source={require("../assets/sportaLogo.png")}
                style={styles.logga}/>
@@ -99,6 +123,10 @@ function CreateprofileScreen(props) {
                </Checkbox.Item>
            ))}
            </View>
+
+           <Button
+           onPress={updateUserInfo}> Save Information</Button>
+           </ScrollView>
  
  
        </SafeAreaView>
@@ -115,7 +143,7 @@ const styles = StyleSheet.create({
    },
    logga:{
        width: 300,
-       height: 60,
+       height: 70,
        marginTop:20,
        marginBottom:10,
    },
@@ -126,6 +154,8 @@ const styles = StyleSheet.create({
        margin:10,
        width: 130,
        height: 130
+   },
+   scroll:{
    },
    text: {
        height: 45,
