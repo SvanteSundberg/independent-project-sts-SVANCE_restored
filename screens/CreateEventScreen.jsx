@@ -6,7 +6,6 @@ import { TextInput, Button, Portal, Provider } from "react-native-paper";
 import React from 'react';
 import colors from '../config/colors.js';
 import firebase from '../config/firebase';
-import { setStatusBarNetworkActivityIndicatorVisible } from "expo-status-bar";
 import { DatePicker } from "react-native-common-date-picker";
 import { useNavigation } from '@react-navigation/native'; //uncomment to use navigation
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -17,64 +16,13 @@ function CreateEventScreen(props) {
     const [place, setPlace] = React.useState("");
     const [date, setDate] = React.useState(new Date().getFullYear() + '-' + (new Date().getMonth() + 1) + '-' + new Date().getDate());
     const [time, setTime] = React.useState(new Date());
-    const [finalTime, setFinalTime] = React.useState("");
-    const [mode, setMode] = React.useState('time');
+    const [finalTime, setFinalTime] = React.useState(new Date().getHours() + ':' + new Date().getMinutes()).toString();
     const [show, setShow] = React.useState(false);
-
-    const changeTime = (event, selectedDate) => {
-        const currentDate = selectedDate || time;
-        setShow(Platform.OS === 'ios');
-        setTime(currentDate);
-        setFinalTime((time.getHours()+':'+time.getMinutes()).toString());
-    };
-    const showMode = currentMode => {
-        setShow(true);
-        setMode(currentMode);
-    };
-    const showTimepicker = () => {
-        showMode('time');
-    };
-
     const [noPeople, setNoPeople] = React.useState("");
     const [dateOpen, setdateOpen] = React.useState("false");
-
-    const navigation = useNavigation(); //uncomment to use navigation
-
-    const pressSend = () => {
-        checkInput();
-    }
     const [isVisible, setVisible] = React.useState(false);
 
-
-    const checkInput = () => {
-        if (!title.trim() || !description.trim() || !place.trim()|| !finalTime.trim() || !date.trim() || !noPeople.trim()) {
-            alert('Please fill out all fields');
-            return;
-        }
-        //sendEvent(); //uncomment to send to database
-        toggleModal();
-        console.log('hallå');
-        setTitle("");
-        setDescription("");
-        setPlace(""),
-        setNoPeople("");
-        setDate(new Date().getFullYear() + '-' + (new Date().getMonth() + 1) + '-' + new Date().getDate());
-        setTime(new Date());
-    };
-    const toggleModal = () => {
-        setVisible(!isVisible);
-    };
-    const sendEvent = () =>
-        firebase.firestore().collection('events').add({
-        title: title,
-        description: description,
-        place: place,
-        date: date,
-        time: finalTime,
-        noPeople: noPeople,
-        createdAt: firebase.database.ServerValue.TIMESTAMP
-    });
-
+    const navigation = useNavigation();
 
     const setMaxDate = (monthInterval) => {
         let current_datetime = new Date()
@@ -89,12 +37,49 @@ function CreateEventScreen(props) {
         return formatted_date;
     }
 
+    const changeTime = (event, selectedDate) => {
+        const currentDate = selectedDate || time;
+        setShow(false);//Platform.OS === 'ios');
+        setTime(currentDate);
+        setFinalTime((time.getHours() + ':' + time.getMinutes()).toString());
+    };
+    const showTimepicker = () => {
+        setShow(true);
+    };
 
+    const pressSend = () => {
+        checkInput();
+    }
+    const checkInput = () => {
+        if (!title.trim() || !description.trim() || !place.trim() || !finalTime.trim() || !date.trim() || !noPeople.trim()) {
+            alert('Please fill out all fields');
+            return;
+        }
+        toggleModal();
+        //sendEvent(); //uncomment to send to database
+    };
+    const toggleModal = () => {
+        setVisible(!isVisible);
+    };
+    const sendEvent = () =>
+        firebase.firestore().collection('events').add({
+            title: title,
+            description: description,
+            place: place,
+            date: date,
+            time: finalTime,
+            noPeople: noPeople,
+            createdAt: firebase.database.ServerValue.TIMESTAMP
+        });
+    const onBackToTimeline = () => {
+        toggleModal();
+        navigation.push("TimelineScreen")
+    }
 
     return (
         <SafeAreaView style={styles.main}>
             <ScrollView style={styles.ScrollView} nestedScrollEnabled={true}>
-                {/* <Text style={styles.header}> CREATE EVENT </Text> */}
+                <Text style={styles.header}> SPORTA EVENT </Text> 
 
 
                 <View style={styles.form}>
@@ -142,17 +127,17 @@ function CreateEventScreen(props) {
 
                                 <DatePicker
                                     backgroundColor="white"
-                                    minDate={new Date()} //'2022-04-01'
+                                    minDate={new Date()}
                                     maxDate={setMaxDate(3)}
-                                    //defaultDate={new Date()}
                                     monthDisplayMode={'en-short'}
                                     cancelText=""
                                     rows={5}
                                     selectedRowBackgroundColor={colors.accentColor} s//"#C2E1C2"
                                     width={350}
                                     toolBarPosition='bottom'
+                                    toolBarStyle={{ width: '100%', justifyContent: 'flex-end' }}
                                     toolBarConfirmStyle={{ color: colors.accentColor }}
-                                    confirmText='Select'
+                                    confirmText='OK'
                                     onValueChange={date => setDate(date)}
                                     confirm={dateOpen => setdateOpen(false)}//{dateOpen=>setdateOpen(false)}//{date => {setDate(date)}} // setDate(date)}
                                 />
@@ -161,12 +146,11 @@ function CreateEventScreen(props) {
                     </Modal>
 
                     <View>
-                        <Button style={styles.dateButton} uppercase={false} onPress={showTimepicker}><Text style={styles.dateText}>Time: {time.getHours()+':'+time.getMinutes()}</Text></Button>
+                        <Button style={styles.dateButton} uppercase={false} onPress={showTimepicker}><Text style={styles.dateText}>Time: {time.getHours() + ':' + time.getMinutes()}</Text></Button>
                     </View>
                     {show && (
                         <DateTimePicker
                             style={styles.timePicker}
-                            timeZoneOffsetInMinutes={0}
                             value={time}
                             mode={'time'}
                             is24Hour={true}
@@ -183,6 +167,7 @@ function CreateEventScreen(props) {
                         animationType={"fade"}
                         visible={isVisible}
                         transparent={true}
+                        onRequestClose={true}
                     >
                         <View style={styles.centerView}>
                             <View style={styles.modalView}>
@@ -190,7 +175,7 @@ function CreateEventScreen(props) {
                                 <Text style={styles.modalText}>You successfully created an event!</Text>
                                 <Button
                                     style={[styles.button, styles.modalButton]}
-                                    onPress={() => navigation.navigate("TimelineScreen")} //toggleModal() comment/uncomment for navigation
+                                    onPress={onBackToTimeline} //toggleModal() comment/uncomment for navigation
                                 >
                                     <Text style={styles.buttonText}>
                                         Back To Timeline</Text>
@@ -213,6 +198,10 @@ const styles = StyleSheet.create({
     ScrollView: {
         flex: 1,
         width: '100%',
+    },
+    header: {
+        flex:1,
+        alignSelf:'center',
     },
     form: {
         flex: 1,
@@ -239,7 +228,6 @@ const styles = StyleSheet.create({
     },
     dateText: {
         color: '#787878',
-        textAlign: 'left',
     },
     modalButton: {
         backgroundColor: colors.accentColor,
@@ -249,6 +237,7 @@ const styles = StyleSheet.create({
     },
     createEventButton: {
         backgroundColor: colors.accentColor,
+        marginTop:50
     },
     input: {
     },
