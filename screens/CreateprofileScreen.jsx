@@ -1,53 +1,36 @@
 import { SafeAreaView, View, Text, TouchableOpacity, Image, ScrollView, StyleSheet } from "react-native";
-import {useState, useEffect} from 'react';
+import {useState } from 'react';
 import { TextInput, Checkbox, Button } from 'react-native-paper';
 import * as ImagePicker from 'expo-image-picker';
-import { getAuth, signOut } from "firebase/auth";
+import { getAuth } from "firebase/auth";
 import firebase from '../config/firebase';
-import { useNavigation } from '@react-navigation/native';
  
-function CreateprofileScreen(props) {
-   const [name, setName] = useState('');
-   const [age, setAge] = useState('');
-   const [descrip, setDescrip] = useState('');
+function CreateprofileScreen({navigation, route}) {
+   const [name, setName] = useState(route.params.name);
+   const [age, setAge] = useState(route.params.age);
+   const [descrip, setDescrip] = useState(route.params.bio);
    const sports = ["soccer", "padel", "basketball"];
-   const [photo, setPhoto] = useState(null);
-   const [selectedSports, chooseSports] = useState([]);
-   const navigation= useNavigation();
-   const [editMode, setEditMode] = useState('false');
+   const [photo, setPhoto] = useState(route.params.photo);
+   const [selectedSports, chooseSports] = useState(route.params.selectedSports);
 
    const auth = getAuth();
    const user = auth.currentUser;
 
-   //useEffect(() => {
-        //getUserInfo();
-    //}, []);
-
-    const getUserInfo = async()=> {
-        const response =firebase.firestore().collection('users');
-        const info =await response.doc(user.uid).get();
-        if (info.exists){
-            setName(info.get("name"));
-            setAge(info.get("age"));
-            setDescrip(info.get("bio"));
-            chooseSports(info.get("sports"));
-            setPhoto(info.get("photo"));
-        }
-        else {
-            setEditMode('true');
-        }
-      };
-
    const updateUserInfo = () => {
-        firebase.firestore().collection('users').doc(user.uid).set({
-            name: name,
+       if (name.length>0 && age>0 && descrip.length>0 && photo.length>0){
+        /*firebase.firestore().collection('users').doc(user.uid).set({
+           name: name,
             age: age,
             bio: descrip,
-            sports: selectedSports,
+           sports: selectedSports,
             photo: photo
-            });
-        getUserInfo();
+            });*/
+        navigation.navigate("ProfileScreen");
+       }
+       else {
+        console.log("gå ej vidare");
     }
+}
 
 
    const pickImage = async () => {
@@ -63,17 +46,6 @@ function CreateprofileScreen(props) {
        }
      };
 
-     const handleSignOut = async() => {
-        signOut(auth).then(() => {
-            navigation.navigate("StartScreen")
-
-          }).catch((error) => {
-            console.log("Sign-out not successful");
-          });
-
-     }
-
-     console.log(editMode);
  
    return (
        <SafeAreaView style={styles.container}>
@@ -82,17 +54,16 @@ function CreateprofileScreen(props) {
                source={require("../assets/sportaLogo.png")}
                style={styles.logga}/>
  
-           {editMode && <Text style={styles.header}>
+           <Text style={styles.header}>
             FILL IN YOUR DETAILS
-           </Text>}
+           </Text>
  
            <TouchableOpacity onPress={pickImage} style={styles.container}>
            {photo && <Image source={{ uri: photo }} style = {styles.userIcon} />}
            {!photo && <Image source={require("../assets/icon-user.png")} style = {styles.userIcon}/>}
  
            <Text> Upload image</Text>
-           <Button onPress={handleSignOut}> Sign out</Button>
-           <Button onPress= {() => (setEditMode(!editMode))}> Edit Profile</Button>
+
            </TouchableOpacity>
  
  
@@ -161,8 +132,13 @@ function CreateprofileScreen(props) {
            ))}
            </View>
 
-           <Button
-              onPress={updateUserInfo} > Save Information </Button> 
+        <View style={styles.flexContainer}>
+            <Button
+              onPress={updateUserInfo} 
+              mode={'outlined'}
+              style={styles.button}
+              color={'dodgerblue'}> Save Information </Button>
+        </View>
            </ScrollView>
  
  
@@ -170,6 +146,11 @@ function CreateprofileScreen(props) {
    );
 }
 const styles = StyleSheet.create({
+    button: {
+        width: 200,
+        alignSelf: 'center',
+        margin:7
+    },
    container: {
        alignItems: 'center',
    },
@@ -183,6 +164,9 @@ const styles = StyleSheet.create({
        height: 70,
        marginTop:20,
        marginBottom:10,
+   },
+   flexContainer: {
+        flex: 1,
    },
    userIcon: {
        borderRadius: 200 / 2, 

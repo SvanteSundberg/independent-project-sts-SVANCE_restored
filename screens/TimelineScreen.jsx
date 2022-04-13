@@ -84,7 +84,7 @@ for (let element of Object.entries(array1)) {
   icon="account-circle"
   color={Colors.black}
   size={40}
-  onPress={() => navigation.navigate("CreateprofileScreen")}
+  onPress={() => navigation.navigate("ProfileScreen")}
 />
  
   </SafeAreaView>
