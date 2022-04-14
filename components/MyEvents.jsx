@@ -30,21 +30,6 @@ function MyEvents(props) {
         }
     }
 
-    /* {theEvents.map((event, index) => { 
-                console.log(event.title);
-                <View key={index}>
-                    <Text> {event.title} </Text>
-                    <Text> {event.description} </Text>
-                    <Text> {event.noPeople} </Text>
-                    <Text> Created by {props.name} </Text>
-                    </View>
-            })}*/
-        
-           /* {theEvents.map((event, index) => ( 
-            <Text key={index}> {event.title} {event.description} {event.noPeople}</Text>
-        ))}*/
-
-
     return (
         <SafeAreaView>
             <Text style={styles.headline}> My recent events </Text>
