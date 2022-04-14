@@ -5,12 +5,13 @@ import { getAuth, signOut } from "firebase/auth";
 import firebase from '../config/firebase';
 import { useNavigation } from '@react-navigation/native'; 
 import { useIsFocused } from '@react-navigation/native';
+import MyEvents from "../components/MyEvents";
 
 function ProfileScreen() {
    const [name, setName] = useState('Carro');
    const [age, setAge] = useState(0);
-   const [descrip, setDescrip] = useState('hej');
-   const [photo, setPhoto] = useState('jajaj');
+   const [descrip, setDescrip] = useState('');
+   const [photo, setPhoto] = useState(null);
    const [selectedSports, chooseSports] = useState([]);
 
    const auth = getAuth();
@@ -108,6 +109,8 @@ function ProfileScreen() {
                 onPress={handleSignOut}
                 color={'dodgerblue'}> Sign out</Button>
             </View>
+
+            <MyEvents name={name} userId ={user.uid} />
 
                 </ScrollView>
         </SafeAreaView>
