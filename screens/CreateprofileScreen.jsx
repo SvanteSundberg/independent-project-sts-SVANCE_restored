@@ -1,4 +1,4 @@
-import { SafeAreaView, View, Text, TouchableOpacity, Image, ScrollView, StyleSheet } from "react-native";
+import { SafeAreaView, View, Text, TouchableOpacity, Image, ScrollView, StyleSheet, Alert } from "react-native";
 import {useState } from 'react';
 import { TextInput, Checkbox, Button } from 'react-native-paper';
 import * as ImagePicker from 'expo-image-picker';
@@ -28,7 +28,12 @@ function CreateprofileScreen({navigation, route}) {
         navigation.navigate("ProfileScreen");
        }
        else {
-        console.log("gå ej vidare");
+        Alert.alert(
+            "Failed to save",
+            "You need to fill in all the fields before saving!",
+              { text: "OK" }
+            
+          );
     }
 }
 
