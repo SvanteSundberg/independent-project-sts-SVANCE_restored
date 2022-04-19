@@ -2,32 +2,57 @@ import { StyleSheet,View, Text, TextInput, SafeAreaView, Button, TouchableOpacit
 import * as React from 'react';
 import { Checkbox } from 'react-native-paper';
 import { IconButton, Colors } from 'react-native-paper';
-import { useNavigation } from '@react-navigation/native'; 
+import { useNavigation } from '@react-navigation/native';
+import firebase from '../config/firebase';
  
 const Timeline = () => {
-    const array1 = {Nils:"jag vill spela fotboll",
-                    Svante: "jag vill spela volyboll",
-                    Carro: "jag vill springa",
-                    Vilma:"jag vill spela fotboll",
-                    Alice: "jag vill spela volyboll",
-                    Emelie: "jag vill springa"};
-    const results = [];
-
-const navigation= useNavigation();
+    const navigation= useNavigation();
    
-for (let element of Object.entries(array1)) {
+    const [events, setevents] =React.useState([]);
+    const [bigpost, setbigpost] =React.useState([]);
+    const results = [];
+   
+    const fetchEvents = async()=>{
+     
+      const response =firebase.firestore().collection('events');
+      const data =await response.get();
+     
+      data.docs.forEach(item =>{
+       
+        
+        setevents(events=>([...events,item.data()]));
+        setbigpost(bigpost=>([...bigpost,false]));
+       
+ 
+       
+        
+      });
+     
+     
+   
+    };
+     React.useEffect(() => {
+      fetchEvents();
+     
+    },[]);
+ 
+   
+   
+   
+/*const test=[1,2,3];
+events.forEach(element =>{
+  console.log('for loop fungerar')
     const [bigpost, setbigpost] = React.useState(false);
     const [checked, setChecked] = React.useState(false);
     results.push(
-    <View style ={styles.allposts} key = {element[0]}>
+    <View style ={styles.allposts}>
       <SafeAreaView>
          
             {bigpost?(
             <TouchableOpacity style = {styles.posts} onPress={() => {
                 setbigpost(!bigpost);
               }}>
-                <Text>{element[0]}</Text>
-                <Text>{element[1]}</Text>
+                <Text>{element}</Text>
                <View style = {styles.joinbutton}><Checkbox
       status={checked ? 'checked' : 'unchecked'}
       color="black"
@@ -43,31 +68,33 @@ for (let element of Object.entries(array1)) {
             {!bigpost?(<TouchableOpacity style = {styles.smallposts} onPress={() => {
         setbigpost(!bigpost);
       }}>
-          <Text>{element[0]}</Text>
+         
             </TouchableOpacity>):null}
  
         </SafeAreaView>
     </View>
   );
-}
- 
-/*results.push(
-    <SafeAreaView style ={styles.createEvent}>
-     
-      <IconButton
-    icon="pencil-circle-outline"
-    color={Colors.black}
-    size={40}
-    onPress={() => console.log('Pressed')}
-  />
-   
-    </SafeAreaView>
-   
-); */
+})
+*/
+let uniqueObjArray = [
+  ...new Map(events.map((item) => [item["title"], item])).values(),
+];
  
     return (<View style={styles.main}>
         <SafeAreaView><Text style={styles.header}>Aktiviteter</Text></SafeAreaView>
-        <ScrollView>{results}</ScrollView>
+        <ScrollView>
+         {uniqueObjArray.map(element =>{
+           return(
+             <View key = {element.title}>
+            <TouchableOpacity  style = {styles.posts}>
+              <Text>{element.title}</Text>
+          </TouchableOpacity>
+          </View>
+           
+           
+         )})}
+       
+    </ScrollView>
     <SafeAreaView style ={styles.createEvent}>
      
     <IconButton
@@ -88,7 +115,8 @@ for (let element of Object.entries(array1)) {
 />
  
   </SafeAreaView>
-  </View>);
+  </View>
+    );
     }
  
  
@@ -99,7 +127,7 @@ const styles = StyleSheet.create({
   main:{
     flex:1,
   },
-
+ 
     header:{
         fontSize:30,
         maxHeight:50,
@@ -156,5 +184,10 @@ const styles = StyleSheet.create({
  
 export default Timeline;
  
+ 
+ 
+ 
+
+
 
 
