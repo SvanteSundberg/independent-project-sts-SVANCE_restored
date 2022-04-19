@@ -2,6 +2,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import TimelineScreen from './TimelineScreen';
 import CreateprofileScreen from './CreateprofileScreen';
 import { Ionicons } from "@expo/vector-icons";
+import MyEventsScreen from './MyEventsScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -34,6 +35,19 @@ export default function MyTabs() {
         return (
           <Ionicons
             name="md-person-circle-outline"
+            size={24}
+            color={tabInfo.focused ? "dodgerblue" : "#8e8e93" }/>
+            );}, headerShown: false
+      }
+      } />
+
+<Tab.Screen 
+        name="Events" 
+        component={MyEventsScreen} 
+        options={{tabBarIcon: (tabInfo) => {
+        return (
+          <Ionicons
+            name="notifications"
             size={24}
             color={tabInfo.focused ? "dodgerblue" : "#8e8e93" }/>
             );}, headerShown: false
