@@ -1,8 +1,10 @@
 import { StyleSheet, Text, View } from 'react-native';
 import React from 'react'; 
 import AppNavigator from './AppNavigator.jsx';
+import i18n from "./lanuages/i18n";
 import { DefaultTheme, Provider as PaperProvider } from 'react-native-paper';
 import CreateEventScreen from './screens/CreateEventScreen.jsx';
+
 
 const theme = {
   ...DefaultTheme,
@@ -39,3 +41,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
+
+
