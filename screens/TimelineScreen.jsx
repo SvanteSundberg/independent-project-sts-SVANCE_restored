@@ -111,7 +111,7 @@ let uniqueObjArray = [
   icon="account-circle"
   color={Colors.black}
   size={40}
-  onPress={() => navigation.navigate("CreateprofileScreen")}
+  onPress={() => navigation.navigate("ProfileScreen")}
 />
  
   </SafeAreaView>
