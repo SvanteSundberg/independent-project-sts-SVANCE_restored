@@ -1,11 +1,10 @@
 import React from 'react';
 import {useState, useEffect} from 'react';
-import { View, SafeAreaView, StyleSheet, Text } from 'react-native';
+import { View, SafeAreaView, StyleSheet, Text, Image } from 'react-native';
 import firebase from '../config/firebase';
 import { getAuth } from "firebase/auth";
 import { Button } from 'react-native-paper';
 import { collection, query, where, getDocs } from "firebase/firestore";
-import style from 'react-native-common-date-picker/src/datePicker/style';
 
 function MyEvents(props) {
 
@@ -48,8 +47,13 @@ function MyEvents(props) {
                 <Text style={styles.text}> {event.title}</Text>
                 </View>
                 <View style={styles.description}>
-                <Text style={styles.smallText}> {event.description}</Text>
+                <Text style={styles.smallText}
+                numberOfLines={3}> {event.description} </Text>
                 </View>
+                <Text style={[styles.peopleText, styles.people]}> {event.noPeople} </Text>
+                <Image
+                source={require("../assets/people.png")}
+                style={[styles.peopleLogga, styles.people]}/>
             </View>
             ))}
 
@@ -67,6 +71,7 @@ const styles = StyleSheet.create({
     },
     description:{
         padding:10,
+        paddingTop:3,
     },
     event: {
         width:150,
@@ -100,7 +105,24 @@ const styles = StyleSheet.create({
     smallText:{
         marginBottom:5,
         alignSelf:'flex-start',
-    }
+    },
+    people: {
+        position: "absolute", 
+    },
+    peopleLogga:{
+        bottom: 0, 
+        right: 15,
+        width: 15,
+        height:15,
+        margin:5,
+    },
+    peopleText: {
+        fontSize:11,
+        bottom: 0, 
+        right: 0,
+        margin:5,
+        
+    },
  
 })
 
