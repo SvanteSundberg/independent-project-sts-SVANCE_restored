@@ -2,6 +2,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import TimelineScreen from './TimelineScreen';
 import CreateprofileScreen from './CreateprofileScreen';
 import { Ionicons } from "@expo/vector-icons";
+import MapScreen from './MapScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -28,12 +29,12 @@ export default function MyTabs() {
          />
 
       <Tab.Screen 
-        name="Profile" 
-        component={CreateprofileScreen} 
+        name="Map" 
+        component={MapScreen} 
         options={{tabBarIcon: (tabInfo) => {
         return (
           <Ionicons
-            name="md-person-circle-outline"
+            name="map"
             size={24}
             color={tabInfo.focused ? "dodgerblue" : "#8e8e93" }/>
             );}, headerShown: false

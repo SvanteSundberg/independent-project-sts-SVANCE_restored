@@ -8,6 +8,7 @@ import RegisterScreen from './screens/RegisterScreen.jsx';
 import ResetPassword from './screens/ResetPassword.jsx'
 import CreateprofileScreen from './screens/CreateprofileScreen.jsx'
 import HomeScreen from './screens/HomeScreen.jsx'
+import MapScreen from './screens/MapScreen.jsx'
 
 
 const {Navigator, Screen}= createNativeStackNavigator();
@@ -49,6 +50,10 @@ const AppNavigator = () => (
 
             <Screen name="HomeScreen"
                 component={HomeScreen}>
+            </Screen>
+
+            <Screen name="MapScreen"
+            component ={MapScreen}>
             </Screen>
 
             <Screen name="CreateEventScreen"
