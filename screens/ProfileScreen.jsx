@@ -3,11 +3,10 @@ import {useState, useEffect} from 'react';
 import { Button, Text } from 'react-native-paper';
 import { getAuth, signOut } from "firebase/auth";
 import firebase from '../config/firebase';
-import { useNavigation } from '@react-navigation/native'; 
 import { useIsFocused } from '@react-navigation/native';
 import MyEvents from "../components/MyEvents";
 
-function ProfileScreen() {
+function ProfileScreen({navigation, route}) {
    const [name, setName] = useState('Carro');
    const [age, setAge] = useState(0);
    const [descrip, setDescrip] = useState('');
@@ -16,17 +15,17 @@ function ProfileScreen() {
 
    const auth = getAuth();
    const user = auth.currentUser;
-   const navigation= useNavigation();
    const isFocused = useIsFocused();
+   const ownUser = (route.params.userID==user.uid);
 
-    /*useEffect(() => {
+    useEffect(() => {
         getUserInfo();
-    }, [isFocused]);*/
+    }, [isFocused]);
 
     const getUserInfo = async()=> {
         console.log("nu hämtar jag info!");
         const response =firebase.firestore().collection('users');
-        const info =await response.doc(user.uid).get();
+        const info =await response.doc(route.params.userID).get();
         if (info.exists){
             setName(info.get("name"));
             setAge(info.get("age"));
@@ -97,7 +96,7 @@ function ProfileScreen() {
 
             </View>
             
-            <View style={styles.buttons}>
+            {ownUser && <View style={styles.buttons}>
                 <Button 
                 mode={'outlined'}
                 style={styles.button}
@@ -108,11 +107,11 @@ function ProfileScreen() {
                 style={styles.button}
                 onPress={handleSignOut}
                 color={'dodgerblue'}> Sign out</Button>
-            </View>
+            </View>}
 
-            <MyEvents name={name} userId ={user.uid} />
+            <MyEvents name={name} theUser ={route.params.userID} />
 
-                </ScrollView>
+                </ScrollView> 
         </SafeAreaView>
     );
 }

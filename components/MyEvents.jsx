@@ -1,16 +1,21 @@
 import React from 'react';
 import {useState, useEffect} from 'react';
-import { View, SafeAreaView, StyleSheet, Text, Image } from 'react-native';
+import { View, SafeAreaView, StyleSheet, Text, Image, TouchableOpacity } from 'react-native';
 import firebase from '../config/firebase';
 import { getAuth } from "firebase/auth";
 import { Button } from 'react-native-paper';
 import { collection, query, where, getDocs } from "firebase/firestore";
+import BiggerEvent from './BiggerEvent';
 
-function MyEvents(props) {
+function MyEvents({theUser}) {
 
    const [theEvents, setEvents] = useState([]);
    const auth = getAuth();
    const user = auth.currentUser;
+   const [visable, setVisable] = useState(false);
+   const [specificEvent, setEvent] = useState({});
+   const [participants, setParticipants] = useState([]); 
+   const [userID, setUserID] = useState([]);
 
     useEffect(() => {
         getMyEvents();
@@ -21,7 +26,7 @@ function MyEvents(props) {
         if (!(theEvents.length>0)){
 
         const database = firebase.firestore();
-        const userEvents = query(collection(database, "events"), where("owner", "==", user.uid) );
+        const userEvents = query(collection(database, "events"), where("owner", "==", theUser) );
             const eventSnapshot = await getDocs(userEvents);
             eventSnapshot.forEach((item) => {
                 setEvents(events=>([...events,item.data()]));
@@ -29,19 +34,63 @@ function MyEvents(props) {
         }
     }
 
+    const changeVisable = () => {
+        setVisable(!visable);
+      }
+
+    /*const getID = async (eventID) => {
+        const database = firebase.firestore();
+        setParticipants([]);
+        const ID = query(collection(database, "user_events"), where("eventID", "==", eventID) );
+              const IDSnapshot = await getDocs(ID);
+              console.log(IDSnapshot);
+              IDSnapshot.forEach(async(item) => {
+                console.log("HEJ");
+                console.log(item.data().userID);
+                const response = await database.collection('users').doc(item.data().userID).get();
+                if (response.exists){
+                    setParticipants(users=>([...users,response.get("name")]));
+                }
+              });
+      }*/
+
+      const getID=async(eventID)=>{
+        const db= firebase.firestore();
+        const response =db.collection('users');
+        console.log(eventID);
+        const participants= query(collection(db,'user_event'), where('eventID','==', eventID));
+        const myParticipantsnapshot= await getDocs(participants);
+        setUserID([]);
+        setParticipants([]);
+        myParticipantsnapshot.forEach(async (user)=> {
+          const info =await response.doc(user.data().userID).get();
+          console.log(info.get("name"));
+          setParticipants(users => ([...users, {
+              name: info.get("name"),
+              userID: user.data().userID }]));
+        });
+      }
+
+
     return (
         <SafeAreaView>
             <Text style={styles.headline}> My recent events </Text>
         
         <View style={styles.container}>
             {theEvents.map((event, index) => ( 
-                <View style={styles.event}
-                key={index}>
+                <TouchableOpacity 
+                    style={styles.event}
+                    key={index}
+                    onPress={() => {
+                        setEvent(theEvents[index]);
+                        setVisable(true);
+                        getID(theEvents[index].eventID);
+                    }}>
                     <View style={styles.row}> 
                 <Button 
                 icon='calendar-today'
                 labelStyle={{fontSize: 12,
-                    color:'black',}}> {event.date} </Button>
+                    color:'black'}}> {event.date} </Button>
                     </View>
                 <View style={styles.header}>
                 <Text style={styles.text}> {event.title}</Text>
@@ -54,11 +103,14 @@ function MyEvents(props) {
                 <Image
                 source={require("../assets/people.png")}
                 style={[styles.peopleLogga, styles.people]}/>
-            </View>
+            </TouchableOpacity>
             ))}
 
             
         </View>
+        
+        <BiggerEvent visable={visable} changeVisable={changeVisable} event={specificEvent} participants={participants}
+                    theUser={theUser}/>
         </SafeAreaView>
     );
 }

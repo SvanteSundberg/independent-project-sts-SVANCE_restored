@@ -4,9 +4,12 @@ import { Checkbox } from 'react-native-paper';
 import { IconButton, Colors } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import firebase from '../config/firebase';
+import { getAuth } from "firebase/auth";
  
 const Timeline = () => {
     const navigation= useNavigation();
+    const auth = getAuth();
+    const user = auth.currentUser;
    
     const [events, setevents] =React.useState([]);
     const [bigpost, setbigpost] =React.useState([]);
@@ -111,7 +114,9 @@ let uniqueObjArray = [
   icon="account-circle"
   color={Colors.black}
   size={40}
-  onPress={() => navigation.navigate("ProfileScreen")}
+  onPress={() => navigation.navigate("ProfileScreen", {
+    userID: user.uid
+  })}
 />
  
   </SafeAreaView>
