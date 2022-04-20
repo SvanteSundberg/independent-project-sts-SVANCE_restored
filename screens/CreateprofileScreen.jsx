@@ -1,16 +1,43 @@
-import { SafeAreaView, View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
-import {useState} from 'react';
-import { TextInput, Checkbox } from 'react-native-paper';
+import { SafeAreaView, View, Text, TouchableOpacity, Image, ScrollView, StyleSheet, Alert } from "react-native";
+import {useState } from 'react';
+import { TextInput, Checkbox, Button } from 'react-native-paper';
 import * as ImagePicker from 'expo-image-picker';
+import { getAuth } from "firebase/auth";
+import firebase from '../config/firebase';
  
-function CreateprofileScreen(props) {
-   const [name, setName] = useState('');
-   const [age, setAge] = useState('');
-   const [descrip, setDescrip] = useState('');
+function CreateprofileScreen({navigation, route}) {
+   const [name, setName] = useState(route.params.name);
+   const [age, setAge] = useState(route.params.age);
+   const [descrip, setDescrip] = useState(route.params.bio);
    const sports = ["soccer", "padel", "basketball"];
-   const [checked, setChecked] = useState(sports.map(() => false));
-   const [photo, setPhoto] = useState(null);
- 
+   const [photo, setPhoto] = useState(route.params.photo);
+   const [selectedSports, chooseSports] = useState(route.params.selectedSports);
+
+   const auth = getAuth();
+   const user = auth.currentUser;
+
+   const updateUserInfo = () => {
+       if (name.length>0 && age>0 && descrip.length>0 && photo.length>0){
+        /*firebase.firestore().collection('users').doc(user.uid).set({
+           name: name,
+            age: age,
+            bio: descrip,
+           sports: selectedSports,
+            photo: photo
+            });*/
+        navigation.navigate("ProfileScreen");
+       }
+       else {
+        Alert.alert(
+            "Failed to save",
+            "You need to fill in all the fields before saving!",
+              { text: "OK" }
+            
+          );
+    }
+}
+
+
    const pickImage = async () => {
        let result = await ImagePicker.launchImageLibraryAsync({
          mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -23,15 +50,17 @@ function CreateprofileScreen(props) {
          setPhoto(result.uri);
        }
      };
+
  
    return (
        <SafeAreaView style={styles.container}>
+           <ScrollView style={styles.scroll}>
            <Image
                source={require("../assets/sportaLogo.png")}
                style={styles.logga}/>
  
            <Text style={styles.header}>
-               FILL IN YOUR DETAILS
+            FILL IN YOUR DETAILS
            </Text>
  
            <TouchableOpacity onPress={pickImage} style={styles.container}>
@@ -39,6 +68,7 @@ function CreateprofileScreen(props) {
            {!photo && <Image source={require("../assets/icon-user.png")} style = {styles.userIcon}/>}
  
            <Text> Upload image</Text>
+
            </TouchableOpacity>
  
  
@@ -77,34 +107,55 @@ function CreateprofileScreen(props) {
                >       
            </TextInput>
  
-           <Text
-               style={styles.header}> Which sports are you interested in? </Text>
+            <Text
+               style={styles.header}> My favorite sports </Text> 
+           
  
-           {sports.map((sport, index) => (    
+           {sports.map((sport) => (    
            <Checkbox.Item
                uncheckedColor="black"
                color="blue"
                key={sport}
                label={sport}
-               status={checked[index] ? 'checked' : 'unchecked'}
+               status={selectedSports.includes(sport) ? 'checked' : 'unchecked'}
  
  
                onPress={() => {
-                   let updateChecked = [...checked];
-                   updateChecked[index]=!updateChecked[index];
-                   setChecked(updateChecked);
+                   let updateSports = [...selectedSports]
+                   const sportIndex = updateSports.indexOf(sport);
+                   if (sportIndex > -1){
+                       updateSports.splice(sportIndex, 1);
+                   }
+                   else {
+                       updateSports.push(sport)
+                   }
+                   chooseSports(updateSports);
                }}
                >
                   
                </Checkbox.Item>
            ))}
            </View>
+
+        <View style={styles.flexContainer}>
+            <Button
+              onPress={updateUserInfo} 
+              mode={'outlined'}
+              style={styles.button}
+              color={'dodgerblue'}> Save Information </Button>
+        </View>
+           </ScrollView>
  
  
        </SafeAreaView>
    );
 }
 const styles = StyleSheet.create({
+    button: {
+        width: 200,
+        alignSelf: 'center',
+        margin:7
+    },
    container: {
        alignItems: 'center',
    },
@@ -115,9 +166,12 @@ const styles = StyleSheet.create({
    },
    logga:{
        width: 300,
-       height: 60,
+       height: 70,
        marginTop:20,
        marginBottom:10,
+   },
+   flexContainer: {
+        flex: 1,
    },
    userIcon: {
        borderRadius: 200 / 2, 
@@ -126,6 +180,8 @@ const styles = StyleSheet.create({
        margin:10,
        width: 130,
        height: 130
+   },
+   scroll:{
    },
    text: {
        height: 45,
