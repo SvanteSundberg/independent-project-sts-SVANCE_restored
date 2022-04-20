@@ -16,7 +16,6 @@ function CreateEventScreen(props) {
     const [place, setPlace] = React.useState("");
     const [date, setDate] = React.useState(new Date().getFullYear() + '-' + (new Date().getMonth() + 1) + '-' + new Date().getDate());
     const [time, setTime] = React.useState(new Date());
-    const [finalTime, setFinalTime] = React.useState(new Date().getHours() + ':' + new Date().getMinutes()).toString();
     const [show, setShow] = React.useState(false);
     const [noPeople, setNoPeople] = React.useState("");
     const [dateOpen, setdateOpen] = React.useState("false");
@@ -37,11 +36,10 @@ function CreateEventScreen(props) {
         return formatted_date;
     }
 
-    const changeTime = (event, selectedDate) => {
-        const currentDate = selectedDate || time;
-        setShow(false);//Platform.OS === 'ios');
-        setTime(currentDate);
-        setFinalTime((time.getHours() + ':' + time.getMinutes()).toString());
+    const changeTime = (event, selectedDate) => { 
+        console.log("hej");
+        setTime(selectedDate);
+        setShow(false);
     };
     const showTimepicker = () => {
         setShow(true);
@@ -51,26 +49,37 @@ function CreateEventScreen(props) {
         checkInput();
     }
     const checkInput = () => {
-        if (!title.trim() || !description.trim() || !place.trim() || !finalTime.trim() || !date.trim() || !noPeople.trim()) {
+        if (!title.trim() || !description.trim() || !place.trim() || !(time.getHours() + ':' + time.getMinutes()).trim() || !date.trim() || !noPeople.trim()) {
             alert('Please fill out all fields');
             return;
         }
         toggleModal();
+        
+        console.log('final: ' + time.getHours() + ':' + time.getMinutes());
         //sendEvent(); //uncomment to send to database
     };
     const toggleModal = () => {
         setVisible(!isVisible);
     };
-    const sendEvent = () =>
+    const sendEvent = () => {
         firebase.firestore().collection('events').add({
             title: title,
             description: description,
             place: place,
             date: date,
-            time: finalTime,
+            time: time.getHours() + ':' + time.getMinutes(),
             noPeople: noPeople,
             createdAt: firebase.database.ServerValue.TIMESTAMP
         });
+
+        setTitle("");
+        console.log('hell');
+        setDescription("");
+        setNoPeople("");
+        setPlace("");
+        setDate(new Date().getFullYear() + '-' + (new Date().getMonth() + 1) + '-' + new Date().getDate());
+        setTime(new Date());
+    }
     const onBackToTimeline = () => {
         toggleModal();
         navigation.push("TimelineScreen")
@@ -154,7 +163,7 @@ function CreateEventScreen(props) {
                             value={time}
                             mode={'time'}
                             is24Hour={true}
-                            display="default"
+                            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
                             onChange={changeTime}
                         />
                     )}
