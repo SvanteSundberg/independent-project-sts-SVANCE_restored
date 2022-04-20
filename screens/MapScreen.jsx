@@ -5,6 +5,7 @@ import firebase from "../config/firebase";
 
 export default function App() {
   const [events, setevents] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
 
   const fetchEvents = async () => {
     const response = firebase.firestore().collection("events");
@@ -18,6 +19,7 @@ export default function App() {
 
   React.useEffect(() => {
     fetchEvents();
+    setLoading(false);
   }, []);
 
   return (
@@ -32,18 +34,20 @@ export default function App() {
         }}
         provider="google"
       >
-        {events.map((event, index) => (
-          <Marker
-            key={index}
-            coordinate={{
-              longitude: event.region.longitude,
-              latitude: event.region.latitude,
-            }}
-            title={event.title}
-            description={event.description}
-            pinColor="blue"
-          />
-        ))}
+        {!loading
+          ? events.map((event, index) => (
+              <Marker
+                key={index}
+                coordinate={{
+                  longitude: event.region.longitude,
+                  latitude: event.region.latitude,
+                }}
+                title={event.title}
+                description={event.description}
+                pinColor="blue"
+              />
+            ))
+          : null}
       </MapView>
     </View>
   );

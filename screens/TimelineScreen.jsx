@@ -1,33 +1,116 @@
-import { StyleSheet,View, Text, TextInput, SafeAreaView, Button, TouchableOpacity, ScrollView, Dimensions } from "react-native";
+import { StyleSheet,View, Text, TextInput, SafeAreaView, TouchableOpacity, ScrollView, Dimensions } from "react-native";
 import * as React from 'react';
 import { Checkbox } from 'react-native-paper';
-import { IconButton, Colors } from 'react-native-paper';
-import { useNavigation } from '@react-navigation/native'; 
+import { IconButton, Colors, Button } from 'react-native-paper';
+import { useNavigation } from '@react-navigation/native';
+import firebase from '../config/firebase';
+import { getAuth } from "firebase/auth";
+import { getDocs, collection, query, where} from "firebase/firestore";
+
+
  
 const Timeline = () => {
-    const array1 = {Nils:"jag vill spela fotboll",
-                    Svante: "jag vill spela volyboll",
-                    Carro: "jag vill springa",
-                    Vilma:"jag vill spela fotboll",
-                    Alice: "jag vill spela volyboll",
-                    Emelie: "jag vill springa"};
-    const results = [];
-
-const navigation= useNavigation();
+  
+    const auth = getAuth();
+    const user = auth.currentUser;
+    const navigation= useNavigation(); 
    
-for (let element of Object.entries(array1)) {
+    const [events, setevents] =React.useState([]);
+    const [testEvents, settestevents] =React.useState([]);
+    const [bigpost, setbigpost] =React.useState([]);
+    const results = [];
+    const [myEvents, setMyevents]= React.useState([]);
+   
+    const fetchEvents = async()=>{
+      const response =firebase.firestore().collection('events');
+      const data =await response.get();
+      setevents([]);
+      data.docs.forEach(item =>{
+        setevents(events=>([...events, item.data()]));
+        setbigpost(bigpost=>([...bigpost,false]));
+      });
+    };
+
+    const fetchMyevents=async()=>{
+      const db= firebase.firestore();
+      const joinedEvents= query(collection(db,'user_event'), where('userID','==',user.uid));
+      const myEventsnapshot= await getDocs(joinedEvents);
+      setMyevents([]);
+      myEventsnapshot.forEach((event)=> {
+        setMyevents(events=>([...events,event.data().eventID]));
+      })
+    }
+
+
+     React.useEffect(() => {
+      fetchEvents();
+      fetchMyevents()
+     
+    },[]);
+
+    const joinEvent= async(element,index)=>{
+      if(element.placesLeft>0){
+      await firebase.firestore().collection('user_event').doc(user.uid+'_'+element.eventID).set({
+        userID:user.uid,
+        eventID:element.eventID,
+      });
+      let placesLeft = element.placesLeft-1;
+      await firebase.firestore().collection('events').doc(element.eventID).update({placesLeft:placesLeft});
+      let eventArray = [...events];
+        eventArray[index].placesLeft= placesLeft;
+        setevents(eventArray);
+      fetchMyevents();
+      console.log(myEvents);
+    }
+  }
+  const unjoinEvent=async (element,index)=>{
+    await firebase.firestore().collection('user_event').doc(user.uid+'_'+element.eventID).delete();
+    let placesLeft = element.placesLeft+1;
+    await firebase.firestore().collection('events').doc(element.eventID).update({placesLeft:placesLeft});
+    let eventArray = [...events];
+    eventArray[index].placesLeft= placesLeft;
+    setevents(eventArray);
+    fetchMyevents();
+    console.log(myEvents.includes(element.eventID));
+    }
+    
+
+
+
+
+      /*userName.update({comingEvents:firebase.firestore.FieldValue.arrayUnion(eventID)}) //find right event
+      
+      
+      const name = await userName.get()
+          .then(doc => {
+            return doc.data().name;
+          })
+          .catch(err => {
+            console.log('Error getting document', err);
+          });
+      
+      console.log(name);
+
+      const participantsRef= firebase.firestore().collection('events').doc(eventID); //find right event
+      
+      participantsRef.update( {participants: firebase.firestore.FieldValue.arrayUnion(name)});*/
+
+   
+  
+/*const test=[1,2,3];
+events.forEach(element =>{
+  console.log('for loop fungerar')
     const [bigpost, setbigpost] = React.useState(false);
     const [checked, setChecked] = React.useState(false);
     results.push(
-    <View style ={styles.allposts} key = {element[0]}>
+    <View style ={styles.allposts}>
       <SafeAreaView>
          
             {bigpost?(
             <TouchableOpacity style = {styles.posts} onPress={() => {
                 setbigpost(!bigpost);
               }}>
-                <Text>{element[0]}</Text>
-                <Text>{element[1]}</Text>
+                <Text>{element}</Text>
                <View style = {styles.joinbutton}><Checkbox
       status={checked ? 'checked' : 'unchecked'}
       color="black"
@@ -43,31 +126,36 @@ for (let element of Object.entries(array1)) {
             {!bigpost?(<TouchableOpacity style = {styles.smallposts} onPress={() => {
         setbigpost(!bigpost);
       }}>
-          <Text>{element[0]}</Text>
+         
             </TouchableOpacity>):null}
  
         </SafeAreaView>
     </View>
   );
-}
- 
-/*results.push(
-    <SafeAreaView style ={styles.createEvent}>
-     
-      <IconButton
-    icon="pencil-circle-outline"
-    color={Colors.black}
-    size={40}
-    onPress={() => console.log('Pressed')}
-  />
-   
-    </SafeAreaView>
-   
-); */
+})
+*/
+let uniqueObjArray = [
+  ...new Map(events.map((item) => [item["title"], item])).values(),
+];
  
     return (<View style={styles.main}>
         <SafeAreaView><Text style={styles.header}>Aktiviteter</Text></SafeAreaView>
-        <ScrollView>{results}</ScrollView>
+        
+        <ScrollView>
+         {uniqueObjArray.map((element,index) =>{
+           return(
+             <View key = {element.title}>
+            <TouchableOpacity  style = {styles.posts}>
+              <Text>{element.title}</Text>
+              {!myEvents.includes(element.eventID)&&<Button onPress={()=>joinEvent(element, index)}> join event</Button>}
+              {myEvents.includes(element.eventID)&&<Button onPress={()=>unjoinEvent(element, index)} color='red' > unjoin</Button>}<Text>{element.noPeople-element.placesLeft } / {element.noPeople}</Text>
+          </TouchableOpacity>
+          </View>
+           
+           
+         )})}
+       
+    </ScrollView>
     <SafeAreaView style ={styles.createEvent}>
      
     <IconButton
@@ -84,11 +172,12 @@ for (let element of Object.entries(array1)) {
   icon="account-circle"
   color={Colors.black}
   size={40}
-  onPress={() => navigation.navigate("CreateprofileScreen")}
+  onPress={() => navigation.navigate("ProfileScreen")}
 />
  
   </SafeAreaView>
-  </View>);
+  </View>
+    );
     }
  
  
@@ -99,7 +188,7 @@ const styles = StyleSheet.create({
   main:{
     flex:1,
   },
-
+ 
     header:{
         fontSize:30,
         maxHeight:50,
@@ -156,5 +245,10 @@ const styles = StyleSheet.create({
  
 export default Timeline;
  
+ 
+ 
+ 
+
+
 
 

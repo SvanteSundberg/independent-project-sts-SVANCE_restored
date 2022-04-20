@@ -7,8 +7,10 @@ import TimelineScreen from "./screens/TimelineScreen.jsx";
 import RegisterScreen from './screens/RegisterScreen.jsx';
 import ResetPassword from './screens/ResetPassword.jsx'
 import CreateprofileScreen from './screens/CreateprofileScreen.jsx'
+import ProfileScreen from "./screens/ProfileScreen.jsx";
 import HomeScreen from './screens/HomeScreen.jsx'
 import MapScreen from './screens/MapScreen.jsx'
+
 
 
 const {Navigator, Screen}= createNativeStackNavigator();
@@ -48,8 +50,13 @@ const AppNavigator = () => (
                 component={CreateprofileScreen}>
             </Screen>
 
+            <Screen name="ProfileScreen"
+                component={ProfileScreen}>
+            </Screen>
+
             <Screen name="HomeScreen"
                 component={HomeScreen}>
+
             </Screen>
 
             <Screen name="MapScreen"

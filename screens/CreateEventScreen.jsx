@@ -9,6 +9,7 @@ import {
   Pressable,
   KeyboardAvoidingView,
   Dimensions,
+  TouchableOpacity,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useForm } from "react-hook-form";
@@ -21,14 +22,24 @@ import { DatePicker } from "react-native-common-date-picker";
 import { useNavigation } from "@react-navigation/native"; //uncomment to use navigation
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import config from "../config";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 function CreateEventScreen(props) {
   const [title, setTitle] = React.useState("");
   const [description, setDescription] = React.useState("");
-  //const [place, setRegion] = React.useState("");
-  const [date, setDate] = React.useState("");
+  const [place, setPlace] = React.useState("");
+  const [date, setDate] = React.useState(
+    new Date().getFullYear() +
+      "-" +
+      (new Date().getMonth() + 1) +
+      "-" +
+      new Date().getDate()
+  );
+  const [time, setTime] = React.useState(new Date());
+  const [show, setShow] = React.useState(false);
   const [noPeople, setNoPeople] = React.useState("");
   const [dateOpen, setdateOpen] = React.useState("false");
+  const [isVisible, setVisible] = React.useState(false);
   const [region, setRegion] = React.useState({
     place: "",
     latitude: 59.856667,
@@ -37,38 +48,7 @@ function CreateEventScreen(props) {
     longitudeDelta: 0.0421,
   });
 
-  const navigation = useNavigation(); //uncomment to use navigation
-
-  const pressSend = () => {
-    checkInput();
-  };
-  const [isVisible, setVisible] = React.useState(false);
-  const checkInput = () => {
-    if (
-      !title.trim() ||
-      !description.trim() ||
-      //!place.trim() ||
-      !date.trim() ||
-      !noPeople.trim()
-    ) {
-      alert("Please fill out all fields");
-      return;
-    }
-    sendEvent(); //uncomment to send to database
-    toggleModal();
-  };
-  const toggleModal = () => {
-    setVisible(!isVisible);
-  };
-  const sendEvent = () =>
-    firebase.firestore().collection("events").add({
-      title: title,
-      description: description,
-      region: region,
-      date: date,
-      noPeople: noPeople,
-      createdAt: firebase.database.ServerValue.TIMESTAMP,
-    });
+  const navigation = useNavigation();
 
   const setMaxDate = (monthInterval) => {
     let current_datetime = new Date();
@@ -92,143 +72,247 @@ function CreateEventScreen(props) {
     return formatted_date;
   };
 
+  const changeTime = (event, selectedDate) => {
+    console.log("hej");
+    setTime(selectedDate);
+    setShow(false);
+  };
+  const showTimepicker = () => {
+    setShow(true);
+  };
+
+  const pressSend = () => {
+    checkInput();
+  };
+
+  const checkInput = () => {
+    if (
+      !title.trim() ||
+      !description.trim() ||
+      !region.place.trim() ||
+      !(time.getHours() + ":" + time.getMinutes()).trim() ||
+      !date.trim() ||
+      !noPeople.trim()
+    ) {
+      alert("Please fill out all fields");
+      return;
+    }
+    toggleModal();
+
+    console.log("final: " + time.getHours() + ":" + time.getMinutes());
+    sendEvent(); //uncomment to send to database
+  };
+  const toggleModal = () => {
+    setVisible(!isVisible);
+  };
+  const sendEvent = () => {
+    firebase
+      .firestore()
+      .collection("events")
+      .add({
+        title: title,
+        description: description,
+        region: region,
+        date: date,
+        time: time.getHours() + ":" + time.getMinutes(),
+        noPeople: noPeople,
+        createdAt: firebase.database.ServerValue.TIMESTAMP,
+      });
+
+    setTitle("");
+    console.log("hell");
+    setDescription("");
+    setNoPeople("");
+    setRegion("");
+    setDate(
+      new Date().getFullYear() +
+        "-" +
+        (new Date().getMonth() + 1) +
+        "-" +
+        new Date().getDate()
+    );
+    setTime(new Date());
+  };
+
+  const onBackToTimeline = () => {
+    toggleModal();
+    navigation.push("TimelineScreen");
+  };
+
   return (
-    <ScrollView
-      keyboardShouldPersistTaps="always"
-      listViewDisplayed={false}
-      style={styles.ScrollView}
-      nestedScrollEnabled={true}
-      horizontal={false}
-      style={{ flex: 1, width: "100%", height: "100%" }}
-    >
-      <View style={styles.form}>
-        <TextInput
-          style={styles.input}
-          label="Event title"
-          value={title}
-          onChangeText={(title) => setTitle(title)}
-          mode="outlined"
-          activeOutlineColor={colors.accentColor}
-          placeholder="Title of your event"
-        />
-        <TextInput
-          label="Event Description"
-          value={description}
-          onChangeText={(description) => setDescription(description)}
-          mode="outlined"
-          activeOutlineColor={colors.accentColor}
-          placeholder="Describe your event in a few words"
-          maxLength={100}
-        />
-        <GooglePlacesAutocomplete
-          placeholder="Search"
-          fetchDetails={true}
-          GooglePlacesSearchQuery={{
-            rankby: "distance",
-          }}
-          onPress={(details, data = null) => {
-            // 'details' is provided when fetchDetails = true
-            setRegion({
-              place: details.description,
-              latitude: data.geometry.location.lat,
-              longitude: data.geometry.location.lng,
-              latitudeDelta: 0.1022,
-              longitudeDelta: 0.0421,
-            });
-          }}
-          query={{
-            key: config.GOOGLE_MAPS_API_KEY,
-            language: "en",
-            components: "country:SE",
-            location: `${region.latitude},${region.longitude}`,
-          }}
-          styles={{
-            textInput: {
-              height: 60,
-              backgroundColor: "transparent",
-              borderColor: "black",
-              marginTop: 10,
-              borderRadius: 10,
-              borderWidth: 1,
-              borderColor: "grey",
-              color: "grey",
-            },
-            listView: {},
-            row: {
-              backgroundColor: "#FFF",
-              padding: 13,
-              height: 44,
-              flexDirection: "row",
-            },
-            textInputContainer: {
-              flexDirection: "row",
-            },
-          }}
-        />
-        <TextInput
-          label="Number of people"
-          value={noPeople}
-          onChangeText={(noPeople) => setNoPeople(noPeople)}
-          mode="outlined"
-          activeOutlineColor={colors.accentColor}
-          placeholder="How many people are you looking for?"
-          keyboardType={"numeric"}
-          maxLength={2}
-        />
-        <Button style={styles.dateButton} onPress={() => setdateOpen(true)}>
-          <Text style={styles.dateText}>Date: {date}</Text>
-        </Button>
-        <Modal visible={dateOpen}>
-          <View style={styles.centerView}>
-            <View style={styles.modalView}>
-              <DatePicker
-                backgroundColor="white"
-                minDate={new Date()} //'2022-04-01'
-                maxDate={setMaxDate(3)}
-                monthDisplayMode={"en-short"}
-                cancelText=""
-                rows={5}
-                selectedRowBackgroundColor={colors.accentColor}
-                s //"#C2E1C2"
-                width={350}
-                toolBarPosition="bottom"
-                toolBarConfirmStyle={{ color: colors.accentColor }}
-                confirmText="Select"
-                onValueChange={(date) => setDate(date)}
-                confirm={(dateOpen) => setdateOpen(false)} //{dateOpen=>setdateOpen(false)}//{date => {setDate(date)}} // setDate(date)}
-              />
+    <SafeAreaView style={styles.main}>
+      <ScrollView
+        style={styles.ScrollView}
+        nestedScrollEnabled={true}
+        keyboardShouldPersistTaps="always"
+        listViewDisplayed={false}
+        horizontal={false}
+        style={{ flex: 1, width: "100%", height: "100%" }}
+      >
+        <Text style={styles.header}> SPORTA EVENT </Text>
+
+        <View style={styles.form}>
+          <TextInput
+            style={styles.input}
+            label="Event title"
+            value={title}
+            onChangeText={(title) => setTitle(title)}
+            mode="outlined"
+            activeOutlineColor={colors.accentColor}
+            placeholder="Title of your event"
+          />
+          <TextInput
+            label="Event Description"
+            value={description}
+            onChangeText={(description) => setDescription(description)}
+            mode="outlined"
+            activeOutlineColor={colors.accentColor}
+            placeholder="Describe your event in a few words"
+            maxLength={100}
+          />
+          <GooglePlacesAutocomplete
+            placeholder="Search"
+            fetchDetails={true}
+            GooglePlacesSearchQuery={{
+              rankby: "distance",
+            }}
+            onPress={(details, data = null) => {
+              // 'details' is provided when fetchDetails = true
+              setRegion({
+                place: details.description,
+                latitude: data.geometry.location.lat,
+                longitude: data.geometry.location.lng,
+                latitudeDelta: 0.1022,
+                longitudeDelta: 0.0421,
+              });
+            }}
+            query={{
+              key: config.GOOGLE_MAPS_API_KEY,
+              language: "en",
+              components: "country:SE",
+              location: `${region.latitude},${region.longitude}`,
+            }}
+            styles={{
+              textInput: {
+                height: 60,
+                backgroundColor: "transparent",
+                borderColor: "black",
+                marginTop: 10,
+                borderRadius: 10,
+                borderWidth: 1,
+                borderColor: "grey",
+                color: "grey",
+              },
+              listView: {},
+              row: {
+                backgroundColor: "#FFF",
+                padding: 13,
+                height: 44,
+                flexDirection: "row",
+              },
+              textInputContainer: {
+                flexDirection: "row",
+              },
+            }}
+          />
+          <TextInput
+            label="Number of people"
+            value={noPeople}
+            onChangeText={(noPeople) => setNoPeople(noPeople)}
+            mode="outlined"
+            activeOutlineColor={colors.accentColor}
+            placeholder="How many people are you looking for?"
+            keyboardType={"numeric"}
+            maxLength={2}
+          />
+          <Button
+            style={styles.dateButton}
+            uppercase={false}
+            onPress={() => setdateOpen(true)}
+          >
+            <Text style={styles.dateText}>Date: {date}</Text>
+          </Button>
+          <Modal visible={dateOpen}>
+            <View style={styles.centerView}>
+              <View style={styles.modalView}>
+                <DatePicker
+                  backgroundColor="white"
+                  minDate={new Date()}
+                  maxDate={setMaxDate(3)}
+                  monthDisplayMode={"en-short"}
+                  cancelText=""
+                  rows={5}
+                  selectedRowBackgroundColor={colors.accentColor}
+                  s //"#C2E1C2"
+                  width={350}
+                  toolBarPosition="bottom"
+                  toolBarStyle={{ width: "100%", justifyContent: "flex-end" }}
+                  toolBarConfirmStyle={{ color: colors.accentColor }}
+                  confirmText="OK"
+                  onValueChange={(date) => setDate(date)}
+                  confirm={(dateOpen) => setdateOpen(false)} //{dateOpen=>setdateOpen(false)}//{date => {setDate(date)}} // setDate(date)}
+                />
+              </View>
             </View>
-          </View>
-        </Modal>
-        <Button
-          style={[styles.button, styles.createEventButton]}
-          title="send"
-          mode="contained"
-          onPress={pressSend}
-        >
-          <Text style={styles.buttonText}> Create Event </Text>
-        </Button>
-        <Modal animationType={"fade"} visible={isVisible} transparent={true}>
-          <View style={styles.centerView}>
-            <View style={styles.modalView}>
-              <Image
-                source={require("../assets/green-checkmark.png")}
-                style={styles.modalLogo}
-              />
-              <Text style={styles.modalText}>
-                You successfully created an event!
+          </Modal>
+
+          <View>
+            <Button
+              style={styles.dateButton}
+              uppercase={false}
+              onPress={showTimepicker}
+            >
+              <Text style={styles.dateText}>
+                Time: {time.getHours() + ":" + time.getMinutes()}
               </Text>
-              <Button
-                style={[styles.button, styles.modalButton]}
-                onPress={() => navigation.navigate("TimelineScreen")} //toggleModal() comment/uncomment for navigation
-              >
-                <Text style={styles.buttonText}>Back To Timeline</Text>
-              </Button>
-            </View>
+            </Button>
           </View>
-        </Modal>
-      </View>
-    </ScrollView>
+          {show && (
+            <DateTimePicker
+              style={styles.timePicker}
+              value={time}
+              mode={"time"}
+              is24Hour={true}
+              display={Platform.OS === "ios" ? "spinner" : "default"}
+              onChange={changeTime}
+            />
+          )}
+
+          <Button
+            style={[styles.button, styles.createEventButton]}
+            title="send"
+            mode="contained"
+            onPress={pressSend}
+          >
+            <Text style={styles.buttonText}> Create Event </Text>
+          </Button>
+          <Modal
+            animationType={"fade"}
+            visible={isVisible}
+            transparent={true}
+            onRequestClose={true}
+          >
+            <View style={styles.centerView}>
+              <View style={styles.modalView}>
+                <Image
+                  source={require("../assets/green-checkmark.png")}
+                  style={styles.modalLogo}
+                />
+                <Text style={styles.modalText}>
+                  You successfully created an event!
+                </Text>
+                <Button
+                  style={[styles.button, styles.modalButton]}
+                  onPress={onBackToTimeline} //toggleModal() comment/uncomment for navigation
+                >
+                  <Text style={styles.buttonText}>Back To Timeline</Text>
+                </Button>
+              </View>
+            </View>
+          </Modal>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
@@ -242,9 +326,13 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
   },
+  header: {
+    flex: 1,
+    alignSelf: "center",
+  },
   form: {
     flex: 1,
-    padding: 10,
+    padding: 15,
   },
   buttonText: {
     color: "white",
@@ -267,7 +355,6 @@ const styles = StyleSheet.create({
   },
   dateText: {
     color: "#787878",
-    alignSelf: "center",
   },
   modalButton: {
     backgroundColor: colors.accentColor,
@@ -276,6 +363,7 @@ const styles = StyleSheet.create({
   },
   createEventButton: {
     backgroundColor: colors.accentColor,
+    marginTop: 50,
   },
   input: {},
   centerView: {
