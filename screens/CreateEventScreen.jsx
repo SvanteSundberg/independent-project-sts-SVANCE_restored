@@ -71,10 +71,9 @@ function CreateEventScreen(props) {
     }
     return formatted_date;
   };
-
   const changeTime = (event, selectedDate) => {
-    console.log("hej");
-    setTime(selectedDate);
+    const currentDate = selectedDate || time;
+    setTime(currentDate);
     setShow(false);
   };
   const showTimepicker = () => {
@@ -98,8 +97,6 @@ function CreateEventScreen(props) {
       return;
     }
     toggleModal();
-
-    console.log("final: " + time.getHours() + ":" + time.getMinutes());
     sendEvent(); //uncomment to send to database
   };
   const toggleModal = () => {
@@ -120,10 +117,16 @@ function CreateEventScreen(props) {
       });
 
     setTitle("");
-    console.log("hell");
     setDescription("");
     setNoPeople("");
-    setRegion("");
+    setRegion({
+      place: "",
+      latitude: 59.856667,
+      longitude: 17.642583,
+      latitudeDelta: 0.1022,
+      longitudeDelta: 0.0421,
+    });
+
     setDate(
       new Date().getFullYear() +
         "-" +
@@ -263,7 +266,7 @@ function CreateEventScreen(props) {
               onPress={showTimepicker}
             >
               <Text style={styles.dateText}>
-                Time: {time.getHours() + ":" + time.getMinutes()}
+                Time: {time.getHours() + ':' + time.getMinutes()}
               </Text>
             </Button>
           </View>
