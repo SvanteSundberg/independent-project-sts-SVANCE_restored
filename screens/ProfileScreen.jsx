@@ -5,11 +5,11 @@ import { getAuth} from "firebase/auth";
 import firebase from '../config/firebase';
 import { useIsFocused } from '@react-navigation/native';
 import MyEvents from "../components/MyEvents";
-import DropMenu from "../components/DropMenu";
+import DownMenu from "../components/DownMenu";
 
 function ProfileScreen({navigation, route}) {
    const [name, setName] = useState('');
-   const [age, setAge] = useState(0);
+   const [age, setAge] = useState('');
    const [descrip, setDescrip] = useState('');
    const [photo, setPhoto] = useState(null);
    const [selectedSports, chooseSports] = useState([]);
@@ -19,14 +19,9 @@ function ProfileScreen({navigation, route}) {
    const isFocused = useIsFocused();
    const [userID, setUserID] = useState(route.params.userID);
    const ownUser = (route.params.userID==user.uid);
-   const [visable, setVisable] = useState(false);
 
    const changeUser = (userID) => {
         setUserID(userID);
-   }
-
-   const closeMenu = () => {
-       setVisable(() => !visable);
    }
 
     /*useEffect(() => {
@@ -65,7 +60,7 @@ function ProfileScreen({navigation, route}) {
               })
      }
 
-     /* {ownUser && <View style={styles.buttons}>
+     /*{ownUser && <View style={styles.buttons}>
                 <Button 
                 mode={'outlined'}
                 style={styles.button}
@@ -80,24 +75,18 @@ function ProfileScreen({navigation, route}) {
 
     return (
         <SafeAreaView>
-
-
         <ScrollView>
-        <View style={[styles.container, styles.userContainer]}> 
-        {ownUser && <Button 
-            labelStyle={{fontSize: 30,
-            color:'black'}}
-            icon='menu'
-            style={styles.menu}
-            onPress={() => setVisable(() => !visable)}/>
-            } 
-        <DropMenu closeMenu={closeMenu} visable={visable} goToEdit={goToEdit}/>
+
+        <View style={[styles.container, styles.userContainer]}>
+
+            {ownUser &&  <DownMenu  style={styles.menu} goToEdit={goToEdit}/>} 
 
             {photo && <Image source={{ uri: photo }} style = {styles.userIcon} />}
             {!photo && <Image source={require("../assets/icon-user.png")} style = {styles.userIcon}/>}
 
             <Text style={styles.header}> {name} </Text>
             <Text style={styles.age}> {age} years old</Text>
+
             </View>
 
             <View style={[styles.container, styles.userInfoContainer]}> 
@@ -129,6 +118,7 @@ function ProfileScreen({navigation, route}) {
             <MyEvents navigation={navigation} name={name} theUser ={userID} changeUser={changeUser} />
 
                 </ScrollView> 
+            
         </SafeAreaView>
     );
 }
@@ -180,8 +170,10 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: "black",
         margin:10,
+        marginTop:30,
         width: 130,
-        height: 130
+        height: 130,
+        zIndex: 0,
     },
     userContainer: {
         backgroundColor: 'indianred',
@@ -198,6 +190,10 @@ const styles = StyleSheet.create({
     sportImage: {
         width: 40,
         height: 40,
+    },
+    size: {
+        backgroundColor: 'green',
+        zIndex: 100,
     }
   
  })

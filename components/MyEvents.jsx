@@ -124,6 +124,7 @@ const styles = StyleSheet.create({
     eventsText: {
         fontStyle: 'italic',
         margin: 10,
+        alignSelf:'center',
     },
     header: {
         paddingTop: 10,
