@@ -89,7 +89,8 @@ let uniqueObjArray = [
         icon="account-circle"
         color={Colors.black}
         size={40}
-        onPress={() => navigation.navigate("ProfileScreen")}
+        onPress={() => navigation.navigate("ProfileScreen", {userID: user.uid}
+        )}
 />
           <Text style={styles.header}>Aktiviteter</Text></View>
         
