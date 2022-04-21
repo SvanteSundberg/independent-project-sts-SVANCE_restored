@@ -6,10 +6,20 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text,  ImageBackground, Image, KeyboardAvoidingView, View, TouchableOpacity } from 'react-native';
 import { Button,  TextInput, HelperText } from 'react-native-paper';
 import { auth } from "../config/firebase";
+import { useTranslation } from "react-i18next";
 
 
 export default function MainScreen() {
 
+  const {t,i18n}=useTranslation();
+
+  const pickLangEn=() =>{
+        i18n.changeLanguage("en")
+       } 
+
+    const pickLangSw=() =>{
+        i18n.changeLanguage("sw")
+    }
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
 
@@ -37,37 +47,52 @@ export default function MainScreen() {
 
   return (
 <KeyboardAvoidingView style={styles.container}>     
-<SafeAreaView  >
-    
-         
+<SafeAreaView>
+
+
+
          
      <ImageBackground source={{
         uri:'https://cdn.discordapp.com/attachments/955769691975065633/957929103665811456/photo-1562552052-af5955fe5ba2.png'}}  
         style={styles.backgroundImage}
         resizeMode="cover"> 
+        <View>
+              <View style={{alignItems:'flex-end'}}>
+              <TouchableOpacity
+              onPress={pickLangEn}>
+              <Image source={require('../assets/united-kingdom.png')} style={styles.flags}/>
+              </TouchableOpacity>
+ 
+              <TouchableOpacity
+              onPress={pickLangSw} >
+              <Image source={require('../assets/sweden.png')} style={styles.flags}/>
+              </TouchableOpacity>
+              </View>
+
     <View style={styles.logoAndText}>
-      <Text>Welcome to</Text>
-      
+        <Text>{t('WelcomeText')}</Text>
+     
             <Image source={require('../assets/sportaLogo.png')}  style={styles.logo}/>
+            </View>
             </View>
 
             <View style={styles.test}> 
-            <Text style={{marginLeft:10, fontWeight:'bold'}}> SIGN IN</Text> 
+            <Text style={{marginLeft:10, fontWeight:'bold'}}> {t('signIN')}</Text> 
             <TextInput style={styles.textinput}
-                label= "Email"
+                label= {t('email')}
                 mode="outlined"
                 activeOutlineColor="hotpink"
-                placeholder="Email"
+                placeholder={t('email')}
                 value={email}
                 onChangeText = {email => setEmail(email)}/>
                 
              
     
             <TextInput style={styles.textinput} secureTextEntry={true} 
-                         label= "Password"
+                         label= {t('password')}
                          mode="outlined"
                          activeOutlineColor="hotpink"
-                         placeholder="Password"
+                         placeholder={t('password')}
                         value={password}
                         onChangeText = {password => setPassword(password)}/> 
 
@@ -76,23 +101,21 @@ export default function MainScreen() {
                      title="Left button"
                     onPress={handleLogin}
                     style={styles.loginBtn} >
-                 Log in
+                 {t('signIN')}
               </Button>
-
+              
               
             <View style = {styles.forgotPasswordText}>
-              <Text>Forgot your password?   
-              <Text onPress={handleForgotOnPress} style = {styles.pressHere}> Press here</Text>
+              <Text>{t('forgotPass')}  
+              <Text onPress={handleForgotOnPress} style = {styles.pressHere}> {t('pressHere')} </Text>
               </Text>
-
-              <Text style={{marginTop:20, fontSize:15}}>OR</Text> 
             </View>
             
       
       
       
       <Button style={styles.registerBtn} mode="outlined" compact="true" onPress={handleRegisterOnPress} >
-        Register
+      {t('register')}
       </Button>
       </View>
       </ImageBackground>
@@ -129,8 +152,18 @@ const styles = StyleSheet.create({
     height:150,
     width:250,
     resizeMode: "contain",
-    
+    marginTop: 250
   },
+
+    flags:{
+      height:30,
+      width:55,
+      margin:5,
+      
+
+    },
+    
+ 
   textinput:{ 
     margin: 10,
     
@@ -154,7 +187,8 @@ logoAndText:{
   alignItems:'center',
   flex:1,
   justifyContent:'space-around',
-  marginTop:100
+  marginTop:5
+  
 
 }
 
