@@ -1,32 +1,37 @@
 import { SafeAreaView, View, Image, ScrollView, StyleSheet } from "react-native";
 import {useState, useEffect} from 'react';
 import { Button, Text } from 'react-native-paper';
-import { getAuth, signOut } from "firebase/auth";
+import { getAuth} from "firebase/auth";
 import firebase from '../config/firebase';
-import { useNavigation } from '@react-navigation/native'; 
 import { useIsFocused } from '@react-navigation/native';
 import MyEvents from "../components/MyEvents";
+import DownMenu from "../components/DownMenu";
 
-function ProfileScreen() {
-   const [name, setName] = useState('Carro');
-   const [age, setAge] = useState(0);
+function ProfileScreen({navigation, route}) {
+   const [name, setName] = useState('');
+   const [age, setAge] = useState('');
    const [descrip, setDescrip] = useState('');
    const [photo, setPhoto] = useState(null);
    const [selectedSports, chooseSports] = useState([]);
 
    const auth = getAuth();
    const user = auth.currentUser;
-   const navigation= useNavigation();
    const isFocused = useIsFocused();
+   const [userID, setUserID] = useState(route.params.userID);
+   const ownUser = (route.params.userID==user.uid);
+
+   const changeUser = (userID) => {
+        setUserID(userID);
+   }
 
     /*useEffect(() => {
         getUserInfo();
-    }, [isFocused]);*/
+    }, [isFocused, userID]);*/
 
     const getUserInfo = async()=> {
         console.log("nu hämtar jag info!");
         const response =firebase.firestore().collection('users');
-        const info =await response.doc(user.uid).get();
+        const info =await response.doc(userID).get();
         if (info.exists){
             setName(info.get("name"));
             setAge(info.get("age"));
@@ -45,16 +50,6 @@ function ProfileScreen() {
         }
       };
 
-      const handleSignOut = async() => {
-        signOut(auth).then(() => {
-            navigation.navigate("StartScreen")
-
-          }).catch((error) => {
-            console.log("Sign-out not successful");
-          });
-
-     }
-
      const goToEdit = () => {
         navigation.navigate("CreateprofileScreen", {
                 name: name,
@@ -65,39 +60,7 @@ function ProfileScreen() {
               })
      }
 
-    return (
-        <SafeAreaView>
-
-        <ScrollView>
-        <View style={[styles.container, styles.userContainer]}> 
-            <Image
-               source={require("../assets/sportaLogo.png")}
-               style={styles.logga}/>    
-
-            {photo && <Image source={{ uri: photo }} style = {styles.userIcon} />}
-            {!photo && <Image source={require("../assets/icon-user.png")} style = {styles.userIcon}/>}
-
-            <Text style={styles.header}> {name} </Text>
-            <Text style={styles.age}> {age} years old</Text>
-            </View>
-
-            <View style={[styles.container, styles.userInfoContainer]}> 
-                <Text style={styles.bio}> {descrip} </Text>
-                <Text style={styles.header}> My favorite Sports:</Text>
-                <View style={[styles.sports]}>
-                {selectedSports.map((sport) => (  
-                    <Button 
-                    labelStyle={{fontSize: 30,
-                    color:'black'}}
-                    style={styles.icons}
-                    key={sport}
-                    icon={sport}/>
-                ))}
-                </View>
-
-            </View>
-            
-            <View style={styles.buttons}>
+     /*{ownUser && <View style={styles.buttons}>
                 <Button 
                 mode={'outlined'}
                 style={styles.button}
@@ -108,11 +71,54 @@ function ProfileScreen() {
                 style={styles.button}
                 onPress={handleSignOut}
                 color={'dodgerblue'}> Sign out</Button>
+            </View>}*/
+
+    return (
+        <SafeAreaView>
+        <ScrollView>
+
+        <View style={[styles.container, styles.userContainer]}>
+
+            {ownUser &&  <DownMenu  style={styles.menu} goToEdit={goToEdit}/>} 
+
+            {photo && <Image source={{ uri: photo }} style = {styles.userIcon} />}
+            {!photo && <Image source={require("../assets/icon-user.png")} style = {styles.userIcon}/>}
+
+            <Text style={styles.header}> {name} </Text>
+            <Text style={styles.age}> {age} years old</Text>
+
             </View>
 
-            <MyEvents name={name} userId ={user.uid} />
+            <View style={[styles.container, styles.userInfoContainer]}> 
+                <Text style={styles.bio}> {descrip} </Text>
+                <Text style={styles.header}> Favorite Sports</Text>
+                <View style={[styles.sports]}>
+                {selectedSports.map((sport) => (
+                    sport=='padel' ? (<Image 
+                        style = {styles.sportImage}
+                        key={sport}
+                        source={require("../assets/padel.png")}/>) 
+                    
+                    : 
+                    
+                    <Button 
+                    labelStyle={{fontSize: 30,
+                    color:'black'}}
+                    style={styles.icons}
+                    key={sport}
+                    icon={sport}/>
 
-                </ScrollView>
+                ))
+                    
+                }
+                </View>
+
+            </View>
+
+            <MyEvents navigation={navigation} name={name} theUser ={userID} changeUser={changeUser} />
+
+                </ScrollView> 
+            
         </SafeAreaView>
     );
 }
@@ -154,13 +160,20 @@ const styles = StyleSheet.create({
         marginTop:20,
         marginBottom:10,
     },
+    menu: {
+        position: "absolute",
+        right:-20,
+        top:0,
+    },
     userIcon: {
         borderRadius: 200 / 2, 
         borderWidth: 1,
         borderColor: "black",
         margin:10,
+        marginTop:30,
         width: 130,
-        height: 130
+        height: 130,
+        zIndex: 0,
     },
     userContainer: {
         backgroundColor: 'indianred',
@@ -172,7 +185,16 @@ const styles = StyleSheet.create({
     sports: {
         flexDirection: 'row',
         marginBottom: 20,
+        marginTop:5,
     },
+    sportImage: {
+        width: 40,
+        height: 40,
+    },
+    size: {
+        backgroundColor: 'green',
+        zIndex: 100,
+    }
   
  })
 
