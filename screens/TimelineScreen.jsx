@@ -10,6 +10,8 @@ import { getDocs, collection, query, where} from "firebase/firestore";
 
  
 const Timeline = () => {
+
+  
   
     const auth = getAuth();
     const user = auth.currentUser;
@@ -20,6 +22,7 @@ const Timeline = () => {
     const [bigpost, setbigpost] =React.useState([]);
     const results = [];
     const [myEvents, setMyevents]= React.useState([]);
+    const [owners, setOwners]= React.useState([]);
    
     const fetchEvents = async()=>{
       const response =firebase.firestore().collection('events');
@@ -29,6 +32,7 @@ const Timeline = () => {
         setevents(events=>([...events, item.data()]));
         setbigpost(bigpost=>([...bigpost,false]));
       });
+      fetchOwners();
     };
 
     const fetchMyevents=async()=>{
@@ -41,10 +45,20 @@ const Timeline = () => {
       })
     }
 
+    const fetchOwners=async()=> {
+      setOwners([]);
+      const users =firebase.firestore().collection('users');
+      events.forEach(async(event)=> {
+      const name=await users.doc(event.owner).get();
+      const obj={ownerid:event.owner, name:name.get('name')}
+      setOwners(owners=>([...owners,obj]))
+      }) 
+    }
+
 
      React.useEffect(() => {
       fetchEvents();
-      fetchMyevents()
+      fetchMyevents();
      
     },[]);
 
@@ -60,7 +74,7 @@ const Timeline = () => {
         eventArray[index].placesLeft= placesLeft;
         setevents(eventArray);
       fetchMyevents();
-      console.log(myEvents);
+      
     }
   }
   const unjoinEvent=async (element,index)=>{
@@ -73,10 +87,14 @@ const Timeline = () => {
     fetchMyevents();
     console.log(myEvents.includes(element.eventID));
     }
-    
-
-
-
+//uses the the owner prop from events to get the owners name
+    const checkOwner=(id)=>{
+      for (let obj of owners) {
+        if (obj.ownerid === id)
+        return  <Text>{obj.name}</Text>
+      }
+      }
+     
 
 let uniqueObjArray = [
   ...new Map(events.map((item) => [item["title"], item])).values(),
@@ -93,14 +111,33 @@ let uniqueObjArray = [
 />
           <Text style={styles.header}>Aktiviteter</Text></View>
         
-        <ScrollView style={{alignSelf:'center'}} >
+        <ScrollView style={styles.scroller} >
          {uniqueObjArray.map((element,index) =>{
            return(
-             <View key = {element.title}>
+             
+             <View key = {element.title} style={styles.postContainer}>
+               
             <TouchableOpacity  style = {styles.posts}>
+
+            <View style={styles.postHeader }>
+              <View style={{flexDirection:'row'}}>
+               <Button icon='calendar-today' labelStyle={{color:'#CCDBDC'}}/>
+              <Text style={styles.dateText}>
+                 {element.date} {element.time}</Text></View>
+                 
+                 <Text style={styles.noPeopleText}> Participants: {element.noPeople-element.placesLeft } / {element.noPeople}</Text>
+              </View>
+            
+            <View style={{justifyContent:'center', alignItems:'center'}}>
               <Text style={{color:"#1b73b3"}}>{element.title} </Text>
+              
+              {checkOwner(element.owner)}
+              <View>
               {!myEvents.includes(element.eventID)&&<Button onPress={()=>joinEvent(element, index)}> join event</Button>}
-              {myEvents.includes(element.eventID)&&<Button onPress={()=>unjoinEvent(element, index)} color='red' > unjoin</Button>}<Text>{element.noPeople-element.placesLeft } / {element.noPeople}</Text>
+              {myEvents.includes(element.eventID)&&<Button onPress={()=>unjoinEvent(element, index)} color='red' > unjoin</Button>}
+              </View>
+
+              </View>
           </TouchableOpacity>
           </View>
            
@@ -130,48 +167,64 @@ let uniqueObjArray = [
 const styles = StyleSheet.create({
   main:{
     flex:1,
-    
+  },
 
+  postContainer:{
+      marginTop:10,
   },
  
     header:{
       alignSelf: 'center',
       fontWeight: "bold",
       fontSize: 25,
-
-      
-     
     },
     
+    scroller:{
+      alignSelf:'center',
+      flex:1,
+    },
+
+    postHeader:{
+      backgroundColor:'#007EA7',
+      borderTopLeftRadius: 10,
+      borderTopRightRadius: 10,
+      borderWidth:1,
+      justifyContent:'space-between',
+      alignItems:'center',
+      flexDirection:'row',
+      
+    },
+
+    dateText:{
+      color:'#CCDBDC',
+      alignSelf:'center'
+    },
+
+    noPeopleText:{
+      marginRight:10,
+      color:'#CCDBDC',
+    },
     
     profile:{
-        alignSelf:'center',
-        position: "absolute",
+      alignSelf:'center',
+      position: "absolute",
       left: 10,
-        
-
     },
 
     createEvent:{
       bottom: 40, 
       right:-5, 
       position: 'absolute'
-
-
     },
    
-  
     posts:{
-        alignItems: 'center',
-    justifyContent: 'center',
-    width: Dimensions.get('window').width -10,
-        height:200,
-        marginTop:5,
-        padding:5,
-        borderWidth: 2,
-        borderRadius: 10,
-        borderColor:"black",
-        backgroundColor:"#D6EAF8",
+      flex:1,
+      width: Dimensions.get('window').width -10,
+      height:200,
+      borderWidth: 0.5,
+      borderRadius: 10,
+        //borderColor:"black",
+        //backgroundColor:"#D6EAF8",
     }
 });
  
