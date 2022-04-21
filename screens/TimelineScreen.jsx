@@ -1,4 +1,4 @@
-import { StyleSheet,View, Text, TextInput, SafeAreaView, TouchableOpacity, ScrollView, Dimensions } from "react-native";
+import { StyleSheet,View, Text, TextInput, TouchableOpacity, ScrollView, Dimensions, SafeAreaView } from "react-native";
 import * as React from 'react';
 import { Checkbox } from 'react-native-paper';
 import { IconButton, Colors, Button } from 'react-native-paper';
@@ -78,75 +78,27 @@ const Timeline = () => {
 
 
 
-      /*userName.update({comingEvents:firebase.firestore.FieldValue.arrayUnion(eventID)}) //find right event
-      
-      
-      const name = await userName.get()
-          .then(doc => {
-            return doc.data().name;
-          })
-          .catch(err => {
-            console.log('Error getting document', err);
-          });
-      
-      console.log(name);
-
-      const participantsRef= firebase.firestore().collection('events').doc(eventID); //find right event
-      
-      participantsRef.update( {participants: firebase.firestore.FieldValue.arrayUnion(name)});*/
-
-   
-  
-/*const test=[1,2,3];
-events.forEach(element =>{
-  console.log('for loop fungerar')
-    const [bigpost, setbigpost] = React.useState(false);
-    const [checked, setChecked] = React.useState(false);
-    results.push(
-    <View style ={styles.allposts}>
-      <SafeAreaView>
-         
-            {bigpost?(
-            <TouchableOpacity style = {styles.posts} onPress={() => {
-                setbigpost(!bigpost);
-              }}>
-                <Text>{element}</Text>
-               <View style = {styles.joinbutton}><Checkbox
-      status={checked ? 'checked' : 'unchecked'}
-      color="black"
-      uncheckedColor="black"
-      onPress={() => {
-        setChecked(!checked);
-      }}
-               
-    /></View>
-            </TouchableOpacity>):null}
-           
-           
-            {!bigpost?(<TouchableOpacity style = {styles.smallposts} onPress={() => {
-        setbigpost(!bigpost);
-      }}>
-         
-            </TouchableOpacity>):null}
- 
-        </SafeAreaView>
-    </View>
-  );
-})
-*/
 let uniqueObjArray = [
   ...new Map(events.map((item) => [item["title"], item])).values(),
 ];
  
-    return (<View style={styles.main}>
-        <SafeAreaView><Text style={styles.header}>Aktiviteter</Text></SafeAreaView>
+    return (<SafeAreaView style={styles.main}>
+        <View style={{flexDirection:"row", justifyContent: "center", height:40}} >
+        <IconButton
+        style ={styles.profile}
+        icon="account-circle"
+        color={Colors.black}
+        size={40}
+        onPress={() => navigation.navigate("ProfileScreen")}
+/>
+          <Text style={styles.header}>Aktiviteter</Text></View>
         
-        <ScrollView>
+        <ScrollView style={{alignSelf:'center'}} >
          {uniqueObjArray.map((element,index) =>{
            return(
              <View key = {element.title}>
             <TouchableOpacity  style = {styles.posts}>
-              <Text>{element.title}</Text>
+              <Text style={{color:"#1b73b3"}}>{element.title} </Text>
               {!myEvents.includes(element.eventID)&&<Button onPress={()=>joinEvent(element, index)}> join event</Button>}
               {myEvents.includes(element.eventID)&&<Button onPress={()=>unjoinEvent(element, index)} color='red' > unjoin</Button>}<Text>{element.noPeople-element.placesLeft } / {element.noPeople}</Text>
           </TouchableOpacity>
@@ -166,17 +118,8 @@ let uniqueObjArray = [
 />
  
   </SafeAreaView>
-  <SafeAreaView style ={styles.profile}>
-     
-    <IconButton
-  icon="account-circle"
-  color={Colors.black}
-  size={40}
-  onPress={() => navigation.navigate("ProfileScreen")}
-/>
- 
+
   </SafeAreaView>
-  </View>
     );
     }
  
@@ -187,49 +130,37 @@ let uniqueObjArray = [
 const styles = StyleSheet.create({
   main:{
     flex:1,
+    
+
   },
  
     header:{
-        fontSize:30,
-        maxHeight:50,
-        marginTop:15,
-        marginLeft:130,
-        alignItems: 'center',
-       
+      alignSelf: 'center',
+      fontWeight: "bold",
+      fontSize: 25,
+
+      
+     
     },
-    joinbutton:{
-        borderWidth: 2,
-            borderRadius: 10,
-            borderColor:"black",
-    },
-    createEvent:{
-        // marginLeft:'10%',
-        // marginTop:'10%',
-        bottom:40,
-        right:-5,
-        position: 'absolute',
-    },
+    
+    
     profile:{
-        marginLeft:5,
-        marginTop:0,
-        position: 'absolute',
+        alignSelf:'center',
+        position: "absolute",
+      left: 10,
+        
+
+    },
+
+    createEvent:{
+      bottom: 40, 
+      right:-5, 
+      position: 'absolute'
+
+
     },
    
-    allposts:{
-        alignItems: 'center',
-      justifyContent: 'center',
-    },
-    smallposts:{
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: Dimensions.get('window').width -10,
-            height:100,
-            marginTop:5,
-            padding:5,
-            borderWidth: 2,
-            borderRadius: 10,
-            borderColor:"black",
-    },
+  
     posts:{
         alignItems: 'center',
     justifyContent: 'center',
@@ -240,6 +171,7 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderRadius: 10,
         borderColor:"black",
+        backgroundColor:"#D6EAF8",
     }
 });
  
