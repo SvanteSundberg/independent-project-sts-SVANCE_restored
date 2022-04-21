@@ -1,0 +1,14 @@
+{
+    "translation":{
+        "WelcomeText": "Välkommen till", 
+        "forgotPass": "Glömt lösenord?",
+        "signIN":"LOGGA IN",
+        "pressHere": "Klicka här",
+        "register": "Registrera",
+        "password": "Lösenord",
+        "email":"Email",
+        "createAccount": "Registrera konto"
+
+    
+    }
+    }

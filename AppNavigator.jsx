@@ -9,6 +9,7 @@ import ResetPassword from './screens/ResetPassword.jsx'
 import CreateprofileScreen from './screens/CreateprofileScreen.jsx'
 import ProfileScreen from "./screens/ProfileScreen.jsx";
 import HomeScreen from './screens/HomeScreen.jsx'
+import MapScreen from './screens/MapScreen.jsx'
 
 
 
@@ -56,6 +57,10 @@ const AppNavigator = () => (
             <Screen name="HomeScreen"
                 component={HomeScreen}>
 
+            </Screen>
+
+            <Screen name="MapScreen"
+            component ={MapScreen}>
             </Screen>
 
             <Screen name="CreateEventScreen"
