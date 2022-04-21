@@ -23,17 +23,19 @@ import { useNavigation } from "@react-navigation/native"; //uncomment to use nav
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import config from "../config";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import sports from "./CreateprofileScreen.jsx";
+import { Picker } from '@react-native-picker/picker';
 
 function CreateEventScreen(props) {
   const [title, setTitle] = React.useState("");
   const [description, setDescription] = React.useState("");
-  const [place, setPlace] = React.useState("");
+  const [sport, setSport] = React.useState("");
   const [date, setDate] = React.useState(
     new Date().getFullYear() +
-      "-" +
-      (new Date().getMonth() + 1) +
-      "-" +
-      new Date().getDate()
+    "-" +
+    (new Date().getMonth() + 1) +
+    "-" +
+    new Date().getDate()
   );
   const [time, setTime] = React.useState(new Date());
   const [show, setShow] = React.useState(false);
@@ -108,6 +110,7 @@ function CreateEventScreen(props) {
       .collection("events")
       .add({
         title: title,
+        sport: sport,
         description: description,
         region: region,
         date: date,
@@ -129,10 +132,10 @@ function CreateEventScreen(props) {
 
     setDate(
       new Date().getFullYear() +
-        "-" +
-        (new Date().getMonth() + 1) +
-        "-" +
-        new Date().getDate()
+      "-" +
+      (new Date().getMonth() + 1) +
+      "-" +
+      new Date().getDate()
     );
     setTime(new Date());
   };
@@ -150,7 +153,6 @@ function CreateEventScreen(props) {
         keyboardShouldPersistTaps="always"
         listViewDisplayed={false}
         horizontal={false}
-        style={{ flex: 1, width: "100%", height: "100%" }}
       >
         <Text style={styles.header}> SPORTA EVENT </Text>
 
@@ -173,8 +175,16 @@ function CreateEventScreen(props) {
             placeholder="Describe your event in a few words"
             maxLength={100}
           />
+          <Picker
+            selectedValue={sport}
+            onValueChange={(itemValue, itemIndex) =>
+              setSport(itemValue)
+            }>
+            <Picker.Item label="Choose Event" value="fotboll" />
+            <Picker.Item label="Basket" value="basket" />
+          </Picker>
           <GooglePlacesAutocomplete
-            placeholder="Search"
+            placeholder="Place"
             fetchDetails={true}
             GooglePlacesSearchQuery={{
               rankby: "distance",
@@ -198,13 +208,12 @@ function CreateEventScreen(props) {
             styles={{
               textInput: {
                 height: 60,
-                backgroundColor: "transparent",
-                borderColor: "black",
+                backgroundColor: '#F6F6F6',// "transparent",
                 marginTop: 10,
                 borderRadius: 10,
                 borderWidth: 1,
-                borderColor: "grey",
-                color: "grey",
+                borderColor: "#787878",//"grey",
+                color: "#787878",
               },
               listView: {},
               row: {
@@ -223,7 +232,7 @@ function CreateEventScreen(props) {
             value={noPeople}
             onChangeText={(noPeople) => setNoPeople(noPeople)}
             mode="outlined"
-            activeOutlineColor={colors.accentColor}
+            activeOutlineColor={colors.blue}
             placeholder="How many people are you looking for?"
             keyboardType={"numeric"}
             maxLength={2}
@@ -245,12 +254,11 @@ function CreateEventScreen(props) {
                   monthDisplayMode={"en-short"}
                   cancelText=""
                   rows={5}
-                  selectedRowBackgroundColor={colors.accentColor}
-                  s //"#C2E1C2"
+                  //selectedRowBackgroundColor="#C2E1C2"
                   width={350}
                   toolBarPosition="bottom"
                   toolBarStyle={{ width: "100%", justifyContent: "flex-end" }}
-                  toolBarConfirmStyle={{ color: colors.accentColor }}
+                  toolBarConfirmStyle={{ color: colors.blue }}
                   confirmText="OK"
                   onValueChange={(date) => setDate(date)}
                   confirm={(dateOpen) => setdateOpen(false)} //{dateOpen=>setdateOpen(false)}//{date => {setDate(date)}} // setDate(date)}
@@ -328,6 +336,7 @@ const styles = StyleSheet.create({
   ScrollView: {
     flex: 1,
     width: "100%",
+    height: "100%",
   },
   header: {
     flex: 1,
@@ -360,12 +369,12 @@ const styles = StyleSheet.create({
     color: "#787878",
   },
   modalButton: {
-    backgroundColor: colors.accentColor,
+    backgroundColor: colors.blue,
     shadowColor: "white",
     alignSelf: "flex-start",
   },
   createEventButton: {
-    backgroundColor: colors.accentColor,
+    backgroundColor: colors.blue,
     marginTop: 50,
   },
   input: {},
