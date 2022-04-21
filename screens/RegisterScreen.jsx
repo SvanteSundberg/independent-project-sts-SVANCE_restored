@@ -4,8 +4,10 @@ import { ImageBackground } from "react-native";
 import { auth } from "../config/firebase";
 import { useState } from "react";
 import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from "react-i18next";
 
     function RegisterScreen(props) {
+     const {t,i18n}=useTranslation();
 
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
@@ -41,7 +43,7 @@ import { useNavigation } from '@react-navigation/native';
                          uri:'https://cdn.discordapp.com/attachments/955769691975065633/957929103665811456/photo-1562552052-af5955fe5ba2.png'}}  
                          style={styles.image}>
               
-       <Text> Create an account </Text>
+       <Text> {t('createAccount')} </Text>
        <TextInput mode="outlined" 
                   label="Email" 
                   style={styles.input}
