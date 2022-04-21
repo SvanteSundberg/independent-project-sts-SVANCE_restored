@@ -7,7 +7,7 @@ import { Button } from 'react-native-paper';
 import { collection, query, where, getDocs } from "firebase/firestore";
 import BiggerEvent from './BiggerEvent';
 
-function MyEvents({theUser}) {
+function MyEvents({navigation, theUser, changeUser, name}) {
 
    const [theEvents, setEvents] = useState([]);
    const auth = getAuth();
@@ -15,15 +15,18 @@ function MyEvents({theUser}) {
    const [visable, setVisable] = useState(false);
    const [specificEvent, setEvent] = useState({});
    const [participants, setParticipants] = useState([]); 
-   const [userID, setUserID] = useState([]);
 
-    useEffect(() => {
+    /*useEffect(() => {
         getMyEvents();
-    }, []);
+    }, [theUser]);*/
+
+    const setUser = (userID) => {
+        changeUser(userID);
+    };
 
     const getMyEvents = async () => {
         console.log("Hämtar");
-        if (!(theEvents.length>0)){
+        setEvents([]);
 
         const database = firebase.firestore();
         const userEvents = query(collection(database, "events"), where("owner", "==", theUser) );
@@ -31,40 +34,20 @@ function MyEvents({theUser}) {
             eventSnapshot.forEach((item) => {
                 setEvents(events=>([...events,item.data()]));
             });
-        }
     }
 
     const changeVisable = () => {
         setVisable(!visable);
       }
 
-    /*const getID = async (eventID) => {
-        const database = firebase.firestore();
-        setParticipants([]);
-        const ID = query(collection(database, "user_events"), where("eventID", "==", eventID) );
-              const IDSnapshot = await getDocs(ID);
-              console.log(IDSnapshot);
-              IDSnapshot.forEach(async(item) => {
-                console.log("HEJ");
-                console.log(item.data().userID);
-                const response = await database.collection('users').doc(item.data().userID).get();
-                if (response.exists){
-                    setParticipants(users=>([...users,response.get("name")]));
-                }
-              });
-      }*/
-
       const getID=async(eventID)=>{
         const db= firebase.firestore();
         const response =db.collection('users');
-        console.log(eventID);
         const participants= query(collection(db,'user_event'), where('eventID','==', eventID));
         const myParticipantsnapshot= await getDocs(participants);
-        setUserID([]);
         setParticipants([]);
         myParticipantsnapshot.forEach(async (user)=> {
           const info =await response.doc(user.data().userID).get();
-          console.log(info.get("name"));
           setParticipants(users => ([...users, {
               name: info.get("name"),
               userID: user.data().userID }]));
@@ -74,8 +57,9 @@ function MyEvents({theUser}) {
 
     return (
         <SafeAreaView>
-            <Text style={styles.headline}> My recent events </Text>
+            <Text style={styles.headline}> Created Events </Text>
         
+        {theEvents.length>0 &&
         <View style={styles.container}>
             {theEvents.map((event, index) => ( 
                 <TouchableOpacity 
@@ -104,13 +88,15 @@ function MyEvents({theUser}) {
                 source={require("../assets/people.png")}
                 style={[styles.peopleLogga, styles.people]}/>
             </TouchableOpacity>
-            ))}
+            ))}  
+        </View>}
 
-            
-        </View>
+        {!theEvents.length>0 &&
+        <Text style={styles.eventsText}> {name} has not created any events yet! </Text>
+        }
         
-        <BiggerEvent visable={visable} changeVisable={changeVisable} event={specificEvent} participants={participants}
-                    theUser={theUser}/>
+        <BiggerEvent navigation={navigation} visable={visable} changeVisable={changeVisable} event={specificEvent} participants={participants}
+                    theUser={theUser} changeUser={setUser}/>
         </SafeAreaView>
     );
 }
@@ -135,12 +121,16 @@ const styles = StyleSheet.create({
         marginBottom:20,
         marginTop:20,
     },
+    eventsText: {
+        fontStyle: 'italic',
+        margin: 10,
+    },
     header: {
         paddingTop: 10,
         width:'100%',
     },
     headline:{
-        fontSize: 15,
+        fontSize:16,
         fontWeight: 'bold',
         alignSelf: 'center',
         marginTop:10,

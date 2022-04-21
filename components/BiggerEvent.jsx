@@ -1,31 +1,8 @@
 import React, { useState } from "react";
-import { Modal, StyleSheet, Text, Pressable, View } from "react-native";
+import { Modal, StyleSheet, Text, View, TouchableOpacity, ScrollView } from "react-native";
 import { Button } from 'react-native-paper';
-import { useNavigation } from '@react-navigation/native';
-import { ScrollView, TouchableOpacity } from "react-native-web";
 
-function BiggerEvent({visable, changeVisable, event, participants, theUser}) {
-    const navigation= useNavigation();
-
-    /*useEffect(() => {
-      getID();
-     }, []);
-
-    const getID = async () => {
-      const database = firebase.firestore();
-      setParticipants([]);
-      const ID = query(collection(database, "user_events"), where("eventID", "==", event.eventID) );
-            const IDSnapshot = await getDocs(ID);
-            IDSnapshot.forEach(async(item) => {
-              const participants = query(collection(database, "user_events"), where("eventID", "==", item.data().userID));
-              const participantSnapshot = await getDocs(participants);
-              participantSnapshot.forEach((user) => {
-                  setParticipants(users=>([...users,user.data()]));
-              });
-            });
-      console.log(participants);      
-      
-    }*/
+function BiggerEvent({navigation, visable, changeVisable, event, participants, changeUser}) {
  
     return (
       <View style={styles.centeredView}>
@@ -38,6 +15,10 @@ function BiggerEvent({visable, changeVisable, event, participants, theUser}) {
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
+            
+          <ScrollView 
+            horizontal={false}
+            style={styles.scrollView}>
 
           <View style={styles.background}>
             <Text style={styles.title}>
@@ -45,7 +26,7 @@ function BiggerEvent({visable, changeVisable, event, participants, theUser}) {
             </Text>
           </View>
 
-            <View  style={styles.iconsContainer}>
+            <View style={styles.iconsContainer}>
             <Text
             style={[styles.iconsContainer, styles.description]}> {event.description} </Text>
 
@@ -54,7 +35,7 @@ function BiggerEvent({visable, changeVisable, event, participants, theUser}) {
             style={styles.iconsContainer}
             icon='map-marker'
             labelStyle={{fontSize: 13,
-                color:'black'}}> {event.region.place}</Button>}
+                color:'black'}}> {event.region.place} </Button>}
 
             <Button 
                 style={styles.iconsContainer}
@@ -83,18 +64,17 @@ function BiggerEvent({visable, changeVisable, event, participants, theUser}) {
               <TouchableOpacity 
                   key={index}
                   onPress={() => {
-                    console.log("navigerar");
                     changeVisable();
-                    changeUser();
+                    changeUser(user.userID);
                     navigation.navigate("ProfileScreen", {
-                    userID: theUser
+                    userID: user.userID
                   })}}>
                   <Text> {user.name}</Text>
              </TouchableOpacity>  
            ))}
            </View>
             </View>
-
+            </ScrollView>
 
               <View style={styles.myButtons}>
                 <Button
@@ -135,7 +115,6 @@ const styles = StyleSheet.create({
   description: {
     fontStyle: 'italic',
     margin: 10,
-
   },
 
   iconsContainer:{
@@ -149,13 +128,13 @@ const styles = StyleSheet.create({
   },
 
   modalView: {
-    padding:20,
+    padding:15,
     backgroundColor: "white",
     borderRadius: 20,
-    alignItems: "center",
     elevation: 5,
     width: '80%',
     height: '60%',
+    alignItems: 'center'
   },
 
   myButtons: {
@@ -163,6 +142,9 @@ const styles = StyleSheet.create({
     flex: 1,
     position:"absolute",
     bottom:6,
+    backgroundColor: 'white',
+    width: '100%',
+    justifyContent: 'center'
   },
 
   button: {
@@ -186,7 +168,12 @@ const styles = StyleSheet.create({
   },
   underTitle: {
     fontWeight: 'bold',
-  }
+  },
+
+  scrollView: {
+    marginHorizontal: 15,
+    backgroundColor: 'white',
+  },
 });
 
 export default BiggerEvent;
