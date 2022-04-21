@@ -118,20 +118,11 @@ let uniqueObjArray = [
 />
  
   </SafeAreaView>
-  <SafeAreaView style ={styles.profile}>
-     
-    <IconButton
-  icon="account-circle"
-  color={Colors.black}
-  size={40}
-  onPress={() => navigation.navigate("ProfileScreen", {
-    userID: user.uid
-  })}
-/>
- 
   </SafeAreaView>
+
+
     );
-    }
+  }
  
  
  
