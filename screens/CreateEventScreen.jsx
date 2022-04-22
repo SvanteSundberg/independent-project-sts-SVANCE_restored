@@ -25,8 +25,15 @@ import config from "../config";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import sports from "./CreateprofileScreen.jsx";
 import { Picker } from '@react-native-picker/picker';
+import { useTranslation } from "react-i18next";
+import { getAuth } from "firebase/auth";
 
 function CreateEventScreen(props) {
+  const { t, i18n } = useTranslation();
+
+  const auth = getAuth();
+  const user = auth.currentUser;
+
   const [title, setTitle] = React.useState("");
   const [description, setDescription] = React.useState("");
   const [sport, setSport] = React.useState("");
@@ -110,12 +117,15 @@ function CreateEventScreen(props) {
       .collection("events")
       .add({
         title: title,
+        lang: i18n.language,
+        owner: user.uid,
         sport: sport,
         description: description,
         region: region,
         date: date,
         time: time.getHours() + ":" + time.getMinutes(),
         noPeople: noPeople,
+        placesLeft: noPeople,
         createdAt: firebase.database.ServerValue.TIMESTAMP,
       });
 
@@ -159,32 +169,38 @@ function CreateEventScreen(props) {
         <View style={styles.form}>
           <TextInput
             style={styles.input}
-            label="Event title"
+            label={t('title1')}
             value={title}
             onChangeText={(title) => setTitle(title)}
             mode="outlined"
             activeOutlineColor={colors.accentColor}
-            placeholder="Title of your event"
+            placeholder={t('title2')}
           />
           <TextInput
-            label="Event Description"
+            style={styles.input}
+            label={t('desc1')}
             value={description}
             onChangeText={(description) => setDescription(description)}
             mode="outlined"
             activeOutlineColor={colors.accentColor}
-            placeholder="Describe your event in a few words"
+            placeholder={t('desc2')}
             maxLength={100}
           />
-          <Picker
-            selectedValue={sport}
-            onValueChange={(itemValue, itemIndex) =>
-              setSport(itemValue)
-            }>
-            <Picker.Item label="Choose Event" value="fotboll" />
-            <Picker.Item label="Basket" value="basket" />
-          </Picker>
+
+          <TextInput
+            label={t('nopeople1')}
+            value={noPeople}
+            style={styles.input}
+            onChangeText={(noPeople) => setNoPeople(noPeople)}
+            mode="outlined"
+            activeOutlineColor={colors.blue}
+            placeholder={t('nopeople2')}
+            keyboardType={"numeric"}
+            maxLength={2}
+          />
+
           <GooglePlacesAutocomplete
-            placeholder="Place"
+            placeholder={t('place')}
             fetchDetails={true}
             GooglePlacesSearchQuery={{
               rankby: "distance",
@@ -227,75 +243,87 @@ function CreateEventScreen(props) {
               },
             }}
           />
-          <TextInput
-            label="Number of people"
-            value={noPeople}
-            onChangeText={(noPeople) => setNoPeople(noPeople)}
-            mode="outlined"
-            activeOutlineColor={colors.blue}
-            placeholder="How many people are you looking for?"
-            keyboardType={"numeric"}
-            maxLength={2}
-          />
-          <Button
-            style={styles.dateButton}
-            uppercase={false}
-            onPress={() => setdateOpen(true)}
-          >
-            <Text style={styles.dateText}>Date: {date}</Text>
-          </Button>
-          <Modal visible={dateOpen}>
-            <View style={styles.centerView}>
-              <View style={styles.modalView}>
-                <DatePicker
-                  backgroundColor="white"
-                  minDate={new Date()}
-                  maxDate={setMaxDate(3)}
-                  monthDisplayMode={"en-short"}
-                  cancelText=""
-                  rows={5}
-                  //selectedRowBackgroundColor="#C2E1C2"
-                  width={350}
-                  toolBarPosition="bottom"
-                  toolBarStyle={{ width: "100%", justifyContent: "flex-end" }}
-                  toolBarConfirmStyle={{ color: colors.blue }}
-                  confirmText="OK"
-                  onValueChange={(date) => setDate(date)}
-                  confirm={(dateOpen) => setdateOpen(false)} //{dateOpen=>setdateOpen(false)}//{date => {setDate(date)}} // setDate(date)}
-                />
-              </View>
-            </View>
-          </Modal>
-
-          <View>
+          <View style={styles.sportPickerView}>
+            <Text>Choose sport:</Text>
+            <Picker
+              style={styles.sportPicker}
+              selectedValue={sport}
+              onValueChange={(itemValue, itemIndex) =>
+                setSport(itemValue)
+              }>
+              <Picker.Item label={t('football')} value="fotboll" />
+              <Picker.Item label={t('basket')} value="basket" />
+              <Picker.Item label={t('padel')} value="padel" />
+              <Picker.Item label={t('tennis')} value="tennis" />
+              <Picker.Item label={t('handball')} value="handball" />
+              <Picker.Item label={t('bandy')} value="floorball" />
+              <Picker.Item label={t('volleyball')} value="volleyball" />
+              <Picker.Item label={t('run')} value="run" />
+              <Picker.Item label={t('golf')} value="golf" />
+              <Picker.Item label={t('squash')} value="squash" />
+              <Picker.Item label={t('other')} value="other" />
+            </Picker>
+          </View>
+          <View style={styles.dateTimeView}>
             <Button
               style={styles.dateButton}
               uppercase={false}
-              onPress={showTimepicker}
+              onPress={() => setdateOpen(true)}
             >
-              <Text style={styles.dateText}>
-                Time: {time.getHours() + ':' + time.getMinutes()}
-              </Text>
+              <Text style={styles.dateText}>{t('date')}: {date}</Text>
             </Button>
+            <Modal visible={dateOpen}>
+              <View style={styles.centerView}>
+                <View style={styles.modalView}>
+                  <DatePicker
+                    backgroundColor="white"
+                    minDate={new Date()}
+                    maxDate={setMaxDate(3)}
+                    monthDisplayMode={"en-short"}
+                    cancelText=""
+                    rows={5}
+                    //selectedRowBackgroundColor="#C2E1C2"
+                    width={350}
+                    toolBarPosition="bottom"
+                    toolBarStyle={{ width: "100%", justifyContent: "flex-end" }}
+                    toolBarConfirmStyle={{ color: colors.blue }}
+                    confirmText="OK"
+                    onValueChange={(date) => setDate(date)}
+                    confirm={(dateOpen) => setdateOpen(false)} //{dateOpen=>setdateOpen(false)}//{date => {setDate(date)}} // setDate(date)}
+                  />
+                </View>
+              </View>
+            </Modal>
+            <View style={styles.block}></View>
+            <View>
+              <Button
+                style={styles.dateButton}
+                uppercase={false}
+                onPress={showTimepicker}
+              >
+                <Text style={styles.dateText}>
+                  {t('time')}: {time.getHours() + ':' + time.getMinutes()}
+                </Text>
+              </Button>
+            </View>
+            {show && (
+              <DateTimePicker
+                style={styles.timePicker}
+                value={time}
+                mode={"time"}
+                is24Hour={true}
+                display={Platform.OS === "ios" ? "spinner" : "default"}
+                onChange={changeTime}
+              />
+            )}
           </View>
-          {show && (
-            <DateTimePicker
-              style={styles.timePicker}
-              value={time}
-              mode={"time"}
-              is24Hour={true}
-              display={Platform.OS === "ios" ? "spinner" : "default"}
-              onChange={changeTime}
-            />
-          )}
-
           <Button
             style={[styles.button, styles.createEventButton]}
             title="send"
             mode="contained"
             onPress={pressSend}
           >
-            <Text style={styles.buttonText}> Create Event </Text>
+            <Text style={styles.buttonText}> {t('createEvent')} </Text>
           </Button>
           <Modal
             animationType={"fade"}
@@ -310,13 +338,13 @@ function CreateEventScreen(props) {
                   style={styles.modalLogo}
                 />
                 <Text style={styles.modalText}>
-                  You successfully created an event!
+                  {t('createdEvent')}
                 </Text>
                 <Button
                   style={[styles.button, styles.modalButton]}
                   onPress={onBackToTimeline} //toggleModal() comment/uncomment for navigation
                 >
-                  <Text style={styles.buttonText}>Back To Timeline</Text>
+                  <Text style={styles.buttonText}>{t('backToTimeline')}</Text>
                 </Button>
               </View>
             </View>
@@ -345,6 +373,19 @@ const styles = StyleSheet.create({
   form: {
     flex: 1,
     padding: 15,
+    backgroundColor: colors.backgroundColor,
+    margin: 5,
+  },
+  sportPickerView: {
+    marginTop: 30,
+    color: 'gray',
+  },
+  sportPicker: {
+    backgroundColor: '#F6F6F6',
+    color: '#787878',
+
+    marginBottom: 5,
+
   },
   buttonText: {
     color: "white",
@@ -356,17 +397,27 @@ const styles = StyleSheet.create({
     margin: 10,
     alignSelf: "center",
   },
+  dateTimeView: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
+  block: {
+    width: 20,
+  },
   dateButton: {
-    backgroundColor: "#F6F6F6",
-    width: Dimensions.get("window").width - 30,
-    height: 40,
+    backgroundColor: 'white',// "#F6F6F6",
+    width: Dimensions.get("window").width / 2 - 30,
+    padding: 5,
+    height: 50,
     marginTop: 5,
-    borderWidth: 1,
-    borderColor: "#787878",
-    alignSelf: "center",
+    // borderWidth: 1,
+    // borderColor: "#787878",
+    borderRadius: 0,
+
   },
   dateText: {
     color: "#787878",
+    alignSelf:'flex-start',
   },
   modalButton: {
     backgroundColor: colors.blue,
@@ -377,7 +428,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.blue,
     marginTop: 50,
   },
-  input: {},
+  input: {
+    //borderColor:'',
+  },
   centerView: {
     backgroundColor: "rgba(0, 0, 0, 0.5)",
     flex: 1,

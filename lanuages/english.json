@@ -7,7 +7,33 @@
     "register": "Register",
     "password": "Password",
     "email":"Email",
-    "createAccount": "Create Account"
+    "createAccount": "Create Account",
+    "football": "Football",
+    "basket": "Basketball",
+    "padel": "Padel",
+    "handball": "Handball",
+    "tennis": "Tennis",
+    "volleyball": "Volleyball",
+    "bandy": "Floorball",
+    "golf": "Golf",
+    "run": "Running",
+    "squash": "Squash",
+    "other": "Other",
+    "title1": "Event title",
+    "title2": "Title of your event",
+    "desc1": "Event Description",
+    "desc2": "Describe yout event in a few words",
+    "nopeople1": "Number of people",
+    "nopeople2": "How many people are you looking for?",
+    "date":"Date",
+    "time":"Time",
+    "place": "Location",
+    "createEvent":"CREATE EVENT",
+    "alertFields":"Please fill out all fields",
+    "createdEvent":"You successfully created an event!",
+    "backToTimeline": "Back to timeline"
+
+
 
 
 }

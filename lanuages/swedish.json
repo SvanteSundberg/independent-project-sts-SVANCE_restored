@@ -1,14 +1,36 @@
 {
-    "translation":{
-        "WelcomeText": "Välkommen till", 
+    "translation": {
+        "WelcomeText": "Välkommen till",
         "forgotPass": "Glömt lösenord?",
-        "signIN":"LOGGA IN",
+        "signIN": "LOGGA IN",
         "pressHere": "Klicka här",
         "register": "Registrera",
         "password": "Lösenord",
-        "email":"Email",
-        "createAccount": "Registrera konto"
-
-    
+        "email": "Email",
+        "createAccount": "Registrera konto",
+        "football": "Fotboll",
+        "basket": "Basket",
+        "padel": "Padel",
+        "handball": "Handboll",
+        "tennis": "Tennis",
+        "volleyball": "Volleyboll",
+        "bandy": "Innebandy",
+        "golf": "Golf",
+        "run": "Löpning",
+        "squash": "Squash",
+        "other": "Övrigt",
+        "title1": "Eventtitel",
+        "title2": "Titel på ditt event",
+        "desc1": "Eventbeskrivning",
+        "desc2": "Beskriv eventet med några ord",
+        "nopeople1": "Antal platser",
+        "nopeople2": "Hur många människor letar du efter?",
+        "date": "Datum",
+        "time": "Tid",
+        "place": "Plats",
+        "createEvent": "SKAPA EVENT",
+        "alertFields": "Vänligen fyll alla fält",
+        "createdEvent": "Du har skapat ett event!",
+        "backToTimeline": "Till tidslinjen"
     }
-    }
+}
