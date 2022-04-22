@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Text } from 'react-native';
 import { Menu, Divider, IconButton } from 'react-native-paper';
 import {useState} from 'react';
 import { getAuth, signOut } from "firebase/auth";
@@ -29,7 +29,12 @@ const TestMenu = ({goToEdit}) => {
       <View style={styles.container}>
           <View style={styles.row}>
           <View style={styles.menuWrapper}>
+            
         <Menu
+
+          contentStyle={{opacity: 0.8,
+                          backgroundColor: 'lightblue',
+                          width:'300%'}}
           visible={visible}
           onDismiss={closeMenu}
           anchor={<IconButton
@@ -38,14 +43,21 @@ const TestMenu = ({goToEdit}) => {
             icon='menu'
             onPress={openMenu}/>}>
         <View style={styles.positioning}> 
-          <Menu.Item onPress={() => {
+        <Menu.Item
+        style={{ marginLeft: 30}} 
+        titleStyle={{alignSelf:'center', fontWeight:'bold'}}
+        title="Menu"> </Menu.Item>
+          <Menu.Item
+          icon='account-edit'
+            onPress={() => {
                 goToEdit();
                 closeMenu();
               }} title="Edit profile" />
               <Divider />
-            <Menu.Item onPress={() => {console.log("Måste fixas :))")}} title="Settings" />
+            <Menu.Item 
+            icon='account-settings' onPress={() => {console.log("Måste fixas :))")}} title="Settings" />
             <Divider />
-            <Menu.Item onPress={handleSignOut} title="Sign out" />
+            <Menu.Item icon='logout' onPress={handleSignOut} title="Sign out" />
             </View>
         </Menu>
       </View>
@@ -64,12 +76,13 @@ const styles = StyleSheet.create({
       row: {
         width: '100%',
         backgroundColor: 'lightblue',
-        paddingBottom: 5,
       },
       menuWrapper: {
         alignSelf: 'flex-end',
-        marginTop: 10,
       },
+      positioning: {
+        marginBottom: 10,
+      }
 
   
  })
