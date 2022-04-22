@@ -18,13 +18,13 @@ function CreateprofileScreen({navigation, route}) {
 
    const updateUserInfo = () => {
        if (name.length>0 && age>0 && descrip.length>0 && photo.length>0){
-        /*firebase.firestore().collection('users').doc(user.uid).set({
+        firebase.firestore().collection('users').doc(user.uid).set({
            name: name,
             age: age,
             bio: descrip,
            sports: selectedSports,
             photo: photo
-            });*/
+            });
         navigation.navigate("ProfileScreen");
        }
        else {

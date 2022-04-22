@@ -6,116 +6,62 @@ import { useNavigation } from '@react-navigation/native';
 import firebase from '../config/firebase';
 import { getAuth } from "firebase/auth";
 import { getDocs, collection, query, where} from "firebase/firestore";
+import Events from "../components/Events";
 
 
  
 const Timeline = () => {
-
-  
-  
     const auth = getAuth();
     const user = auth.currentUser;
     const navigation= useNavigation(); 
    
     const [events, setevents] =React.useState([]);
-    const [testEvents, settestevents] =React.useState([]);
-    const [bigpost, setbigpost] =React.useState([]);
-    const results = [];
     const sports = ["soccer", "padel", "basketball"];
     const [Mysports, chooseSports] = React.useState([]);
     const [showSort, setShowSort]= React.useState(false);
-    const [myEvents, setMyevents]= React.useState([]);
     const [owners, setOwners]= React.useState([]);
    
     const fetchEvents = async()=>{
       const response =firebase.firestore().collection('events');
       const data =await response.get();
       setevents([]);
+      let myEvents= [];
       data.docs.forEach(item =>{
         if(new Date(item.data().date)> new Date()){
           setevents(events=>([...events, item.data()]));
-          setbigpost(bigpost=>([...bigpost,false]));
+          myEvents.push(item.data());
           }
           if(new Date(item.data().date)< new Date()){
            deleteExpDate(item.data());
             }
 
       });
-      fetchOwners();
+      fetchOwners(myEvents);
+      
+      events.sort(function(a,b){
+        return new Date(a.date) - new Date(b.date);
+      });
     };
 
-    const fetchMyevents=async()=>{
-      const db= firebase.firestore();
-      const joinedEvents= query(collection(db,'user_event'), where('userID','==',user.uid));
-      const myEventsnapshot= await getDocs(joinedEvents);
-      setMyevents([]);
-      myEventsnapshot.forEach((event)=> {
-        setMyevents(events=>([...events,event.data().eventID]));
-      })
-    }
-
-    const fetchOwners=async()=> {
+    const fetchOwners=async(myEvents)=> {
       setOwners([]);
       const users =firebase.firestore().collection('users');
-      events.forEach(async(event)=> {
-      const name=await users.doc(event.owner).get();
-      const obj={ownerid:event.owner, name:name.get('name')}
-      setOwners(owners=>([...owners,obj]))
-      }) 
+      myEvents.map(async (event) => {
+        const name=await users.doc(event.owner).get();
+        const obj={ownerid:event.owner, name:name.get('name')}
+        setOwners(owners=>([...owners, obj]))
+      });
     }
-
 
      React.useEffect(() => {
       fetchEvents();
-      fetchMyevents();
      
     },[]);
-
-    const joinEvent= async(element,index)=>{
-      if(element.placesLeft>0){
-      await firebase.firestore().collection('user_event').doc(user.uid+'_'+element.eventID).set({
-        userID:user.uid,
-        eventID:element.eventID,
-      });
-      let placesLeft = element.placesLeft-1;
-      await firebase.firestore().collection('events').doc(element.eventID).update({placesLeft:placesLeft});
-      let eventArray = [...events];
-        eventArray[index].placesLeft= placesLeft;
-        setevents(eventArray);
-      fetchMyevents();
-      
-    }
-  }
-  const unjoinEvent=async (element,index)=>{
-    await firebase.firestore().collection('user_event').doc(user.uid+'_'+element.eventID).delete();
-    let placesLeft = element.placesLeft+1;
-    await firebase.firestore().collection('events').doc(element.eventID).update({placesLeft:placesLeft});
-    let eventArray = [...events];
-    eventArray[index].placesLeft= placesLeft;
-    setevents(eventArray);
-    fetchMyevents();
-    console.log(myEvents.includes(element.eventID));
-    }
-//uses the the owner prop from events to get the owners name
-    const checkOwner=(id)=>{
-      for (let obj of owners) {
-        if (obj.ownerid === id)
-        return  <Text>{obj.name}</Text>
-      }
-      }
      
 
-let uniqueObjArray = [
-  ...new Map(events.map((item) => [item["title"], item])).values(),
-];
-uniqueObjArray.sort(function(a,b){
- 
-  return new Date(a.date) - new Date(b.date);
-});
 const deleteExpDate=async (element)=>{
   await firebase.firestore().collection('events').doc(element.eventID).delete();
 }
-
  
     return (<SafeAreaView style={styles.main}>
        <Button onPress={()=>setShowSort(!showSort)}>Sortera</Button>
@@ -156,37 +102,7 @@ const deleteExpDate=async (element)=>{
           <Text style={styles.header}>Aktiviteter</Text></View>
         
         <ScrollView style={styles.scroller} >
-         {uniqueObjArray.map((element,index) =>{
-           return(
-             
-             <View key = {element.title} style={styles.postContainer}>
-               
-            <TouchableOpacity  style = {styles.posts}>
-
-            <View style={styles.postHeader }>
-              <View style={{flexDirection:'row'}}>
-               <Button icon='calendar-today' labelStyle={{color:'#CCDBDC'}}/>
-              <Text style={styles.dateText}>
-                 {element.date} {element.time}</Text></View>
-                 
-                 <Text style={styles.noPeopleText}> Participants: {element.noPeople-element.placesLeft } / {element.noPeople}</Text>
-              </View>
-            
-            <View style={{justifyContent:'center', alignItems:'center'}}>
-              <Text style={{color:"#1b73b3"}}>{element.title} </Text>
-              
-              {checkOwner(element.owner)}
-              <View>
-              {!myEvents.includes(element.eventID)&&<Button onPress={()=>joinEvent(element, index)}> join event</Button>}
-              {myEvents.includes(element.eventID)&&<Button onPress={()=>unjoinEvent(element, index)} color='red' > unjoin</Button>}
-              </View>
-
-              </View>
-          </TouchableOpacity>
-          </View>
-           
-           
-         )})}
+         <Events events={events} setevents={setevents} owners={owners}/>
        
     </ScrollView>
     <SafeAreaView style ={styles.createEvent}>
@@ -238,16 +154,6 @@ const styles = StyleSheet.create({
       alignItems:'center',
       flexDirection:'row',
       
-    },
-
-    dateText:{
-      color:'#CCDBDC',
-      alignSelf:'center'
-    },
-
-    noPeopleText:{
-      marginRight:10,
-      color:'#CCDBDC',
     },
     
     profile:{

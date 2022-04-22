@@ -24,9 +24,9 @@ function ProfileScreen({navigation, route}) {
         setUserID(userID);
    }
 
-    /*useEffect(() => {
+    useEffect(() => {
         getUserInfo();
-    }, [isFocused, userID]);*/
+    }, [isFocused, userID]);
 
     const getUserInfo = async()=> {
         console.log("nu hämtar jag info!");
