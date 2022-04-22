@@ -21,6 +21,9 @@ const Timeline = () => {
     const [testEvents, settestevents] =React.useState([]);
     const [bigpost, setbigpost] =React.useState([]);
     const results = [];
+    const sports = ["soccer", "padel", "basketball"];
+    const [Mysports, chooseSports] = React.useState([]);
+    const [showSort, setShowSort]= React.useState(false);
     const [myEvents, setMyevents]= React.useState([]);
     const [owners, setOwners]= React.useState([]);
    
@@ -29,8 +32,14 @@ const Timeline = () => {
       const data =await response.get();
       setevents([]);
       data.docs.forEach(item =>{
-        setevents(events=>([...events, item.data()]));
-        setbigpost(bigpost=>([...bigpost,false]));
+        if(new Date(item.data().date)> new Date()){
+          setevents(events=>([...events, item.data()]));
+          setbigpost(bigpost=>([...bigpost,false]));
+          }
+          if(new Date(item.data().date)< new Date()){
+           deleteExpDate(item.data());
+            }
+
       });
       fetchOwners();
     };
@@ -99,8 +108,42 @@ const Timeline = () => {
 let uniqueObjArray = [
   ...new Map(events.map((item) => [item["title"], item])).values(),
 ];
+uniqueObjArray.sort(function(a,b){
+ 
+  return new Date(a.date) - new Date(b.date);
+});
+const deleteExpDate=async (element)=>{
+  await firebase.firestore().collection('events').doc(element.eventID).delete();
+}
+
  
     return (<SafeAreaView style={styles.main}>
+       <Button onPress={()=>setShowSort(!showSort)}>Sortera</Button>
+        {showSort&& <View>{sports.map((element)=>(
+         
+          <Checkbox.Item
+               uncheckedColor="black"
+               color="blue"
+               label={element}
+               status={Mysports.includes(element) ? 'checked' : 'unchecked'}
+               onPress={() => {
+                 let updateSports = [...Mysports]
+                const sportIndex = updateSports.indexOf(element);
+                if (sportIndex > -1){
+                    updateSports.splice(sportIndex, 1);
+                }
+                else {
+                    updateSports.push(element)
+                }
+                chooseSports(updateSports);}}
+               >
+                 
+               </Checkbox.Item>
+         
+        ))
+          }
+          </View> }
+
         <View style={{flexDirection:"row", justifyContent: "center", height:40}} >
         <IconButton
         style ={styles.profile}
