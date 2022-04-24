@@ -24,9 +24,9 @@ function ProfileScreen({navigation, route}) {
         setUserID(userID);
    }
 
-    /*useEffect(() => {
+    useEffect(() => {
         getUserInfo();
-    }, [isFocused, userID]);*/
+    }, [isFocused, userID]);
 
     const getUserInfo = async()=> {
         console.log("nu hämtar jag info!");
@@ -115,7 +115,7 @@ function ProfileScreen({navigation, route}) {
 
             </View>
 
-            <MyEvents navigation={navigation} name={name} theUser ={userID} changeUser={changeUser} />
+            <MyEvents navigation={navigation} name={name} theUser ={userID} changeUser={changeUser} ownUser={ownUser}/>
 
                 </ScrollView> 
             
