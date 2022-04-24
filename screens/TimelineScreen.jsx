@@ -1,12 +1,13 @@
 import { StyleSheet,View, Text, TextInput, TouchableOpacity, ScrollView, Dimensions, SafeAreaView } from "react-native";
 import * as React from 'react';
-import { Checkbox } from 'react-native-paper';
+import { Checkbox,Menu, Divider, } from 'react-native-paper';
 import { IconButton, Colors, Button } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import firebase from '../config/firebase';
 import { getAuth } from "firebase/auth";
 import { getDocs, collection, query, where} from "firebase/firestore";
 import Events from "../components/Events";
+
 
 
  
@@ -18,7 +19,10 @@ const Timeline = () => {
     const [events, setevents] =React.useState([]);
     const sports = ["soccer", "padel", "basketball"];
     const [Mysports, chooseSports] = React.useState([]);
+    const [Mydates, choosedates] = React.useState([]);
     const [showSort, setShowSort]= React.useState(false);
+    const [showSportSort, setShowSportSort]= React.useState(false);
+    const [myEvents, setMyevents]= React.useState([]);
     const [owners, setOwners]= React.useState([]);
    
     const fetchEvents = async()=>{
@@ -67,31 +71,7 @@ const deleteExpDate=async (element)=>{
 }
  
     return (<SafeAreaView style={styles.main}>
-       <Button onPress={()=>setShowSort(!showSort)}>Sortera</Button>
-        {showSort&& <View>{sports.map((element)=>(
-         
-          <Checkbox.Item
-               uncheckedColor="black"
-               color="blue"
-               label={element}
-               status={Mysports.includes(element) ? 'checked' : 'unchecked'}
-               onPress={() => {
-                 let updateSports = [...Mysports]
-                const sportIndex = updateSports.indexOf(element);
-                if (sportIndex > -1){
-                    updateSports.splice(sportIndex, 1);
-                }
-                else {
-                    updateSports.push(element)
-                }
-                chooseSports(updateSports);}}
-               >
-                 
-               </Checkbox.Item>
-         
-        ))
-          }
-          </View> }
+      
 
         <View style={{flexDirection:"row", justifyContent: "center", height:40}} >
         <IconButton
@@ -102,7 +82,44 @@ const deleteExpDate=async (element)=>{
         onPress={() => navigation.navigate("ProfileScreen", {userID: user.uid}
         )}
 />
-          <Text style={styles.header}>Aktiviteter</Text></View>
+          <Text style={styles.header}>Aktiviteter</Text>
+          <IconButton
+        style ={styles.sort}
+        icon="filter-variant"
+        color={Colors.black}
+        size={40}
+        onPress={()=>setShowSort(!showSort)}
+/></View>
+{showSort&& <View><Button  onPress={()=>setShowSportSort(!showSportSort)}>sortera med sport</Button>
+{showSportSort&& <View>{sports.map((element)=>(
+         
+         <Checkbox.Item
+              uncheckedColor="black"
+              color="blue"
+              label={element}
+              status={Mysports.includes(element) ? 'checked' : 'unchecked'}
+              onPress={() => {
+                let updateSports = [...Mysports]
+               const sportIndex = updateSports.indexOf(element);
+               if (sportIndex > -1){
+                   updateSports.splice(sportIndex, 1);
+               }
+               else {
+                   updateSports.push(element)
+               }
+               chooseSports(updateSports);}}
+              >
+                
+              </Checkbox.Item>
+        
+       ))
+         }
+         </View> }
+
+<Button>sortera med dag</Button>
+
+</View> }
+
         
         <ScrollView style={styles.scroller} >
          <Events events={events} setevents={setevents} owners={owners}/>
@@ -163,6 +180,11 @@ const styles = StyleSheet.create({
       alignSelf:'center',
       position: "absolute",
       left: 10,
+    },
+    sort:{
+      alignSelf:'center',
+      position: "absolute",
+      right: 10,
     },
 
     createEvent:{
