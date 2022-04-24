@@ -7,22 +7,38 @@ import { Button } from 'react-native-paper';
 import { collection, query, where, getDocs } from "firebase/firestore";
 import BiggerEvent from './BiggerEvent';
 
-function MyEvents({navigation, theUser, changeUser, name}) {
+function MyEvents({navigation, theUser, changeUser, name, ownUser}) {
 
    const [theEvents, setEvents] = useState([]);
-   const auth = getAuth();
-   const user = auth.currentUser;
    const [visable, setVisable] = useState(false);
    const [specificEvent, setEvent] = useState({});
    const [participants, setParticipants] = useState([]); 
 
-    /*useEffect(() => {
+    useEffect(() => {
         getMyEvents();
-    }, [theUser]);*/
+    }, [theUser]);
 
     const setUser = (userID) => {
         changeUser(userID);
     };
+
+    const deleteEvent = async (eventID) => {
+        let eventArray = [...theEvents];
+        index = eventArray.findIndex(x => x.eventID ===eventID);
+        eventArray.splice(index,1);
+        setEvents(eventArray);
+    
+    
+        /*const db = firebase.firestore();
+        await db.collection('events').doc(eventID).delete();
+        const joinedEvent_query = db.collection('user_event').where("eventID", '==', eventID);
+        joinedEvent_query.get().then(function(querySnapshot){
+            querySnapshot.forEach(function(doc) {
+                doc.ref.delete();
+        });
+    
+        })*/
+    }
 
     const getMyEvents = async () => {
         console.log("Hämtar");
@@ -32,7 +48,10 @@ function MyEvents({navigation, theUser, changeUser, name}) {
         const userEvents = query(collection(database, "events"), where("owner", "==", theUser) );
             const eventSnapshot = await getDocs(userEvents);
             eventSnapshot.forEach((item) => {
-                setEvents(events=>([...events,item.data()]));
+                let data = item.data();
+                let id = {eventID: item.id}
+                Object.assign(data, id);
+                setEvents(events=>([...events, data]));
             });
     }
 
@@ -96,7 +115,7 @@ function MyEvents({navigation, theUser, changeUser, name}) {
         }
         
         <BiggerEvent navigation={navigation} visable={visable} changeVisable={changeVisable} event={specificEvent} participants={participants}
-                    theUser={theUser} changeUser={setUser}/>
+                    theUser={theUser} changeUser={setUser} ownUser={ownUser} deleteEvent={deleteEvent}/>
         </SafeAreaView>
     );
 }

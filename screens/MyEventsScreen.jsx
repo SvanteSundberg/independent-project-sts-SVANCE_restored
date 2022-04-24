@@ -42,7 +42,10 @@ export default function MyEventsScreen() {
       const userEvents = query(collection(database, "events"), where("owner", "==", user.uid) );
           const eventSnapshot = await getDocs(userEvents);
           eventSnapshot.forEach((item) => {
-              setMyEvents(events=>([...events,item.data()]));
+              let data = item.data();
+              let id = {eventID: item.id}
+              Object.assign(data, id);
+              setMyEvents(events=>([...events,data]));
               myEvents.push(item.data());
           });
       getName(myEvents);
@@ -78,20 +81,18 @@ export default function MyEventsScreen() {
       setEvents([]);
       idArray.map(async(eventID)=> {
         const database = firebase.firestore();
-        const upcoming = query(collection(database, "events"), where(("eventID"), "==", eventID));
-        const eventSnapshot = await getDocs(upcoming);
-        eventSnapshot.forEach((item)=> {
-          myEvents.push(item.data());
-          setEvents(events => ([...events, item.data()]));
-        });
+        const info = await database.collection("events").doc(eventID).get();
+        let data = info.data();
+        let id = {eventID: eventID}
+        Object.assign(data, id);
+        myEvents.push(data);
+        setEvents(events => ([...events, data]));
         fetchOwners(myEvents);
        })
-
   }
 
 
   React.useEffect(() => {
-    console.log("tjaba");
     fetchComingEvents();
     getMyEvents();
   },[isFocused]);

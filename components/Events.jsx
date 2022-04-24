@@ -35,7 +35,7 @@ function Events({events, setevents, owners}) {
         const userEvents = query(collection(database, "events"), where("owner", "==", user.uid) );
         const eventSnapshot = await getDocs(userEvents);
         eventSnapshot.forEach((item) => {
-            setOwnEvents(events=>([...events,item.data().eventID]));
+            setOwnEvents(events=>([...events,item.id]));
         });
     }
 
@@ -45,6 +45,28 @@ function Events({events, setevents, owners}) {
         let amountParticipants = places - placesOver;
 
         return <Text> {amountParticipants} </Text>
+    }
+
+    const deleteEvent = async (eventID, index) => {
+        let eventArray = [...events];
+        eventArray.splice(index,1);
+        setevents(eventArray);
+
+        let updateOwn = [...ownEvents]
+        let i = updateOwn.indexOf(eventID, 0);
+        updateOwn.splice(i,1);
+        setOwnEvents(updateOwn);
+
+
+        const db = firebase.firestore();
+        await db.collection('events').doc(eventID).delete();
+        const joinedEvent_query = db.collection('user_event').where("eventID", '==', eventID);
+        joinedEvent_query.get().then(function(querySnapshot){
+            querySnapshot.forEach(function(doc) {
+                doc.ref.delete();
+        });
+
+        })
     }
 
     const checkOwner=(id)=>{
@@ -135,6 +157,9 @@ function Events({events, setevents, owners}) {
                    joinEvent(element, index)}}> join event</Button>}
                {joinedEvents.includes(element.eventID)&&<Button onPress={()=>unjoinEvent(element, index)} color='red' > unjoin</Button>}
                </View>}
+
+               {ownEvents.includes(element.eventID) && <Button color='red' onPress={()=>{
+                   deleteEvent(element.eventID, index)}}> remove event</Button>}
                
                </View>
  

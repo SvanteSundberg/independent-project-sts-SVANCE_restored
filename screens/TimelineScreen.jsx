@@ -28,12 +28,15 @@ const Timeline = () => {
       let myEvents= [];
       data.docs.forEach(item =>{
         if(new Date(item.data().date)> new Date()){
-          setevents(events=>([...events, item.data()]));
-          myEvents.push(item.data());
+          let data = item.data();
+          let id = {eventID: item.id}
+          Object.assign(data, id);
+          setevents(events=>([...events, data]));
+          myEvents.push(data);
           }
-          if(new Date(item.data().date)< new Date()){
-           deleteExpDate(item.data());
-            }
+          //if(new Date(item.data().date)< new Date()){
+          // deleteExpDate(item.data());
+          //  }
 
       });
       fetchOwners(myEvents);

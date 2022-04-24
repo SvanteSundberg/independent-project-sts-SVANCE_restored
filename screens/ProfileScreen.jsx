@@ -115,7 +115,7 @@ function ProfileScreen({navigation, route}) {
 
             </View>
 
-            <MyEvents navigation={navigation} name={name} theUser ={userID} changeUser={changeUser} />
+            <MyEvents navigation={navigation} name={name} theUser ={userID} changeUser={changeUser} ownUser={ownUser}/>
 
                 </ScrollView> 
             

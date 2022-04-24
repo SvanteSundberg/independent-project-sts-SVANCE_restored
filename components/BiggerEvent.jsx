@@ -2,7 +2,15 @@ import React, { useState } from "react";
 import { Modal, StyleSheet, Text, View, TouchableOpacity, ScrollView } from "react-native";
 import { Button } from 'react-native-paper';
 
-function BiggerEvent({navigation, visable, changeVisable, event, participants, changeUser}) {
+function BiggerEvent({navigation, visable, changeVisable, event, participants, changeUser, ownUser, deleteEvent}) {
+  /*<Button
+                  style={styles.button}
+                  labelStyle={{fontSize: 12}}
+                  onPress={() => {
+                    changeVisable()
+                    navigation.navigate("CreateEventScreen")}}>
+                    Edit Event
+                  </Button>*/
  
     return (
       <View style={styles.centeredView}>
@@ -83,16 +91,16 @@ function BiggerEvent({navigation, visable, changeVisable, event, participants, c
                   onPress={() => changeVisable()}>
                     Back
                   </Button>
-
-                  <Button
-                  style={styles.button}
+              
+              {ownUser && <View>
+                <Button style={styles.button}
                   labelStyle={{fontSize: 12}}
+                  color="red"
                   onPress={() => {
                     changeVisable()
-                    navigation.navigate("CreateEventScreen")}}>
-                    Edit Event
-                  </Button>
-                </View>
+                    deleteEvent(event.eventID)}}> Remove Event</Button>
+                </View>}
+              </View>
           </View>
         </View>
       </Modal>
