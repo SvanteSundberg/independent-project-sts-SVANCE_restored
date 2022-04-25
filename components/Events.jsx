@@ -113,6 +113,10 @@ function Events({events, setevents, owners}) {
         await firebase.firestore().collection('events').doc(element.eventID).update({placesLeft:placesLeft});
       }
 
+      const checkFull = (element) => {
+        return element.placesleft
+      }
+
 
     return (
     
@@ -153,10 +157,15 @@ function Events({events, setevents, owners}) {
                <Text style={styles.owner}> Created by: {checkOwner(element.owner)} </Text>
             
             {!ownEvents.includes(element.eventID) && <View>
+                {!(element.placesLeft===0) && <View> 
                {!joinedEvents.includes(element.eventID)&&<Button onPress={()=>{
                    joinEvent(element, index)}}> join event</Button>}
+                   </View>} 
                {joinedEvents.includes(element.eventID)&&<Button onPress={()=>unjoinEvent(element, index)} color='red' > unjoin</Button>}
-               </View>}
+               
+               {(element.placesLeft===0) && <Text style={styles.full}> This event is full! </Text>}
+               
+               </View> }
 
                {ownEvents.includes(element.eventID) && <Button color='red' onPress={()=>{
                    deleteEvent(element.eventID, index)}}> remove event</Button>}
@@ -188,6 +197,12 @@ function Events({events, setevents, owners}) {
      created: {
         bottom: 0, 
         position: 'absolute'
+     },
+     full: {
+        marginTop: 5,
+        alignSelf: "center",
+        fontStyle: "italic",
+        color: "red"
      },
      main:{
          flex:1,
