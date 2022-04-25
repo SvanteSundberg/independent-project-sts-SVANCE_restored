@@ -113,10 +113,6 @@ function Events({events, setevents, owners}) {
         await firebase.firestore().collection('events').doc(element.eventID).update({placesLeft:placesLeft});
       }
 
-      const checkFull = (element) => {
-        return element.placesleft
-      }
-
 
     return (
     
