@@ -25,7 +25,8 @@ function CreateprofileScreen({navigation, route}) {
            sports: selectedSports,
             photo: photo
             });
-        navigation.navigate("ProfileScreen");
+        navigation.navigate("ProfileScreen",
+        {userID:user.uid});
        }
        else {
         Alert.alert(
