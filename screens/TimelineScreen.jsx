@@ -39,6 +39,13 @@ const Timeline = () => {
           setevents(events=>([...events, data]));
           myEvents.push(data);
           }
+        else if (new Date(item.data().date).getUTCDate()== new Date().getUTCDate()){
+          let data = item.data();
+          let id = {eventID: item.id}
+          Object.assign(data, id);
+          setevents(events=>([...events, data]));
+          myEvents.push(data);
+        }
           //if(new Date(item.data().date)< new Date()){
           // deleteExpDate(item.data());
           //  }
