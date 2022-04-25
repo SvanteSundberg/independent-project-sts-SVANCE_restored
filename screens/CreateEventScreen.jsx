@@ -264,7 +264,7 @@ function CreateEventScreen(props) {
               <Picker.Item label={t('other')} value="other" />
             </Picker>
           </View>
-          <View style={styles.dateTimeView}>
+          
             <Button
               style={styles.dateButton}
               uppercase={false}
@@ -316,7 +316,7 @@ function CreateEventScreen(props) {
                 onChange={changeTime}
               />
             )}
-          </View>
+          
           <Button
             style={[styles.button, styles.createEventButton]}
             title="send"
@@ -406,7 +406,7 @@ const styles = StyleSheet.create({
   },
   dateButton: {
     backgroundColor: 'white',// "#F6F6F6",
-    width: Dimensions.get("window").width / 2 - 30,
+    width: Dimensions.get("window").width -40,
     padding: 5,
     height: 50,
     marginTop: 5,
