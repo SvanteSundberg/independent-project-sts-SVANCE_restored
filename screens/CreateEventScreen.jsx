@@ -152,7 +152,7 @@ function CreateEventScreen(props) {
 
   const onBackToTimeline = () => {
     toggleModal();
-    navigation.push("TimelineScreen");
+    navigation.push("HomeScreen");
   };
 
   return (
