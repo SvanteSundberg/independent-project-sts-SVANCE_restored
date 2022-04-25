@@ -10,6 +10,7 @@ import CreateprofileScreen from './screens/CreateprofileScreen.jsx'
 import ProfileScreen from "./screens/ProfileScreen.jsx";
 import HomeScreen from './screens/HomeScreen.jsx'
 import MapScreen from './screens/MapScreen.jsx'
+import {Text} from "react-native";
 
 
 
@@ -55,7 +56,8 @@ const AppNavigator = () => (
             </Screen>
 
             <Screen name="HomeScreen"
-                component={HomeScreen}>
+                component={HomeScreen}
+                options={{headerLeft: () => <Text></Text>}}>
 
             </Screen>
 
