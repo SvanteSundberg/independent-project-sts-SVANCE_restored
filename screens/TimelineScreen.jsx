@@ -5,7 +5,7 @@ import { IconButton, Colors, Button } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import firebase from '../config/firebase';
 import { getAuth } from "firebase/auth";
-import { getDocs, collection, query, where} from "firebase/firestore";
+import { getDocs, collection, query, where, orderBy} from "firebase/firestore";
 import Events from "../components/Events";
 
 
@@ -26,8 +26,9 @@ const Timeline = () => {
     const [owners, setOwners]= React.useState([]);
    
     const fetchEvents = async()=>{
-      const response =firebase.firestore().collection('events');
-      const data =await response.get();
+      const db =firebase.firestore();
+      const snapshot= query(collection(db,'events'), orderBy("date"));
+      const data =await getDocs(snapshot);
       setevents([]);
       let myEvents= [];
       data.docs.forEach(item =>{
@@ -45,9 +46,9 @@ const Timeline = () => {
       });
       fetchOwners(myEvents);
       
-      events.sort(function(a,b){
+      /*events.sort(function(a,b){
         return new Date(a.date) - new Date(b.date);
-      });
+      });*/
     };
 
     const fetchOwners=async(myEvents)=> {
