@@ -32,7 +32,9 @@
         "alertFields": "Vänligen fyll alla fält",
         "createdEvent": "Du har skapat ett event!",
         "backToTimeline": "Till tidslinjen",
-        "confirmpassword":"Upprepa lösenord"
+        "confirmpassword":"Upprepa lösenord",
+        "createEventTitle":"SKAPA DITT SPORTA-EVENT",
+        "selectSport":"Välj Sport"
 
     }
 }
