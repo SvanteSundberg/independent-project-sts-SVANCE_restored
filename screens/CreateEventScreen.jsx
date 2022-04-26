@@ -39,7 +39,7 @@ function CreateEventScreen(props) {
   const [sport, setSport] = React.useState("");
   const [date, setDate] = React.useState(
     new Date().getFullYear() +
-    "-" +
+    "-" + "0" +
     (new Date().getMonth() + 1) +
     "-" +
     new Date().getDate()
@@ -58,6 +58,20 @@ function CreateEventScreen(props) {
   });
 
   const navigation = useNavigation();
+
+  const correctTime = (time) => {
+    let correctHours = time.getHours();
+    let correctMinutes = time.getMinutes();;
+    let correctTime;
+    if (time.getHours() < 10) {
+      correctHours = "0" + time.getHours();
+    }
+    if (time.getMinutes() < 10) {
+      correctMinutes = "0" + time.getMinutes();
+    }
+    correctTime = correctHours + ":" + correctMinutes;
+    return correctTime;
+  }
 
   const setMaxDate = (monthInterval) => {
     let current_datetime = new Date();
@@ -80,9 +94,9 @@ function CreateEventScreen(props) {
     }
     return formatted_date;
   };
-  const changeTime = (event, selectedDate) => {
-    const currentDate = selectedDate || time;
-    setTime(currentDate);
+  const changeTime = (event, selectedTime) => {
+    const currentTime = selectedTime || time;
+    setTime(currentTime);
     setShow(false);
   };
   const showTimepicker = () => {
@@ -106,11 +120,12 @@ function CreateEventScreen(props) {
       return;
     }
     toggleModal();
-    sendEvent(); //uncomment to send to database
+    sendEvent();
   };
   const toggleModal = () => {
     setVisible(!isVisible);
   };
+  const googleInput = React.useRef();
   const sendEvent = () => {
     firebase
       .firestore()
@@ -123,10 +138,9 @@ function CreateEventScreen(props) {
         description: description,
         region: region,
         date: date,
-        time: time.getHours() + ":" + time.getMinutes(),
         noPeople: noPeople,
         placesLeft: noPeople,
-        createdAt: firebase.database.ServerValue.TIMESTAMP,
+        time: correctTime(time),
       });
 
     setTitle("");
@@ -152,7 +166,7 @@ function CreateEventScreen(props) {
 
   const onBackToTimeline = () => {
     toggleModal();
-    navigation.push("HomeScreen");
+    navigation.navigate("HomeScreen");
   };
 
   return (
@@ -200,13 +214,14 @@ function CreateEventScreen(props) {
           />
 
           <GooglePlacesAutocomplete
-            placeholder={t('place')}
+          placeholder={t('place')}
             fetchDetails={true}
             GooglePlacesSearchQuery={{
               rankby: "distance",
             }}
             onPress={(details, data = null) => {
               // 'details' is provided when fetchDetails = true
+              
               setRegion({
                 place: details.description,
                 latitude: data.geometry.location.lat,
@@ -417,7 +432,7 @@ const styles = StyleSheet.create({
   },
   dateText: {
     color: "#787878",
-    alignSelf:'flex-start',
+    alignSelf: 'flex-start',
   },
   modalButton: {
     backgroundColor: colors.blue,
