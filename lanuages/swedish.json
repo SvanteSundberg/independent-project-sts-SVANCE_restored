@@ -7,7 +7,7 @@
         "register": "Registrera",
         "password": "Lösenord",
         "email": "Email",
-        "createAccount": "Registrera konto",
+        "createAccount": "REGISTRERA KONTO",
         "football": "Fotboll",
         "basket": "Basket",
         "padel": "Padel",
@@ -31,6 +31,8 @@
         "createEvent": "SKAPA EVENT",
         "alertFields": "Vänligen fyll alla fält",
         "createdEvent": "Du har skapat ett event!",
-        "backToTimeline": "Till tidslinjen"
+        "backToTimeline": "Till tidslinjen",
+        "confirmpassword":"Upprepa lösenord"
+
     }
 }
