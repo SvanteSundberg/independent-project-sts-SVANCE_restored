@@ -8,6 +8,10 @@ import { getAuth } from "firebase/auth";
 import { getDocs, collection, query, where, orderBy} from "firebase/firestore";
 import Events from "../components/Events";
 
+import { DatePicker } from "react-native-common-date-picker";
+import colors from "../config/colors.js";
+import SportFilter from "../components/SportFilter";
+
 
 
  
@@ -17,33 +21,44 @@ const Timeline = () => {
     const navigation= useNavigation(); 
    
     const [events, setevents] =React.useState([]);
-    const sports = ["soccer", "padel", "basketball"];
+    const [unfilteredEvents, setUnfilteredevents]= React.useState([]);
+    const sports = ['football','basket','padel','tennis','handball','bandy','volleyball','run','golf','squash','other'];
     const [Mysports, chooseSports] = React.useState([]);
     const [Mydates, choosedates] = React.useState([]);
     const [showSort, setShowSort]= React.useState(false);
     const [showSportSort, setShowSportSort]= React.useState(false);
     const [myEvents, setMyevents]= React.useState([]);
     const [owners, setOwners]= React.useState([]);
+    const [date, setDate] = React.useState(
+      new Date().getFullYear() +
+      "-" +
+      (new Date().getMonth() + 1) +
+      "-" +
+      new Date().getDate()
+    );
+    const [dateOpen, setdateOpen] = React.useState(false);
+    const [isFilteredBydate, setIsfilteredBydate]= React.useState(false);
+    const [filteredDatearray, setFiltereddatearray]= React.useState([]);
    
     const fetchEvents = async()=>{
       const db =firebase.firestore();
       const snapshot= query(collection(db,'events'), orderBy("date"));
       const data =await getDocs(snapshot);
-      setevents([]);
+      setUnfilteredevents([]);
       let myEvents= [];
       data.docs.forEach(item =>{
         if(new Date(item.data().date)> new Date()){
           let data = item.data();
           let id = {eventID: item.id}
           Object.assign(data, id);
-          setevents(events=>([...events, data]));
+          setUnfilteredevents(events=>([...events, data]));
           myEvents.push(data);
           }
         else if (new Date(item.data().date).getUTCDate()== new Date().getUTCDate()){
           let data = item.data();
           let id = {eventID: item.id}
           Object.assign(data, id);
-          setevents(events=>([...events, data]));
+          setUnfilteredevents(events=>([...events, data]));
           myEvents.push(data);
         }
           //if(new Date(item.data().date)< new Date()){
@@ -52,10 +67,35 @@ const Timeline = () => {
 
       });
       fetchOwners(myEvents);
+     
       
       /*events.sort(function(a,b){
         return new Date(a.date) - new Date(b.date);
       });*/
+    };
+
+    
+
+    const setMaxDate = (monthInterval) => {
+      let current_datetime = new Date();
+      current_datetime.setMonth(current_datetime.getMonth() + monthInterval);
+      let formatted_date;
+      if (current_datetime.getMonth() < 10) {
+        formatted_date =
+          current_datetime.getFullYear() +
+          "-0" +
+          (current_datetime.getMonth() + 1) +
+          "-" +
+          current_datetime.getDate();
+      } else {
+        formatted_date =
+          current_datetime.getFullYear() +
+          "-" +
+          (current_datetime.getMonth() + 1) +
+          "-" +
+          current_datetime.getDate();
+      }
+      return formatted_date;
     };
 
     const fetchOwners=async(myEvents)=> {
@@ -72,7 +112,21 @@ const Timeline = () => {
       fetchEvents();
      
     },[]);
-     
+
+const filterBydate=(date)=>{
+  setDate(date);
+  setdateOpen(false);
+  setFiltereddatearray([]);
+  for (let event of events) {
+    
+    if (event.date === date) {
+      setFiltereddatearray(filteredDatearray=>[...filteredDatearray, event])
+    }
+  }
+  setIsfilteredBydate(true);
+}  
+
+
 
 const deleteExpDate=async (element)=>{
   await firebase.firestore().collection('events').doc(element.eventID).delete();
@@ -124,13 +178,33 @@ const deleteExpDate=async (element)=>{
          }
          </View> }
 
-<Button>sortera med dag</Button>
 
+ <Button onPress={()=>setdateOpen(!dateOpen)}>sortera med dag</Button>
+ {isFilteredBydate && <Button onPress={()=>setIsfilteredBydate(false)}> Clear filters </Button>}
+ <SportFilter sports={sports} events={events} setevents={setevents} originalEvents={unfilteredEvents} userid={user.uid}/>
+ 
+ {dateOpen && <DatePicker
+                    backgroundColor="white"
+                    minDate={new Date()}
+                    maxDate={setMaxDate(3)}
+                    monthDisplayMode={"en-short"}
+                    cancelText=""
+                    rows={5}
+                    width={350}
+                    toolBarPosition="bottom"
+                    toolBarStyle={{ width: "100%", justifyContent: "flex-end" }}
+                    toolBarConfirmStyle={{ color: colors.blue }}
+                    confirmText="OK"
+                    confirm={(date) => filterBydate(date)}
+                  />
+ }
+ 
 </View> }
 
         
         <ScrollView style={styles.scroller} >
-         <Events events={events} setevents={setevents} owners={owners}/>
+      {!isFilteredBydate &&   <Events events={events} setevents={setevents} owners={owners}/>}
+      {isFilteredBydate &&   <Events events={filteredDatearray} setevents={setevents} owners={owners}/>}
        
     </ScrollView>
     <SafeAreaView style ={styles.createEvent}>
