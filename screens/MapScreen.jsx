@@ -95,6 +95,7 @@ export default function App() {
           latitudeDelta: 0.1022,
           longitudeDelta: 0.0421,
         }}
+        showsUserLocation = {true}
         provider="google"
       >
         {!loading
