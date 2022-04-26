@@ -32,7 +32,9 @@
     "alertFields":"Please fill out all fields",
     "createdEvent":"You successfully created an event!",
     "backToTimeline": "Back to timeline", 
-    "repeatpassword":"Repeat password"
+    "repeatpassword":"Repeat password",
+    "createEventTitle":"CREATE YOUR SPORTA EVENT",
+    "selectSport":"Select Sport"
 
 
 
