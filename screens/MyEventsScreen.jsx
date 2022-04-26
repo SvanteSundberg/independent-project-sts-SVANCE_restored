@@ -43,10 +43,12 @@ export default function MyEventsScreen() {
           const eventSnapshot = await getDocs(userEvents);
           eventSnapshot.forEach((item) => {
               let data = item.data();
-              let id = {eventID: item.id}
-              Object.assign(data, id);
-              setMyEvents(events=>([...events,data]));
-              myEvents.push(item.data());
+              if (typeof data !== 'undefined'){
+                let id = {eventID: item.id}
+                Object.assign(data, id);
+                setMyEvents(events=>([...events,data]));
+                myEvents.push(item.data());
+              }
           });
       getName(myEvents);
   }
@@ -83,10 +85,12 @@ export default function MyEventsScreen() {
         const database = firebase.firestore();
         const info = await database.collection("events").doc(eventID).get();
         let data = info.data();
-        let id = {eventID: eventID}
-        Object.assign(data, id);
-        myEvents.push(data);
-        setEvents(events => ([...events, data]));
+        if (typeof data !== 'undefined'){
+          let id = {eventID: eventID}
+          Object.assign(data, id);
+          myEvents.push(data);
+          setEvents(events => ([...events, data]));
+        }
         fetchOwners(myEvents);
        })
   }
