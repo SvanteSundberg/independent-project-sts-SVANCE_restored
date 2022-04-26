@@ -88,6 +88,7 @@ function Events({ events, setevents, owners }) {
       if (obj.ownerid === id) {
         return (
           <Text
+            style={styles.ownerText}
             onPress={() =>
               navigation.navigate("ProfileScreen", {
                 userID: id,
@@ -198,9 +199,7 @@ function Events({ events, setevents, owners }) {
                   </Button>
 
                   <View>
-                    <Text style={styles.owner}>
-                      Created by: {checkOwner(element.owner)}
-                    </Text>
+                    <Text> Created by: {checkOwner(element.owner)}</Text>
 
                     {!ownEvents.includes(element.eventID) && (
                       <View>
@@ -293,7 +292,10 @@ const styles = StyleSheet.create({
   owner: {
     margin: 5,
   },
-
+  ownerText: {
+    color: "#0081CF",
+    textDecorationLine: "underline",
+  },
   scroller: {
     alignSelf: "center",
     flex: 1,

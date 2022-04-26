@@ -80,7 +80,7 @@ const Participants = ({ event, events, getAmount }) => {
         <Menu
           contentStyle={{
             opacity: 0.95,
-            backgroundColor: "lightgrey",
+            backgroundColor: "#DEA01E",
             width: "100.5%",
             height: 198,
           }}
@@ -108,9 +108,13 @@ const Participants = ({ event, events, getAmount }) => {
             )}
 
             {participant.map((p, index) => (
-              <View key={p.userID}>
+              <View style={styles.test} key={p.userID}>
                 <Menu.Item
-                  titleStyle={{ fontSize: 13 }}
+                  titleStyle={{
+                    fontSize: 13,
+                    color: "#0081CF",
+                    padding: 6,
+                  }}
                   onPress={() => {
                     goToParticipant(p.userID);
                     closeMenu();
@@ -141,13 +145,15 @@ const styles = StyleSheet.create({
     paddingBottom: 7,
   },
   touch: {
-    backgroundColor: "#CCDBDC",
+    backgroundColor: "#DEA01E",
     borderTopRightRadius: 8,
     borderLeftWidth: 1,
     padding: 3,
-    shadowColor: "white",
+    shadowColor: "black",
     shadowOpacity: 0.2,
-    shadowRadius: 4,
+    shadowRadius: 6,
+    shadowOffset: { height: 1, width: 1 },
+    elevation: 2,
   },
 });
 
