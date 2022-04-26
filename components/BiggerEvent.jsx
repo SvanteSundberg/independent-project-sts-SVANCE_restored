@@ -148,7 +148,9 @@ const unjoinEvent=async ()=>{
                   key={index}
                   onPress={() => {
                     changeVisable();
-                    changeUser(user.userID);
+                    if (typeof changeUser !== 'undefined'){
+                        changeUser(user.userID);
+                    }
                     navigation.navigate("ProfileScreen", {
                     userID: user.userID
                   })}}>
