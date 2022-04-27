@@ -49,6 +49,7 @@ import { useTranslation } from "react-i18next";
        <TextInput mode="outlined"
                   label={t('email')}
                   style={styles.input}
+                  activeOutlineColor="#63B5FF"
                   value={email}
                   onChangeText = {email => setEmail(email)}
        />
@@ -56,6 +57,7 @@ import { useTranslation } from "react-i18next";
        <TextInput mode="outlined"
                   label={t('password')}
                   style={styles.input}
+                  activeOutlineColor="#63B5FF"
                   secureTextEntry={true}
                   value={password}
                   onChangeText = {password => setPassword(password)}
