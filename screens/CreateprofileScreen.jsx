@@ -17,7 +17,8 @@ function CreateprofileScreen({navigation, route}) {
    const user = auth.currentUser;
 
    const updateUserInfo = () => {
-       if (name.length>0 && age>0 && descrip.length>0 && photo.length>0){
+       if (name.length>0 && age>0 && descrip.length>0 &&
+        typeof photo !== "undefined"){
         firebase.firestore().collection('users').doc(user.uid).set({
            name: name,
             age: age,
