@@ -194,6 +194,7 @@ function CreateEventScreen(props) {
             outlineColor="white"
             activeOutlineColor={colors.mediumBlue}
             placeholder={t('title2')}
+            maxLength={30}
           />
           <TextInput
             style={styles.input}

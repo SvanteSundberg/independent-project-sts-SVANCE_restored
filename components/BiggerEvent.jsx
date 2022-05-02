@@ -77,6 +77,13 @@ const unjoinEvent=async ()=>{
     await firebase.firestore().collection('user_event').doc(user.uid+'_'+event.eventID).delete();
     await firebase.firestore().collection('events').doc(event.eventID).update({placesLeft:placesLeft});
   }
+
+const getAmountPart = (event) => {
+  let placesLeft = parseInt(event.placesLeft);
+  let placesAvail = parseInt(event.noPeople);
+  let amountP = placesAvail - placesLeft;
+  return <Text>{amountP}</Text>;
+};
   
   /*<Button
                   style={styles.button}
@@ -136,7 +143,7 @@ const unjoinEvent=async ()=>{
                 style={styles.iconsContainer}
                 icon='human-handsdown'
                 labelStyle={{fontSize: 13,
-                    color:'black'}}> {event.noPeople} </Button>
+                    color:'black'}}> <Text>{getAmountPart(event)}/{event.noPeople}</Text> </Button>
 
             <View>
             <Text style={[styles.underTitle, styles.margins]}> MORE INFO</Text>
@@ -209,6 +216,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
 
   description: {
