@@ -4,14 +4,18 @@ import { TextInput, Checkbox, Button } from 'react-native-paper';
 import * as ImagePicker from 'expo-image-picker';
 import { getAuth } from "firebase/auth";
 import firebase from '../config/firebase';
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import uuid from "uuid";
  
 function CreateprofileScreen({navigation, route}) {
    const [name, setName] = useState(route.params.name);
    const [age, setAge] = useState(route.params.age);
    const [descrip, setDescrip] = useState(route.params.bio);
-   const sports = ["soccer", "padel", "basketball"];
+   const sports = ["football", "padel", "basketball", "tennis", "handball", "floorball", "volleyball", "run", "golf", "squash"];
    const [photo, setPhoto] = useState(route.params.photo);
+   const [remove, setRemove] = useState(false);
    const [selectedSports, chooseSports] = useState(route.params.selectedSports);
+   const [uploading, setUploading] = useState(false);
 
    const auth = getAuth();
    const user = auth.currentUser;
@@ -19,6 +23,7 @@ function CreateprofileScreen({navigation, route}) {
    const updateUserInfo = () => {
        if (name.length>0 && age>0 && descrip.length>0 &&
         typeof photo !== "undefined"){
+        console.log(photo);
         firebase.firestore().collection('users').doc(user.uid).set({
            name: name,
             age: age,
@@ -48,10 +53,86 @@ function CreateprofileScreen({navigation, route}) {
          quality: 1,
        });
   
-       if (!result.cancelled) {
-         setPhoto(result.uri);
-       }
-     };
+       try {
+        if (!result.cancelled) {
+            if (typeof photo !==undefined){
+                setRemove(true);
+            }
+            setUploading(true);
+            const uploadUrl = await uploadImageAsync(result.uri);
+        }
+        
+        } catch (e) {
+            console.log(e);
+            alert("Upload failed, sorry :(");
+        } 
+        };
+        
+
+     async function uploadImageAsync(uri) {
+        // Why are we using XMLHttpRequest? See:
+        // https://github.com/expo/expo/issues/2402#issuecomment-443726662
+        const blob = await new Promise((resolve, reject) => {
+          const xhr = new XMLHttpRequest();
+          xhr.onload = function () {
+            resolve(xhr.response);
+          };
+          xhr.onerror = function (e) {
+            console.log(e);
+            reject(new TypeError("Network request failed"));
+          };
+          xhr.responseType = "blob";
+          xhr.open("GET", uri, true);
+          xhr.send(null);
+        });
+        
+        const fileRef = ref(getStorage(), user.uid);
+
+        if (remove){
+            deleteObject(fileRef).then(() => {
+                // File deleted successfully
+              }).catch((error) => {
+                // Uh-oh, an error occurred!
+                console.log(error);
+              });
+        }
+
+        const result = await uploadBytes(fileRef, blob);
+        blob.close();
+
+
+        const url = await getDownloadURL(fileRef);
+        setPhoto(url);
+        setUploading(false);
+
+        /*const unique = uuid.v4();
+        const fileRef = ref(getStorage(), user.uid);
+        const result = await uploadBytes(fileRef, blob);
+      
+        // We're done with the blob, close and release it
+        blob.close();
+      
+        const url = await getDownloadURL(fileRef);
+        setPhoto(url);
+        setUploading(false);
+        if (remove) {
+            deleteObject(fileRef).then(() => {
+                // File deleted successfully
+              }).catch((error) => {
+                // Uh-oh, an error occurred!
+              });
+        }*/
+
+        /*if (remove){
+            deleteObject(fileRef).then(() => {
+                // File deleted successfully
+              }).catch((error) => {
+                // Uh-oh, an error occurred!
+                console.log(error);
+              });
+        }*/
+      }
+
 
  
    return (
@@ -66,9 +147,13 @@ function CreateprofileScreen({navigation, route}) {
            </Text>
  
            <TouchableOpacity onPress={pickImage} style={styles.container}>
+         {!uploading && <View>
            {photo && <Image source={{ uri: photo }} style = {styles.userIcon} />}
            {!photo && <Image source={require("../assets/icon-user.png")} style = {styles.userIcon}/>}
- 
+           </View>
+        }
+
+           {uploading && <Image source={require("../assets/waiting.png")} style = {styles.userIcon}/>}
            <Text> Upload image</Text>
 
            </TouchableOpacity>

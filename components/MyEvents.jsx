@@ -6,6 +6,7 @@ import { getAuth } from "firebase/auth";
 import { Button } from 'react-native-paper';
 import { collection, query, where, getDocs } from "firebase/firestore";
 import BiggerEvent from './BiggerEvent';
+import colors from '../config/colors';
 
 function MyEvents({navigation, theUser, changeUser, name, ownUser}) {
 
@@ -154,10 +155,11 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         alignSelf: 'center',
         marginTop:10,
+        color: colors.deepBlue
     },
     row: {
         flexDirection:'row',
-        backgroundColor: 'lightblue',
+        backgroundColor: colors.orange
     }, 
     text: {
         alignSelf:'center',
