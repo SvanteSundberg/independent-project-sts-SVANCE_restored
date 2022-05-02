@@ -172,7 +172,7 @@ function Events({ events, setevents, owners }) {
                   <Text style={styles.noPeopleText}>
                     Participants: {getAmount(element)} / {element.noPeople}
                   </Text>
-                  <View style={{ alignSelf: "baseLine" }}>
+                  <View>
                     <Participants
                       event={element}
                       events={events}
