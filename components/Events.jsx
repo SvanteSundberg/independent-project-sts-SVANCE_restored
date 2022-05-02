@@ -5,6 +5,7 @@ import {
   ScrollView,
   Dimensions,
   SafeAreaView,
+  Image
 } from "react-native";
 import { useState, useEffect } from "react";
 import { Button } from "react-native-paper";
@@ -14,13 +15,22 @@ import { getDocs, collection, query, where } from "firebase/firestore";
 import { useNavigation } from "@react-navigation/native";
 import Participants from "./Participants";
 import { TouchableOpacity } from "react-native";
+import BiggerEvent from "../components/BiggerEvent";
+import colors from "../config/colors";
 
-function Events({ events, setevents, owners }) {
+
+function Events({ events, setevents, owners}) {
   const [ownEvents, setOwnEvents] = useState([]);
   const [joinedEvents, setJoinedEvents] = useState([]);
   const auth = getAuth();
   const user = auth.currentUser;
   const navigation = useNavigation();
+
+  const [visable, setVisable] = useState(false);
+  const [specificEvent, setEvent] = useState({});
+  const [participants, setParticipants] = useState([]); 
+  const [ownUser, setOwnUser] = useState(false);
+
 
   useEffect(() => {
     fetchJoinedEvents();
@@ -82,6 +92,31 @@ function Events({ events, setevents, owners }) {
       });
     });
   };
+
+  const changeVisable = () => {
+    setVisable(!visable);
+  }
+
+  const getID=async(eventID)=>{
+    const db= firebase.firestore();
+    const response =db.collection('users');
+    const participants= query(collection(db,'user_event'), where('eventID','==', eventID));
+    const myParticipantsnapshot= await getDocs(participants);
+    setParticipants([]);
+    myParticipantsnapshot.forEach(async (user)=> {
+      const info =await response.doc(user.data().userID).get();
+      setParticipants(users => ([...users, {
+          name: info.get("name"),
+          userID: user.data().userID }]));
+    });
+  }
+  
+    const handleOnPress = (event) =>  {
+      setEvent(event);
+      setVisable(true);
+      getID(event.eventID);
+    }
+
 
   const checkOwner = (id) => {
     for (let obj of owners) {
@@ -153,9 +188,26 @@ function Events({ events, setevents, owners }) {
 
   return (
     <SafeAreaView style={styles.main}>
+      {visable && <BiggerEvent
+                      navigation={navigation}
+                      visable={visable}
+                      changeVisable={changeVisable}
+                      event={specificEvent}
+                      participants={participants}
+                  //changeUser={setUser}
+                      ownUser={ownUser}
+                      deleteEvent={deleteEvent}
+                      setEvent={setEvent}
+                      getID={getID}
+                      setParticipants={setParticipants}
+                    />}
       <ScrollView style={styles.scroller}>
+        <View style={styles.outer}>
         {events.map((element, index) => {
           return (
+            
+            <TouchableOpacity
+            onPress = {() => handleOnPress(element)}>
             <View key={element.title} style={styles.postContainer}>
               <View style={styles.posts}>
                 <View style={styles.postHeader}>
@@ -168,16 +220,18 @@ function Events({ events, setevents, owners }) {
                       {element.date} {element.time}
                     </Text>
                   </View>
-
+                  <Image
+                source={require("../assets/people.png")}
+                style={[styles.peopleLogga, styles.people]}/>
                   <Text style={styles.noPeopleText}>
-                    Participants: {getAmount(element)} / {element.noPeople}
+                     {getAmount(element)} / {element.noPeople}
                   </Text>
                   <View>
-                    <Participants
+                    {/* <Participants
                       event={element}
                       events={events}
                       getAmount={getAmount}
-                    />
+                    /> */}
                   </View>
                 </View>
 
@@ -247,8 +301,10 @@ function Events({ events, setevents, owners }) {
                 </View>
               </View>
             </View>
+          </TouchableOpacity>
           );
         })}
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -275,6 +331,10 @@ const styles = StyleSheet.create({
   main: {
     flex: 1,
   },
+  outer:{
+    width: Dimensions.get("window").width,
+    padding:10,
+  },
 
   ownerContainer: {
     position: "absolute",
@@ -282,13 +342,14 @@ const styles = StyleSheet.create({
 
   postContainer: {
     marginTop: 10,
+
   },
 
-  header: {
-    alignSelf: "center",
-    fontWeight: "bold",
-    fontSize: 25,
-  },
+  // header: {
+  //   alignSelf: "center",
+  //   fontWeight: "bold",
+  //   fontSize: 25,
+  // },
   owner: {
     margin: 5,
   },
@@ -301,11 +362,22 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 
+  people: {
+    position: "absolute", 
+},
+peopleLogga:{
+    bottom: 0, 
+    right: 30,
+    width: 20,
+    height:20,
+    margin:5,
+},
+
   postHeader: {
-    backgroundColor: "#007EA7",
+    backgroundColor: colors.deepBlue,
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
-    borderWidth: 1,
+    //borderWidth: 1,
     justifyContent: "space-between",
     alignItems: "center",
     flexDirection: "row",
@@ -335,12 +407,23 @@ const styles = StyleSheet.create({
 
   posts: {
     flex: 1,
-    width: Dimensions.get("window").width - 10,
+    width: Dimensions.get("window").width - 20,
     height: 200,
-    borderWidth: 0.5,
+    //borderWidth: 0.5,
     borderRadius: 10,
+    backgroundColor:'white',//colors.lightBlue,
     //borderColor:"black",
     //backgroundColor:"#D6EAF8",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 8,
+    },
+    shadowOpacity: 0.46,
+    shadowRadius: 11.14,
+    
+    elevation: 6,
+
   },
 
   title: {
