@@ -1,8 +1,83 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Modal, StyleSheet, Text, View, TouchableOpacity, ScrollView } from "react-native";
 import { Button } from 'react-native-paper';
+import { getAuth } from "firebase/auth";
+import firebase from '../config/firebase';
+import { getDocs, collection, query, where} from "firebase/firestore";
+import { useIsFocused } from '@react-navigation/native';
 
-function BiggerEvent({navigation, visable, changeVisable, event, participants, changeUser, ownUser, deleteEvent}) {
+function BiggerEvent({navigation, 
+                    visable, 
+                    changeVisable, 
+                    event, 
+                    participants, 
+                    changeUser, 
+                    ownUser, 
+                    deleteEvent, 
+                    setEvent, 
+                    getID, 
+                    setParticipants}) {
+  
+const auth = getAuth();
+const user = auth.currentUser;  
+const [joinedEvents, setJoinedEvents] = useState([]);
+const isFocused = useIsFocused();
+
+  useEffect(() => {
+    fetchJoinedEvents();
+  },[]);
+  
+  const fetchJoinedEvents=async()=>{
+      setJoinedEvents([]);
+      const db= firebase.firestore();
+      const joinedEvents= query(collection(db,'user_event'), where('userID','==',user.uid));
+      const myEventsnapshot= await getDocs(joinedEvents);
+      myEventsnapshot.forEach((event)=> {
+      setJoinedEvents(events=>([...events,event.data().eventID]));
+      })
+  }
+
+  const joinEvent= async()=>{
+    if(event.placesLeft>0){
+        let placesLeft = event.placesLeft-1;
+        let updateEvent = event;
+        updateEvent.placesLeft= placesLeft;
+        setEvent(updateEvent);
+
+        let updateJoin = [...joinedEvents]
+        updateJoin.push(event.eventID);
+        setJoinedEvents(updateJoin);
+
+        getID(event.eventID);
+
+        await firebase.firestore().collection('user_event').doc(user.uid+'_'+event.eventID).set({
+        userID:user.uid,
+        eventID:event.eventID,
+        });
+        await firebase.firestore().collection('events').doc(event.eventID).update({placesLeft:placesLeft});
+  }
+}
+const unjoinEvent=async ()=>{
+    let placesLeft = event.placesLeft+1;
+    let updateEvent = event;
+    updateEvent.placesLeft= placesLeft;
+    setEvent(updateEvent);
+
+    let updateParticipants = [...participants];
+    let index = updateParticipants.findIndex(x => x.userID === user.uid)
+    updateParticipants.splice(index,1);
+    setParticipants(updateParticipants);
+
+
+    let updateJoin = [...joinedEvents]
+    let i = updateJoin.indexOf(event.eventID, 0);
+    updateJoin.splice(i,1);
+    setJoinedEvents(updateJoin);
+
+    await firebase.firestore().collection('user_event').doc(user.uid+'_'+event.eventID).delete();
+    await firebase.firestore().collection('events').doc(event.eventID).update({placesLeft:placesLeft});
+  }
+  
   /*<Button
                   style={styles.button}
                   labelStyle={{fontSize: 12}}
@@ -55,7 +130,7 @@ function BiggerEvent({navigation, visable, changeVisable, event, participants, c
                 style={styles.iconsContainer}
                 icon='clock-outline'
                 labelStyle={{fontSize: 13,
-                    color:'black'}}> 14:50 </Button>
+                    color:'black'}}> {event.time} </Button>
 
             <Button 
                 style={styles.iconsContainer}
@@ -73,7 +148,9 @@ function BiggerEvent({navigation, visable, changeVisable, event, participants, c
                   key={index}
                   onPress={() => {
                     changeVisable();
-                    changeUser(user.userID);
+                    if (typeof changeUser !== 'undefined'){
+                        changeUser(user.userID);
+                    }
                     navigation.navigate("ProfileScreen", {
                     userID: user.userID
                   })}}>
@@ -100,6 +177,20 @@ function BiggerEvent({navigation, visable, changeVisable, event, participants, c
                     changeVisable()
                     deleteEvent(event.eventID)}}> Remove Event</Button>
                 </View>}
+
+              {!ownUser && <View> 
+              {!(event.placesLeft===0) && <View> 
+              {!joinedEvents.includes(event.eventID)&&<Button 
+                                                        style={styles.button}
+                                                        onPress={()=>{
+                                                            joinEvent()}}> join event</Button>}
+                </View>} 
+               {joinedEvents.includes(event.eventID)&&<Button 
+                                                          style={styles.button}
+                                                          onPress={()=>unjoinEvent()} color='red' > unjoin</Button>}
+               
+                </View>}
+
               </View>
           </View>
         </View>
@@ -140,7 +231,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 20,
     elevation: 5,
-    width: '80%',
+    width: '90%',
     height: '60%',
     alignItems: 'center'
   },
@@ -179,7 +270,7 @@ const styles = StyleSheet.create({
   },
 
   scrollView: {
-    marginHorizontal: 15,
+    marginHorizontal: 0,
     backgroundColor: 'white',
   },
 });

@@ -1,6 +1,7 @@
 export default{
-    backgroundColor: '#C2E1C2',
-    accentColor:'#C05746',
-    blue: '#1b73b3',
+    deepBlue: '#0081CF',
+    mediumBlue:'#63B5FF',
+    lightBlue: '#DBF2FF',
+    orange: '#DEA01E'
     }
     

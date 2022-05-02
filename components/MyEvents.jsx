@@ -85,9 +85,9 @@ function MyEvents({navigation, theUser, changeUser, name, ownUser}) {
                     style={styles.event}
                     key={index}
                     onPress={() => {
-                        setEvent(theEvents[index]);
+                        setEvent(event);
                         setVisable(true);
-                        getID(theEvents[index].eventID);
+                        getID(event.eventID);
                     }}>
                     <View style={styles.row}> 
                 <Button 
@@ -115,7 +115,7 @@ function MyEvents({navigation, theUser, changeUser, name, ownUser}) {
         }
         
         <BiggerEvent navigation={navigation} visable={visable} changeVisable={changeVisable} event={specificEvent} participants={participants}
-                    theUser={theUser} changeUser={setUser} ownUser={ownUser} deleteEvent={deleteEvent}/>
+                    theUser={theUser} changeUser={setUser} ownUser={ownUser} deleteEvent={deleteEvent} setEvent={setEvent} getID={getID} setParticipants={setParticipants}/>
         </SafeAreaView>
     );
 }

@@ -27,6 +27,7 @@ import sports from "./CreateprofileScreen.jsx";
 import { Picker } from '@react-native-picker/picker';
 import { useTranslation } from "react-i18next";
 import { getAuth } from "firebase/auth";
+import { color } from "react-native-elements/dist/helpers";
 
 function CreateEventScreen(props) {
   const { t, i18n } = useTranslation();
@@ -39,7 +40,7 @@ function CreateEventScreen(props) {
   const [sport, setSport] = React.useState("");
   const [date, setDate] = React.useState(
     new Date().getFullYear() +
-    "-" +
+    "-" + "0" +
     (new Date().getMonth() + 1) +
     "-" +
     new Date().getDate()
@@ -58,6 +59,20 @@ function CreateEventScreen(props) {
   });
 
   const navigation = useNavigation();
+
+  const correctTime = (time) => {
+    let correctHours = time.getHours();
+    let correctMinutes = time.getMinutes();;
+    let correctTime;
+    if (time.getHours() < 10) {
+      correctHours = "0" + time.getHours();
+    }
+    if (time.getMinutes() < 10) {
+      correctMinutes = "0" + time.getMinutes();
+    }
+    correctTime = correctHours + ":" + correctMinutes;
+    return correctTime;
+  }
 
   const setMaxDate = (monthInterval) => {
     let current_datetime = new Date();
@@ -80,9 +95,10 @@ function CreateEventScreen(props) {
     }
     return formatted_date;
   };
-  const changeTime = (event, selectedDate) => {
-    const currentDate = selectedDate || time;
-    setTime(currentDate);
+  const changeTime = (event, selectedTime) => {
+    console.log(sport);
+    const currentTime = selectedTime || time;
+    setTime(currentTime);
     setShow(false);
   };
   const showTimepicker = () => {
@@ -100,17 +116,19 @@ function CreateEventScreen(props) {
       !region.place.trim() ||
       !(time.getHours() + ":" + time.getMinutes()).trim() ||
       !date.trim() ||
-      !noPeople.trim()
+      !noPeople.trim() ||
+      sport == "select"
     ) {
       alert("Please fill out all fields");
       return;
     }
     toggleModal();
-    sendEvent(); //uncomment to send to database
+    sendEvent();
   };
   const toggleModal = () => {
     setVisible(!isVisible);
   };
+  const googleInput = React.useRef();
   const sendEvent = () => {
     firebase
       .firestore()
@@ -123,10 +141,9 @@ function CreateEventScreen(props) {
         description: description,
         region: region,
         date: date,
-        time: time.getHours() + ":" + time.getMinutes(),
         noPeople: noPeople,
         placesLeft: noPeople,
-        createdAt: firebase.database.ServerValue.TIMESTAMP,
+        time: correctTime(time),
       });
 
     setTitle("");
@@ -152,7 +169,7 @@ function CreateEventScreen(props) {
 
   const onBackToTimeline = () => {
     toggleModal();
-    navigation.push("TimelineScreen");
+    navigation.navigate("HomeScreen");
   };
 
   return (
@@ -164,16 +181,18 @@ function CreateEventScreen(props) {
         listViewDisplayed={false}
         horizontal={false}
       >
-        <Text style={styles.header}> SPORTA EVENT </Text>
+        
 
         <View style={styles.form}>
+        <Text style={styles.header}> {t('createEventTitle')} </Text>
           <TextInput
             style={styles.input}
             label={t('title1')}
             value={title}
             onChangeText={(title) => setTitle(title)}
             mode="outlined"
-            activeOutlineColor={colors.accentColor}
+            outlineColor="white"
+            activeOutlineColor={colors.mediumBlue}
             placeholder={t('title2')}
           />
           <TextInput
@@ -182,9 +201,11 @@ function CreateEventScreen(props) {
             value={description}
             onChangeText={(description) => setDescription(description)}
             mode="outlined"
-            activeOutlineColor={colors.accentColor}
+            outlineColor="white"
+            activeOutlineColor={colors.mediumBlue}
             placeholder={t('desc2')}
             maxLength={100}
+            
           />
 
           <TextInput
@@ -193,20 +214,20 @@ function CreateEventScreen(props) {
             style={styles.input}
             onChangeText={(noPeople) => setNoPeople(noPeople)}
             mode="outlined"
-            activeOutlineColor={colors.blue}
+            outlineColor="white"
+            activeOutlineColor={colors.mediumBlue}
             placeholder={t('nopeople2')}
             keyboardType={"numeric"}
             maxLength={2}
           />
 
           <GooglePlacesAutocomplete
-            placeholder={t('place')}
+          placeholder={t('place')}
             fetchDetails={true}
             GooglePlacesSearchQuery={{
               rankby: "distance",
             }}
             onPress={(details, data = null) => {
-              // 'details' is provided when fetchDetails = true
               setRegion({
                 place: details.description,
                 latitude: data.geometry.location.lat,
@@ -223,12 +244,13 @@ function CreateEventScreen(props) {
             }}
             styles={{
               textInput: {
-                height: 60,
-                backgroundColor: '#F6F6F6',// "transparent",
-                marginTop: 10,
+                height: 50,
+                backgroundColor: '#F6F6F6',
+                marginTop: 5,
+                marginBottom:10,
                 borderRadius: 10,
                 borderWidth: 1,
-                borderColor: "#787878",//"grey",
+                borderColor:'white',
                 color: "#787878",
               },
               listView: {},
@@ -243,29 +265,7 @@ function CreateEventScreen(props) {
               },
             }}
           />
-          <View style={styles.sportPickerView}>
-            <Text>Choose sport:</Text>
-            <Picker
-              style={styles.sportPicker}
-              selectedValue={sport}
-              onValueChange={(itemValue, itemIndex) =>
-                setSport(itemValue)
-              }>
-              <Picker.Item label={t('football')} value="fotboll" />
-              <Picker.Item label={t('basket')} value="basket" />
-              <Picker.Item label={t('padel')} value="padel" />
-              <Picker.Item label={t('tennis')} value="tennis" />
-              <Picker.Item label={t('handball')} value="handball" />
-              <Picker.Item label={t('bandy')} value="floorball" />
-              <Picker.Item label={t('volleyball')} value="volleyball" />
-              <Picker.Item label={t('run')} value="run" />
-              <Picker.Item label={t('golf')} value="golf" />
-              <Picker.Item label={t('squash')} value="squash" />
-              <Picker.Item label={t('other')} value="other" />
-            </Picker>
-          </View>
-          <View style={styles.dateTimeView}>
-            <Button
+          <Button
               style={styles.dateButton}
               uppercase={false}
               onPress={() => setdateOpen(true)}
@@ -282,14 +282,14 @@ function CreateEventScreen(props) {
                     monthDisplayMode={"en-short"}
                     cancelText=""
                     rows={5}
-                    //selectedRowBackgroundColor="#C2E1C2"
+                    selectedRowBackgroundColor={colors.mediumBlue}
                     width={350}
                     toolBarPosition="bottom"
                     toolBarStyle={{ width: "100%", justifyContent: "flex-end" }}
-                    toolBarConfirmStyle={{ color: colors.blue }}
+                    toolBarConfirmStyle={{ color: colors.deepBlue }}
                     confirmText="OK"
                     onValueChange={(date) => setDate(date)}
-                    confirm={(dateOpen) => setdateOpen(false)} //{dateOpen=>setdateOpen(false)}//{date => {setDate(date)}} // setDate(date)}
+                    confirm={(dateOpen) => setdateOpen(false)}
                   />
                 </View>
               </View>
@@ -316,7 +316,28 @@ function CreateEventScreen(props) {
                 onChange={changeTime}
               />
             )}
+          <View style={styles.sportPickerView}>
+            <Picker
+              style={styles.sportPicker}
+              selectedValue={sport}
+              onValueChange={(itemValue, itemIndex) =>
+                setSport(itemValue)
+              }>
+              <Picker.Item label={t('selectSport')} value="select" />
+              <Picker.Item label={t('football')} value="fotboll" />
+              <Picker.Item label={t('basket')} value="basket" />
+              <Picker.Item label={t('padel')} value="padel" />
+              <Picker.Item label={t('tennis')} value="tennis" />
+              <Picker.Item label={t('handball')} value="handball" />
+              <Picker.Item label={t('bandy')} value="floorball" />
+              <Picker.Item label={t('volleyball')} value="volleyball" />
+              <Picker.Item label={t('run')} value="run" />
+              <Picker.Item label={t('golf')} value="golf" />
+              <Picker.Item label={t('squash')} value="squash" />
+              <Picker.Item label={t('other')} value="other" />
+            </Picker>
           </View>
+            
           <Button
             style={[styles.button, styles.createEventButton]}
             title="send"
@@ -342,7 +363,7 @@ function CreateEventScreen(props) {
                 </Text>
                 <Button
                   style={[styles.button, styles.modalButton]}
-                  onPress={onBackToTimeline} //toggleModal() comment/uncomment for navigation
+                  onPress={onBackToTimeline}
                 >
                   <Text style={styles.buttonText}>{t('backToTimeline')}</Text>
                 </Button>
@@ -369,23 +390,25 @@ const styles = StyleSheet.create({
   header: {
     flex: 1,
     alignSelf: "center",
+    padding: 10,
+    fontSize:18,
+    fontWeight:'bold',
+    color:colors.mediumBlue,
   },
   form: {
     flex: 1,
     padding: 15,
-    backgroundColor: colors.backgroundColor,
+    backgroundColor: colors.deepBlue,
     margin: 5,
+    paddingTop:20,
+    borderRadius: 15,
   },
   sportPickerView: {
-    marginTop: 30,
     color: 'gray',
   },
   sportPicker: {
     backgroundColor: '#F6F6F6',
     color: '#787878',
-
-    marginBottom: 5,
-
   },
   buttonText: {
     color: "white",
@@ -404,32 +427,29 @@ const styles = StyleSheet.create({
   block: {
     width: 20,
   },
+  input:{
+    marginBottom:5,
+  },
   dateButton: {
-    backgroundColor: 'white',// "#F6F6F6",
-    width: Dimensions.get("window").width / 2 - 30,
+    backgroundColor: 'white',
+    width: Dimensions.get("window").width -40,
     padding: 5,
     height: 50,
-    marginTop: 5,
-    // borderWidth: 1,
-    // borderColor: "#787878",
+    marginBottom:10,
     borderRadius: 0,
 
   },
   dateText: {
     color: "#787878",
-    alignSelf:'flex-start',
   },
   modalButton: {
-    backgroundColor: colors.blue,
+    backgroundColor: colors.orange,
     shadowColor: "white",
     alignSelf: "flex-start",
   },
   createEventButton: {
-    backgroundColor: colors.blue,
-    marginTop: 50,
-  },
-  input: {
-    //borderColor:'',
+    backgroundColor: colors.orange,
+    marginTop: 20,
   },
   centerView: {
     backgroundColor: "rgba(0, 0, 0, 0.5)",

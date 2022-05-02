@@ -7,7 +7,7 @@
     "register": "Register",
     "password": "Password",
     "email":"Email",
-    "createAccount": "Create Account",
+    "createAccount": "CREATE ACCOUNT",
     "football": "Football",
     "basket": "Basketball",
     "padel": "Padel",
@@ -31,7 +31,11 @@
     "createEvent":"CREATE EVENT",
     "alertFields":"Please fill out all fields",
     "createdEvent":"You successfully created an event!",
-    "backToTimeline": "Back to timeline"
+    "backToTimeline": "Back to timeline", 
+    "repeatpassword":"Repeat password",
+    "createEventTitle":"CREATE YOUR SPORTA EVENT",
+    "selectSport":"Select Sport"
+
 
 
 
