@@ -4,6 +4,7 @@ import { Button, TextInput} from 'react-native-paper';
 import { auth } from "../config/firebase";
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useTheme } from 'react-native-paper';
+import { useTranslation } from "react-i18next";
 
 const ResetPassword = (props) => {
 
@@ -11,6 +12,7 @@ const ResetPassword = (props) => {
     
     const [isSent, setIsSent]= useState(false);
     const [email, setEmail] = useState('');
+    const {t,i18n}=useTranslation();
 
     const reset = async() => {
         try {
@@ -31,16 +33,16 @@ const ResetPassword = (props) => {
             return(
             <View style={styles.emailSent}>
                 <Ionicons name="md-checkmark-circle" size={50} color="green" />
-                <Text>Link to reset your password sent. Please check your inbox.</Text>
+                <Text>{t('linkPass')}</Text>
             </View>)
         }
         else {
             return(
             <View style={styles.container}>
-            <Text style={{ fontSize: 28, height: 50, alignSelf:'center'}}>Reset your password</Text>
+            <Text style={{ fontSize: 28, height: 50, alignSelf:'center'}}>{t('resPassword')}</Text>
             <TextInput
                     style={styles.textInput}
-                    placeholder='Your Email'
+                    placeholder={t('yourEmail')}
                     value={email}
                     onChangeText={setEmail}
                     mode="outlined"
@@ -49,7 +51,7 @@ const ResetPassword = (props) => {
                     style={{width: btnStyle.width, alignSelf: btnStyle.alignSelf}}
                     mode="contained"
                     onPress={() => reset()}> 
-                    Reset
+                     {t('reset')}
                     </Button>     
         </View>
             )
