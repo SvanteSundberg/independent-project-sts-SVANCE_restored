@@ -5,6 +5,7 @@ import { auth } from "../config/firebase";
 import { useState } from "react";
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from "react-i18next";
+import { color } from "react-native-elements/dist/helpers";
  
     function RegisterScreen(props) {
      const {t,i18n}=useTranslation();
@@ -39,10 +40,8 @@ import { useTranslation } from "react-i18next";
     return (
         <SafeAreaView style={styles.container}>
  
-        <ImageBackground source={{
-                         uri:'https://cdn.discordapp.com/attachments/955769691975065633/957929103665811456/photo-1562552052-af5955fe5ba2.png'}}  
-                         style={styles.image}>
-        <Image source={require('../assets/sportaLogo.png')}  style={styles.logo}/>
+       <ImageBackground source={require('../assets/logoOpac.png')} style={styles.backgroundImg}>
+       <Image source={require('../assets/sportaLogoFinal.png')} style={styles.logo} />
            
              
        <Text style={styles.header}> {t('createAccount')}  </Text>
@@ -105,7 +104,10 @@ const styles = StyleSheet.create({
     header:{
       marginTop:5,
       marginLeft:120,
-      fontWeight:'bold'
+      fontWeight:'bold',
+      color: '#fff',
+      right: 100
+      
  
     },
  
@@ -113,11 +115,11 @@ const styles = StyleSheet.create({
       margin:7,
  
     },
-    image: {
-      width:'100%',
-      height:'100%',
-      resizeMode:'cover',
+    backgroundImg: {
+      width: '100%',
+      height: '100%',
     },
+
     button:{
       width:200,
      alignSelf:'center',
