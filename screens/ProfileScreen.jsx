@@ -10,6 +10,7 @@ import colors from "../config/colors";
 import { color } from "react-native-elements/dist/helpers";
 import { setStatusBarNetworkActivityIndicatorVisible } from "expo-status-bar";
 import { useTranslation } from "react-i18next";
+import HeaderProfile from "../components/HeaderProfile";
 
 function ProfileScreen({navigation, route}) {
    const [name, setName] = useState('');
@@ -85,6 +86,7 @@ function ProfileScreen({navigation, route}) {
         <View style={[styles.container, styles.userContainer]}>
 
             {ownUser &&  <DownMenu  style={styles.menu} goToEdit={goToEdit}/>} 
+            {!ownUser && <HeaderProfile style={styles.menu}/>}
 
             {photo && <Image source={{ uri: photo }} style = {styles.userIcon} />}
             {!photo && <Image source={require("../assets/icon-user.png")} style = {styles.userIcon}/>}
@@ -176,7 +178,7 @@ const styles = StyleSheet.create({
     favorite: {
         position: 'absolute',
         top:-21,
-        right: 94,
+        alignSelf: 'center',
         fontWeight: 'bold',
         color: colors.orange,
         shadowColor: colors.orange,

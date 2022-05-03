@@ -205,7 +205,7 @@ function BiggerEvent({ navigation,
 
             <View style={styles.myButtons}>
               <Button
-                labelStyle={{ fontSize: 12 }}
+                labelStyle={{ fontSize: 13 }}
                 style={styles.button}
                 onPress={() => changeVisable()}>
                 {t('back')}
@@ -213,7 +213,7 @@ function BiggerEvent({ navigation,
 
               {ownUser && <View>
                 <Button style={styles.button}
-                  labelStyle={{ fontSize: 12 }}
+                  labelStyle={{ fontSize: 13 }}
                   color="red"
                   onPress={() => {
                     changeVisable()
@@ -225,12 +225,14 @@ function BiggerEvent({ navigation,
                 {!(event.placesLeft === 0) && <View>
                   {!joinedEvents.includes(event.eventID) && <Button
                     style={styles.button}
+                    labelStyle={{ fontSize: 13 }}
                     onPress={() => {
                       joinEvent()
                     }}>{t('joinEvent')}</Button>}
                 </View>}
                 {joinedEvents.includes(event.eventID) && <Button
                   style={styles.button}
+                  labelStyle={{ fontSize: 13 }}
                   onPress={() => unjoinEvent()} color='red' > {t('unjoinEvent')}</Button>}
 
               </View>}

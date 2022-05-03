@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
     date: {
         fontSize: 13,
         fontWeight: 'bold',
-        color: colors.deepBlue
+        color: colors.lightBlue
     },
     shadow:{   
         backgroundColor: 'white',  
