@@ -70,12 +70,9 @@ const AppNavigator = () => (
 
             <Screen name="CreateEventScreen"
                 component={CreateEventScreen}
+                
                 options={{
-                title: "Create Event",
-                headerTintColor: 'black',
-                headerTitleStyle: {
-                    fontWeight: 'bold',
-                },
+                headerShown:false
                 }}>
 
             </Screen>
