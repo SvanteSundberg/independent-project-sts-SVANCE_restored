@@ -1,36 +1,41 @@
 import { StyleSheet,View, Text, Image, TextInput, TouchableOpacity, ScrollView, Dimensions, SafeAreaView } from "react-native";
 import * as React from 'react';
 import { Checkbox,Menu, Divider, } from 'react-native-paper';
-import { IconButton, Colors, Button } from 'react-native-paper';
+import { IconButton, Colors, Button, Chip, Modal, Portal  } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import firebase from '../config/firebase';
 import { getAuth } from "firebase/auth";
 import { getDocs, collection, query, where, orderBy} from "firebase/firestore";
 import Events from "../components/Events";
-
-
+import SportFilter from "../components/SportFilter";
 
  
 const Timeline = () => {
     const auth = getAuth();
     const user = auth.currentUser;
     const navigation= useNavigation(); 
-   
     const [events, setevents] =React.useState([]);
-    const sports = ["soccer", "padel", "basketball"];
-    const [Mysports, chooseSports] = React.useState([]);
-    const [Mydates, choosedates] = React.useState([]);
+    const [unfilteredEvents, setUnfilteredevents]= React.useState([]);
+    const [selectedSports, setSelectedsports] = React.useState([]);
+    const sports = ['football','basket','padel','tennis','handball','bandy','volleyball','run','golf','squash','other'];
     const [showSort, setShowSort]= React.useState(false);
-    const [showSportSort, setShowSportSort]= React.useState(false);
-    const [myEvents, setMyevents]= React.useState([]);
+    const [dateSorted, setDateSorted]= React.useState(false);
     const [owners, setOwners]= React.useState([]);
+    const [date, setDate] = React.useState(
+      new Date().getFullYear() +
+      "-" +
+      (new Date().getMonth() + 1) +
+      "-" +
+      new Date().getDate()
+    );
+    const [dateOpen, setdateOpen] = React.useState(false);
     const [photo, setPhoto] = React.useState(null);
    
     const fetchEvents = async()=>{
       const db =firebase.firestore();
       const snapshot= query(collection(db,'events'), orderBy("date"));
       const data =await getDocs(snapshot);
-      setevents([]);
+      setUnfilteredevents([]);
       let myEvents= [];
       data.docs.forEach(item =>{
 
@@ -39,14 +44,16 @@ const Timeline = () => {
           let data = item.data();
           let id = {eventID: item.id}
           Object.assign(data, id);
-          setevents(events=>([...events, data]));
+          setUnfilteredevents(events=>([...events, data]));
+          setevents(events=>([...events, data]))
           myEvents.push(data);
           }
         else if (new Date(item.data().date).getUTCDate()== new Date().getUTCDate()){
           let data = item.data();
           let id = {eventID: item.id}
           Object.assign(data, id);
-          setevents(events=>([...events, data]));
+          setUnfilteredevents(events=>([...events, data]));
+          setevents(events=>([...events, data]))
           myEvents.push(data);
         }
           //if(new Date(item.data().date)< new Date()){
@@ -61,6 +68,30 @@ const Timeline = () => {
       /*events.sort(function(a,b){
         return new Date(a.date) - new Date(b.date);
       });*/
+    };
+
+    
+
+    const setMaxDate = (monthInterval) => {
+      let current_datetime = new Date();
+      current_datetime.setMonth(current_datetime.getMonth() + monthInterval);
+      let formatted_date;
+      if (current_datetime.getMonth() < 10) {
+        formatted_date =
+          current_datetime.getFullYear() +
+          "-0" +
+          (current_datetime.getMonth() + 1) +
+          "-" +
+          current_datetime.getDate();
+      } else {
+        formatted_date =
+          current_datetime.getFullYear() +
+          "-" +
+          (current_datetime.getMonth() + 1) +
+          "-" +
+          current_datetime.getDate();
+      }
+      return formatted_date;
     };
 
     const fetchOwners=async(myEvents)=> {
@@ -78,6 +109,7 @@ const Timeline = () => {
       getUserPhoto();
      
     },[]);
+
 
     const getUserPhoto = async()=> {
       const response =firebase.firestore().collection('users');
@@ -109,42 +141,36 @@ const deleteExpDate=async (element)=>{
         color={Colors.black}
         size={40}
         onPress={()=>setShowSort(!showSort)}
-        label="Filter"/>
 
-</View>
-{showSort&& <View><Button  onPress={()=>setShowSportSort(!showSportSort)}>sortera med sport</Button>
-{showSportSort&& <View>{sports.map((element)=>(
-         
-         <Checkbox.Item
-              uncheckedColor="black"
-              color="blue"
-              label={element}
-              status={Mysports.includes(element) ? 'checked' : 'unchecked'}
-              onPress={() => {
-                let updateSports = [...Mysports]
-               const sportIndex = updateSports.indexOf(element);
-               if (sportIndex > -1){
-                   updateSports.splice(sportIndex, 1);
-               }
-               else {
-                   updateSports.push(element)
-               }
-               chooseSports(updateSports);}}
-              >
-                
-              </Checkbox.Item>
-        
-       ))
-         }
-         </View> }
+/></View>
+<Portal>
+        <Modal visible={showSort} 
+              onDismiss={()=>setShowSort(!showSort)}
+              contentContainerStyle={styles.modalStyle}>
 
-<Button>sortera med dag</Button>
+<SportFilter
+ selectedSports={selectedSports} 
+ setSelectedsports={setSelectedsports}
+ sports={sports}
+ events={events} 
+ setevents={setevents} 
+ originalEvents={unfilteredEvents} 
+ userid={user.uid} 
+ setDateSorted={setDateSorted}
+ dateSorted={dateSorted}
+ date={date}
+ setMaxDate={setMaxDate}
+ setDate={setDate}
+ setdateOpen={setdateOpen}
+ setShowSort={setShowSort}
+ dateOpen={dateOpen}
+ showSort={showSort}/>
+ 
+ </Modal></Portal>
 
-</View> }
-
-        
         <ScrollView style={styles.scroller} >
-         <Events events={events} setevents={setevents} owners={owners}/>
+      <Events events={events} setevents={setevents} owners={owners}/>
+     
        
     </ScrollView>
     <SafeAreaView style ={styles.createEvent}>
@@ -163,10 +189,7 @@ const deleteExpDate=async (element)=>{
     );
   }
  
- 
- 
- 
- 
+
 const styles = StyleSheet.create({
   main:{
     flex:1,
@@ -175,6 +198,12 @@ const styles = StyleSheet.create({
   postContainer:{
       marginTop:10,
   },
+
+  modalStyle:{
+    backgroundColor:'white',
+    padding:30,
+    borderRadius:20
+},
 
   head: {
     flexDirection:"row", 

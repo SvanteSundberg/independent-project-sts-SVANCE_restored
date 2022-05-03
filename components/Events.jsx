@@ -192,6 +192,9 @@ function Events({ events, setevents, owners}) {
 
   return (
     <SafeAreaView style={styles.main}>
+
+     {events.length<1 && <View style={{marginTop:30}}><Text>No events found</Text></View>}
+
       {visable && <BiggerEvent
                       navigation={navigation}
                       visable={visable}
@@ -205,6 +208,7 @@ function Events({ events, setevents, owners}) {
                       getID={getID}
                       setParticipants={setParticipants}
                     />}
+
       <ScrollView style={styles.scroller}>
         <View style={styles.outer}>
         {events.map((element, index) => {
