@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, Alert } from 'react-native';
+import { StyleSheet, View, Text, Alert, ImageBackground, SafeAreaView, Image } from 'react-native';
 import { Button, TextInput} from 'react-native-paper';
 import { auth } from "../config/firebase";
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -38,8 +38,11 @@ const ResetPassword = (props) => {
         }
         else {
             return(
-            <View style={styles.container}>
-            <Text style={{ fontSize: 28, height: 50, alignSelf:'center'}}>{t('resPassword')}</Text>
+                <SafeAreaView style={styles.container}>
+ 
+                <ImageBackground source={require('../assets/logoOpac.png')} style={styles.backgroundImg}>
+                <Image source={require('../assets/sportaLogoFinal.png')} style={styles.logo} />
+                <Text style={{ color:'white', marginLeft: 5, fontWeight: 'bold', left: 10 }}>{t('resPassword')}</Text>
             <TextInput
                     style={styles.textInput}
                     placeholder={t('yourEmail')}
@@ -48,12 +51,13 @@ const ResetPassword = (props) => {
                     mode="outlined"
                     activeOutlineColor="hotpink"/>
                     <Button
-                    style={{width: btnStyle.width, alignSelf: btnStyle.alignSelf}}
+                    style={{width: btnStyle.width, alignSelf: btnStyle.alignSelf, marginTop: 20}}
                     mode="contained"
                     onPress={() => reset()}> 
                      {t('reset')}
                     </Button>     
-        </View>
+                    </ImageBackground>
+        </SafeAreaView>
             )
 
         }
@@ -76,18 +80,32 @@ const ResetPassword = (props) => {
         justifyContent:'center'
     },
     textInput:{
-        margin:20,
+        margin:10,
         
     },
     btn:{
         width:200,
-        alignSelf:'center'
+        alignSelf:'center',
+        marginTop: 20
     },
     emailSent:{
         flex:1,
         justifyContent: 'center',
         alignItems:'center'
-    }
+    }, 
+    backgroundImg: {
+        width: '100%',
+        height: '100%',
+      },
+      logo: {
+        width: 350,
+        height:150,
+        marginBottom: 15,
+        marginTop: 25,
+        resizeMode: "contain",
+        alignSelf: 'center'
+      
+      },
     
 })
   

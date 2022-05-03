@@ -11,6 +11,7 @@ import LangMenu from "../components/LangMenu";
 import { getAuth } from "firebase/auth";
 import firebase from '../config/firebase';
 import colors from '../config/colors';
+import { ScrollView } from 'react-native-web';
 
 
 export default function MainScreen() {
@@ -65,6 +66,8 @@ export default function MainScreen() {
   const handleRegisterOnPress = () => navigation.navigate("RegisterScreen")
 
   return (
+
+   
 
     <KeyboardAvoidingView style={styles.container}>
 
@@ -129,9 +132,11 @@ export default function MainScreen() {
 
           </View>
         </ImageBackground>
+        
       </SafeAreaView>
 
     </KeyboardAvoidingView>
+    
   );
 }
 
@@ -164,9 +169,11 @@ const styles = StyleSheet.create({
 
   logo: {
     width: 350,
+    height:150,
+    marginBottom: 15,
     resizeMode: "contain",
-    marginTop: 5,
     alignSelf: 'center'
+  
   },
   backgroundImg: {
     width: '100%',
@@ -195,7 +202,7 @@ const styles = StyleSheet.create({
   },
 
   buttonsAndText: {
-    marginTop: 20,
+    marginTop: 15,
   }
 
 
