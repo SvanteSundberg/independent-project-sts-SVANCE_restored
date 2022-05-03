@@ -1,4 +1,4 @@
-import { StyleSheet,View, Text, TextInput, TouchableOpacity, ScrollView, Dimensions, SafeAreaView } from "react-native";
+import { StyleSheet,View, Text, Image, TextInput, TouchableOpacity, ScrollView, Dimensions, SafeAreaView } from "react-native";
 import * as React from 'react';
 import { Checkbox,Menu, Divider, } from 'react-native-paper';
 import { IconButton, Colors, Button } from 'react-native-paper';
@@ -24,6 +24,7 @@ const Timeline = () => {
     const [showSportSort, setShowSportSort]= React.useState(false);
     const [myEvents, setMyevents]= React.useState([]);
     const [owners, setOwners]= React.useState([]);
+    const [photo, setPhoto] = React.useState(null);
    
     const fetchEvents = async()=>{
       const db =firebase.firestore();
@@ -32,6 +33,8 @@ const Timeline = () => {
       setevents([]);
       let myEvents= [];
       data.docs.forEach(item =>{
+
+        if (item.data().owner !== user.uid){
         if(new Date(item.data().date)> new Date()){
           let data = item.data();
           let id = {eventID: item.id}
@@ -50,7 +53,9 @@ const Timeline = () => {
           // deleteExpDate(item.data());
           //  }
 
+        }
       });
+    
       fetchOwners(myEvents);
       
       /*events.sort(function(a,b){
@@ -70,8 +75,18 @@ const Timeline = () => {
 
      React.useEffect(() => {
       fetchEvents();
+      getUserPhoto();
      
     },[]);
+
+    const getUserPhoto = async()=> {
+      const response =firebase.firestore().collection('users');
+      const info =await response.doc(user.uid).get();
+      if (info.exists){
+          setPhoto(info.get("photo"));
+          console.log(info.get("photo"), "thaba");
+      }
+    };
      
 
 const deleteExpDate=async (element)=>{
@@ -81,15 +96,12 @@ const deleteExpDate=async (element)=>{
     return (<SafeAreaView style={styles.main}>
       
 
-        <View style={{flexDirection:"row", justifyContent: "center", height:40}} >
-        <IconButton
-        style ={styles.profile}
-        icon="account-circle"
-        color={Colors.black}
-        size={40}
+        <View style={styles.head} >
+        <TouchableOpacity style={styles.profile}
         onPress={() => navigation.navigate("ProfileScreen", {userID: user.uid}
-        )}
-/>
+        )}>
+          <Image source={{ uri: photo }} style = {styles.userIcon}/>
+        </TouchableOpacity>
           <Text style={styles.header}>Aktiviteter</Text>
           <IconButton
         style ={styles.sort}
@@ -97,7 +109,9 @@ const deleteExpDate=async (element)=>{
         color={Colors.black}
         size={40}
         onPress={()=>setShowSort(!showSort)}
-/></View>
+        label="Filter"/>
+
+</View>
 {showSort&& <View><Button  onPress={()=>setShowSportSort(!showSportSort)}>sortera med sport</Button>
 {showSportSort&& <View>{sports.map((element)=>(
          
@@ -161,6 +175,19 @@ const styles = StyleSheet.create({
   postContainer:{
       marginTop:10,
   },
+
+  head: {
+    flexDirection:"row", 
+    justifyContent: "center", 
+    backgroundColor: 'white',
+    height:'13%',
+    borderBottomWidth :0.5,
+    borderBottomColor: 'lightgrey',
+    shadowColor: '#171717',
+    shadowOffset: {width: -2, height: 4},
+    shadowOpacity: 0.1,
+    shadowRadius: 9,
+  },
  
     header:{
       alignSelf: 'center',
@@ -187,7 +214,10 @@ const styles = StyleSheet.create({
     profile:{
       alignSelf:'center',
       position: "absolute",
-      left: 10,
+      left: 15,
+      top:14,
+      width: 30,
+      height: 30
     },
     sort:{
       alignSelf:'center',
@@ -209,7 +239,15 @@ const styles = StyleSheet.create({
       borderRadius: 10,
         //borderColor:"black",
         //backgroundColor:"#D6EAF8",
-    }
+    },
+    userIcon: {
+      borderRadius: 200 / 2, 
+      borderWidth: 1,
+      width: 48,
+      height: 48,
+      borderColor: 'black'
+  },
+
 });
  
 export default Timeline;
