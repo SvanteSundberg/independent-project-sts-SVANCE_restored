@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { View, TouchableOpacity, Image} from 'react-native';
+import { View, TouchableOpacity, Image, StyleSheet} from 'react-native';
 import {  Button, Menu, Divider } from 'react-native-paper';
 import { useTranslation } from "react-i18next";
+import colors from '../config/colors';
 
 const LangMenu = () => {
 
@@ -32,12 +33,11 @@ const pickLangSw=() =>{
         }}>
         <Menu
          contentStyle={{opacity: 0.8,
-            backgroundColor: 'lightblue',
+            backgroundColor: colors.mediumBlue,
             width:'130%'}}
           visible={visible}
           onDismiss={closeMenu}
-          anchor={<Button onPress={openMenu}> Switch Language
-          </Button>}>
+          anchor={<TouchableOpacity onPress={openMenu}><Image source={require('../assets/language.png')} style={styles.langImg}/></TouchableOpacity>}> 
           <Menu.Item onPress={pickLangSw} title="Svenska" />
           <Divider />
           <Menu.Item onPress={pickLangEn} title="English" />
@@ -47,5 +47,13 @@ const pickLangSw=() =>{
     
   );
 };
+
+const styles = StyleSheet.create({
+  langImg:{
+    margin:5,
+    height:30,
+    width:30,
+  }
+});
 
 export default LangMenu;

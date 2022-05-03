@@ -18,6 +18,7 @@ import { TouchableOpacity } from "react-native";
 import BiggerEvent from "../components/BiggerEvent";
 import colors from "../config/colors";
 import { useTranslation } from "react-i18next";
+import {useIsFocused} from '@react-navigation/native';
 
 
 function Events({ events, setevents, owners}) {
@@ -32,12 +33,13 @@ function Events({ events, setevents, owners}) {
   const [specificEvent, setEvent] = useState({});
   const [participants, setParticipants] = useState([]); 
   const [ownUser, setOwnUser] = useState(false);
+  const isFocused = useIsFocused();
 
 
   useEffect(() => {
     fetchJoinedEvents();
     fetchOwnEvents();
-  }, []);
+  }, [isFocused]);
 
   const fetchJoinedEvents = async () => {
     setJoinedEvents([]);
@@ -120,24 +122,24 @@ function Events({ events, setevents, owners}) {
     }
 
 
-  const checkOwner = (id) => {
-    for (let obj of owners) {
-      if (obj.ownerid === id) {
-        return (
-          <Text
-            style={styles.ownerText}
-            onPress={() =>
-              navigation.navigate("ProfileScreen", {
-                userID: id,
-              })
-            }
-          >
-            {obj.name}
-          </Text>
-        );
+    const checkOwner = (id) => {
+      for (let obj of owners) {
+        if (obj.ownerid === id) {
+          return (
+            <Text
+              style={styles.ownerText}
+              onPress={() =>
+                navigation.navigate("ProfileScreen", {
+                  userID: id,
+                })
+              }
+            >
+              {obj.name}
+            </Text>
+          );
+        }
       }
-    }
-  };
+    };
 
   const joinEvent = async (element, index) => {
     if (element.placesLeft > 0) {
@@ -208,9 +210,10 @@ function Events({ events, setevents, owners}) {
         {events.map((element, index) => {
           return (
             
-            <TouchableOpacity
+            
+            <View style={styles.postContainer}>
+            <TouchableOpacity key={element.title}
             onPress = {() => handleOnPress(element)}>
-            <View key={element.title} style={styles.postContainer}>
               <View style={styles.posts}>
                 <View style={styles.postHeader}>
                   <View style={{ flexDirection: "row" }}>
@@ -246,18 +249,30 @@ function Events({ events, setevents, owners}) {
                 </View>
 
                 <View style={{ marginLeft: 15 }}>
-                  <Text style={styles.description}> {element.description}</Text>
+
+               
+                  
+                  
+                  <Button
+                    style={styles.iconsContainer}
+                    icon="pen"
+                    uppercase={false}
+                    labelStyle={{ fontSize: 13, color: "black" }}
+                  >
+                    <Text style={styles.description} numberOfLines={1}> {element.description}</Text>
+                  </Button>
 
                   <Button
                     style={styles.iconsContainer}
                     icon="map-marker"
+                    uppercase={false}
                     labelStyle={{ fontSize: 13, color: "black" }}
                   >
                     {element.region.place}
                   </Button>
 
                   <View>
-                    <Text> {t('createdBy')} {checkOwner(element.owner)}</Text>
+                  {/* <Text> {t('createdBy')} {checkOwner(element.owner)}</Text> */}
 
                     {!ownEvents.includes(element.eventID) && (
                       <View>
@@ -269,7 +284,7 @@ function Events({ events, setevents, owners}) {
                                   joinEvent(element, index);
                                 }}
                               >
-                                {t('joinEvent')}
+                                <Text style={styles.text}>{t('joinEvent')}</Text>
                               </Button>
                             )}
 
@@ -285,7 +300,7 @@ function Events({ events, setevents, owners}) {
                             onPress={() => unjoinEvent(element, index)}
                             color="red"
                           >
-                            {t('unjoinEvent')}
+                            <Text style={styles.text}>{t('unjoinEvent')}</Text>
                           </Button>
                         )}
                       </View>
@@ -299,14 +314,15 @@ function Events({ events, setevents, owners}) {
                           deleteEvent(element.eventID, index);
                         }}
                       >
-                        {t('removeEvent')}
+                       <Text style={styles.text}>{t('removeEvent')}</Text> 
                       </Button>
                     )}
                   </View>
                 </View>
               </View>
+              </TouchableOpacity>
             </View>
-          </TouchableOpacity>
+          
           );
         })}
         </View>
@@ -318,10 +334,15 @@ function Events({ events, setevents, owners}) {
 const styles = StyleSheet.create({
   iconsContainer: {
     alignSelf: "flex-start",
+    marginRight:5,
+    marginLeft:5,
   },
 
   description: {
-    fontStyle: "italic",
+    //fontStyle: "italic",
+    color:'black',
+    //marginBottom:15
+
   },
   created: {
     bottom: 0,
@@ -348,6 +369,8 @@ const styles = StyleSheet.create({
   postContainer: {
     marginTop: 10,
 
+  },
+  text:{
   },
 
   // header: {
@@ -436,9 +459,11 @@ peopleLogga:{
   },
 
   unjoinButtons: {
-    width: 95,
+    width: 105,
     height: 35,
     alignSelf: "center",
+    marginTop:15,
+
 
   }, 
 
@@ -446,6 +471,7 @@ peopleLogga:{
     width: 160,
     height: 35,
     alignSelf: "center",
+    marginTop:15,
 
   }, 
  
@@ -453,10 +479,11 @@ peopleLogga:{
     width: 150,
     height: 35,
     alignSelf: "center",
+    marginTop:15,
   },
 
   title: {
-    color: "#1b73b3",
+    color: colors.deepBlue,
     fontWeight: "bold",
     fontSize: 18,
     margin: 5,
