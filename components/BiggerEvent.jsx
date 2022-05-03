@@ -5,6 +5,8 @@ import { getAuth } from "firebase/auth";
 import firebase from '../config/firebase';
 import { getDocs, collection, query, where} from "firebase/firestore";
 import { useIsFocused } from '@react-navigation/native';
+import { getFixedT } from "i18next";
+import { useTranslation } from "react-i18next";
 
 function BiggerEvent({navigation, 
                     visable, 
@@ -19,6 +21,7 @@ function BiggerEvent({navigation,
                     setParticipants}) {
   
 const auth = getAuth();
+const {t,i18n}=useTranslation();
 const user = auth.currentUser;  
 const [joinedEvents, setJoinedEvents] = useState([]);
 const isFocused = useIsFocused();
@@ -95,7 +98,7 @@ const getAmountPart = (event) => {
                   </Button>*/
  
     return (
-      <View style={styles.centeredView}>
+     <View style={styles.centeredView}>
       <Modal
         transparent={true}
         visible={visable}
@@ -107,7 +110,7 @@ const getAmountPart = (event) => {
           <View style={styles.modalView}>
             
           <ScrollView 
-            horizontal={false}
+            //horizontal={false}
             style={styles.scrollView}>
 
           <View style={styles.background}>
@@ -144,11 +147,17 @@ const getAmountPart = (event) => {
                 icon='human-handsdown'
                 labelStyle={{fontSize: 13,
                     color:'black'}}> <Text>{getAmountPart(event)}/{event.noPeople}</Text> </Button>
+                    
+                    {/*<Image
+                source={require("../assets/people.png")}
+                style={[styles.peopleLogga, styles.people]}/>* EVENTUELLT LÄGGA TILL ISTÄLLET FÖR OVAN*/}
+                
+          
 
             <View>
-            <Text style={[styles.underTitle, styles.margins]}> MORE INFO</Text>
-            <Text style={styles.margins}> There are {event.placesLeft} places left! </Text>
-            <Text style={styles.margins}> {participants.length} people have joined: </Text>
+            <Text style={[styles.underTitle, styles.margins]}> {t('moreInfo')}</Text>
+            {/*<Text style={styles.margins}> There are {event.placesLeft} places left! </Text>*/}
+            <Text style={styles.margins}> {participants.length} {t('peopleJoined')} </Text>
 
             {participants.map((user, index) => (  
               <TouchableOpacity 
@@ -161,7 +170,7 @@ const getAmountPart = (event) => {
                     navigation.navigate("ProfileScreen", {
                     userID: user.userID
                   })}}>
-                  <Text> {user.name}</Text>
+                  <Text style={styles.peopleJoined}> {user.name} </Text>
              </TouchableOpacity>  
            ))}
            </View>
@@ -173,7 +182,7 @@ const getAmountPart = (event) => {
                   labelStyle={{fontSize: 12}}
                   style={styles.button}
                   onPress={() => changeVisable()}>
-                    Back
+                    {t('back')}
                   </Button>
               
               {ownUser && <View>
@@ -182,7 +191,7 @@ const getAmountPart = (event) => {
                   color="red"
                   onPress={() => {
                     changeVisable()
-                    deleteEvent(event.eventID)}}> Remove Event</Button>
+                    deleteEvent(event.eventID)}}> {t('removeEvent')}</Button>
                 </View>}
 
               {!ownUser && <View> 
@@ -190,11 +199,11 @@ const getAmountPart = (event) => {
               {!joinedEvents.includes(event.eventID)&&<Button 
                                                         style={styles.button}
                                                         onPress={()=>{
-                                                            joinEvent()}}> join event</Button>}
+                                                            joinEvent()}}>{t('removeEvent')}</Button>}
                 </View>} 
                {joinedEvents.includes(event.eventID)&&<Button 
                                                           style={styles.button}
-                                                          onPress={()=>unjoinEvent()} color='red' > unjoin</Button>}
+                                                          onPress={()=>unjoinEvent()} color='red' > {t('unjoinEvent')}</Button>}
                
                 </View>}
 
@@ -226,6 +235,12 @@ const styles = StyleSheet.create({
 
   iconsContainer:{
     alignSelf: "flex-start",
+  },
+   
+  peopleJoined:{
+    color: "#0081CF",
+    textDecorationLine: "underline",
+
   },
 
   margins: {
@@ -280,6 +295,7 @@ const styles = StyleSheet.create({
   scrollView: {
     marginHorizontal: 0,
     backgroundColor: 'white',
+    
   },
 });
 

@@ -17,9 +17,11 @@ import Participants from "./Participants";
 import { TouchableOpacity } from "react-native";
 import BiggerEvent from "../components/BiggerEvent";
 import colors from "../config/colors";
+import { useTranslation } from "react-i18next";
 
 
 function Events({ events, setevents, owners}) {
+  const {t,i18n}=useTranslation();
   const [ownEvents, setOwnEvents] = useState([]);
   const [joinedEvents, setJoinedEvents] = useState([]);
   const auth = getAuth();
@@ -220,12 +222,14 @@ function Events({ events, setevents, owners}) {
                       {element.date} {element.time}
                     </Text>
                   </View>
-                  <Image
-                source={require("../assets/people.png")}
-                style={[styles.peopleLogga, styles.people]}/>
+                 
                   <Text style={styles.noPeopleText}>
                      {getAmount(element)} / {element.noPeople}
                   </Text>
+
+                  <Image
+                source={require("../assets/people.png")}
+                style={[styles.peopleLogga, styles.people]}/>
                   <View>
                     {/* <Participants
                       event={element}
@@ -253,35 +257,35 @@ function Events({ events, setevents, owners}) {
                   </Button>
 
                   <View>
-                    <Text> Created by: {checkOwner(element.owner)}</Text>
+                    <Text> {t('createdBy')} {checkOwner(element.owner)}</Text>
 
                     {!ownEvents.includes(element.eventID) && (
                       <View>
                         {!joinedEvents.includes(element.eventID) && (
                           <View>
                             {!(element.placesLeft === 0) && (
-                              <Button
+                              <Button style={styles.joinButtons}
                                 onPress={() => {
                                   joinEvent(element, index);
                                 }}
                               >
-                                join event
+                                {t('joinEvent')}
                               </Button>
                             )}
 
                             {element.placesLeft === 0 && (
                               <Text style={styles.full}>
-                                This event is full!
+                                {t('fullEvent')}
                               </Text>
                             )}
                           </View>
                         )}
                         {joinedEvents.includes(element.eventID) && (
-                          <Button
+                          <Button style={styles.unjoinButtons}
                             onPress={() => unjoinEvent(element, index)}
                             color="red"
                           >
-                            unjoin
+                            {t('unjoinEvent')}
                           </Button>
                         )}
                       </View>
@@ -289,12 +293,13 @@ function Events({ events, setevents, owners}) {
 
                     {ownEvents.includes(element.eventID) && (
                       <Button
+                      style={styles.removeButton}
                         color="red"
                         onPress={() => {
                           deleteEvent(element.eventID, index);
                         }}
                       >
-                        remove event
+                        {t('removeEvent')}
                       </Button>
                     )}
                   </View>
@@ -367,7 +372,7 @@ const styles = StyleSheet.create({
 },
 peopleLogga:{
     bottom: 0, 
-    right: 30,
+    right: 50,
     width: 20,
     height:20,
     margin:5,
@@ -390,7 +395,11 @@ peopleLogga:{
 
   noPeopleText: {
     //marginRight:10,
+    bottom: 0, 
+    left: 55,
+    margin:5,
     color: "#CCDBDC",
+
   },
 
   profile: {
@@ -426,11 +435,32 @@ peopleLogga:{
 
   },
 
+  unjoinButtons: {
+    width: 95,
+    height: 35,
+    alignSelf: "center",
+
+  }, 
+
+  removeButton: {
+    width: 160,
+    height: 35,
+    alignSelf: "center",
+
+  }, 
+ 
+  joinButtons:{
+    width: 150,
+    height: 35,
+    alignSelf: "center",
+  },
+
   title: {
     color: "#1b73b3",
     fontWeight: "bold",
     fontSize: 18,
     margin: 5,
   },
+
 });
 export default Events;
