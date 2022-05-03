@@ -5,6 +5,8 @@ import firebase from '../config/firebase';
 import { getDocs, collection, query, where} from "firebase/firestore";
 import Events from '../components/Events';
 import { useIsFocused } from '@react-navigation/native';
+import { useTranslation } from "react-i18next";
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 export default function MyEventsScreen() {
@@ -23,6 +25,8 @@ export default function MyEventsScreen() {
       fetchComingEvents();
       setRefreshing(false);
     } 
+    
+    const {t,i18n}=useTranslation();
 
     const getName = async (myEvents) => {
       setName([]);
@@ -110,10 +114,10 @@ export default function MyEventsScreen() {
 
         
     return ( 
-
+      
         <View style={styles.container}> 
         <View style={styles.header}>
-             <Text style={styles.upcoming}>Upcoming events </Text>
+             <Text style={styles.upcoming}> {t('upComEvents')} </Text>
              </View>
             <ScrollView
                 refreshControl={
@@ -128,6 +132,7 @@ export default function MyEventsScreen() {
             </ScrollView>
             
         </View>
+        
     );
 }
 

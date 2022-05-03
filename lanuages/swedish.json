@@ -43,7 +43,12 @@
         "moreInfo": "MER INFO",
         "peopleJoined": "Deltagare",
         "back": "Tillbaka",
-        "favSports": "Favoritsporter"
+        "favSports": "Favoritsporter",
+        "upComEvents": "Kommande event",
+        "linkPass":"Länk för att återställa ditt lösenord har skickats till din mejl.",
+        "resPassword": "Återställ lösenord", 
+        "yourEmail": "Skriv Email",
+        "reset": "Återställ"
 
     }
 }
