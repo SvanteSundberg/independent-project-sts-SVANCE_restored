@@ -27,6 +27,9 @@ const TestMenu = ({goToEdit}) => {
 
      }
 
+     /* <Menu.Item  titleStyle={{color: colors.lightBlue}}
+            icon='account-settings' onPress={() => {console.log("Måste fixas :))")}} title="Settings" />*/
+
   return (
       <View style={styles.container}>
           <View style={styles.row}>
@@ -37,7 +40,7 @@ const TestMenu = ({goToEdit}) => {
           contentStyle={{opacity: 0.9,
                           backgroundColor: colors.deepBlue,
                           width:'105%',
-                          borderTopRightRadius: 20,
+                          borderRadius: 20,
                           }}
           visible={visible}
           onDismiss={closeMenu}
@@ -57,9 +60,6 @@ const TestMenu = ({goToEdit}) => {
                 closeMenu();
               }} title="Edit profile" />
               <Divider />
-            <Menu.Item  titleStyle={{color: colors.lightBlue}}
-            icon='account-settings' onPress={() => {console.log("Måste fixas :))")}} title="Settings" />
-            <Divider />
             <Menu.Item titleStyle={{color: colors.lightBlue}} icon='logout' onPress={handleSignOut} title="Sign out" />
             </View>
         </Menu>

@@ -7,6 +7,8 @@ import { useIsFocused } from '@react-navigation/native';
 import MyEvents from "../components/MyEvents";
 import DownMenu from "../components/DownMenu";
 import colors from "../config/colors";
+import { color } from "react-native-elements/dist/helpers";
+import { setStatusBarNetworkActivityIndicatorVisible } from "expo-status-bar";
 
 function ProfileScreen({navigation, route}) {
    const [name, setName] = useState('');
@@ -90,11 +92,10 @@ function ProfileScreen({navigation, route}) {
             </View>
 
             <Text style={styles.bio}> {descrip} </Text>
-            </View>
 
             <View style={[styles.container, styles.userInfoContainer]}> 
-                <Text style={[styles.header, styles.darkBlue]}> Favorite Sports</Text>
                 <View style={[styles.sports]}>
+                    <Text style={styles.favorite}> Favorite Sports</Text>
                 {selectedSports.map((sport) => (
                      sport=='padel' ? (<Image style={styles.sportImage} key={sport} source={require("../assets/padel.png")}/>)
                      : sport=="football"  ? (<Image style={styles.sportImage} key={sport} source={require("../assets/football.png")}/>)
@@ -113,6 +114,7 @@ function ProfileScreen({navigation, route}) {
                 ))
                     
                 }
+                </View>
                 </View>
 
             </View>
@@ -150,12 +152,35 @@ const styles = StyleSheet.create({
     },
     container: {
         alignItems: 'center',
-        justifyContent:'center'
+        justifyContent:'center',
+        backgroundColor: colors.lightBlue,
+        padding: 10,
+        width:'100%',
+        borderRadius: 20,
+        marginTop:10,
+        shadowColor: '#171717',
+        shadowOffset: {width: -2, height: 4},
+        shadowOpacity: 0.1,
+        shadowRadius: 3,
+        borderColor: colors.orange,
+        borderWidth: 1,
+        backgroundColor: 'white'
     },
     header: {
         margin:10,
         fontSize:16,
         fontWeight: 'bold',
+    },
+    favorite: {
+        position: 'absolute',
+        top:-21,
+        right: 94,
+        fontWeight: 'bold',
+        color: colors.orange,
+        shadowColor: colors.orange,
+        shadowOffset: {width: -2, height: 4},
+        shadowOpacity: 0.5,
+        shadowRadius: 3,
     },
 
     logga:{
@@ -171,32 +196,30 @@ const styles = StyleSheet.create({
     },
     userIcon: {
         borderRadius: 200 / 2, 
-        borderWidth: 1,
-        borderColor: "black",
+        borderWidth: 5,
+        borderColor: colors.lightBlue,
         margin:10,
         marginTop:30,
-        width: 130,
-        height: 130,
+        width: 170,
+        height: 170,
         zIndex: 0,
     },
     userContainer: {
-        paddingBottom:15,
         borderRadius: 20,
         borderColor: colors.deepBlue,
-        backgroundColor: colors.deepBlue
+        backgroundColor: colors.deepBlue,
+        paddingBottom: 20,
     },
     userInfoContainer: {
-        marginTop: 10,
     },
     sports: {
         flexDirection: 'row',
-        marginBottom: 20,
-        marginTop:5,
     },
     sportImage: {
-        width: 35,
-        height: 35,
-        marginLeft: 4,
+        width: 30,
+        height: 30,
+        marginLeft:10,
+        marginRight: 10
     },
     darkBlue: {
         color: colors.deepBlue

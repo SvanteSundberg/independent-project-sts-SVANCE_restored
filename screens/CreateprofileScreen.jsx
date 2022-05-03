@@ -1,11 +1,11 @@
-import { SafeAreaView, View, Text, TouchableOpacity, Image, ScrollView, StyleSheet, Alert } from "react-native";
+import { KeyboardAvoidingView, SafeAreaView, View, Text, TouchableOpacity, Image, ScrollView, StyleSheet, Alert } from "react-native";
 import {useState } from 'react';
 import { TextInput, Checkbox, Button } from 'react-native-paper';
 import * as ImagePicker from 'expo-image-picker';
 import { getAuth } from "firebase/auth";
 import firebase from '../config/firebase';
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import uuid from "uuid";
+import colors from "../config/colors";
  
 function CreateprofileScreen({navigation, route}) {
    const [name, setName] = useState(route.params.name);
@@ -46,6 +46,7 @@ function CreateprofileScreen({navigation, route}) {
 
 
    const pickImage = async () => {
+       if (!uploading){
        let result = await ImagePicker.launchImageLibraryAsync({
          mediaTypes: ImagePicker.MediaTypeOptions.Images,
          allowsEditing: true,
@@ -66,6 +67,7 @@ function CreateprofileScreen({navigation, route}) {
             console.log(e);
             alert("Upload failed, sorry :(");
         } 
+        }
         };
         
 
@@ -136,34 +138,31 @@ function CreateprofileScreen({navigation, route}) {
 
  
    return (
-       <SafeAreaView style={styles.container}>
+       <SafeAreaView style={[styles.container, styles.background]}>
            <ScrollView style={styles.scroll}>
-           <Image
-               source={require("../assets/sportaLogo.png")}
-               style={styles.logga}/>
  
-           <Text style={styles.header}>
+           <Text style={[styles.header, {marginTop:30}]}>
             FILL IN YOUR DETAILS
            </Text>
  
-           <TouchableOpacity onPress={pickImage} style={styles.container}>
+           <KeyboardAvoidingView>
+           <TouchableOpacity onPress={pickImage}>
          {!uploading && <View>
            {photo && <Image source={{ uri: photo }} style = {styles.userIcon} />}
            {!photo && <Image source={require("../assets/icon-user.png")} style = {styles.userIcon}/>}
            </View>
         }
-
-           {uploading && <Image source={require("../assets/waiting.png")} style = {styles.userIcon}/>}
-           <Text> Upload image</Text>
+           {uploading && <View style={styles.upload}> <Image source={require("../assets/waiting.png")} style = {[styles.waiting]}/></View> }
+           {!uploading && <Text style={styles.uploading}> Upload image</Text>}
+           {uploading && <Text style={styles.uploading}> Uploading image...</Text>}
 
            </TouchableOpacity>
  
  
-           <View>
            <TextInput
                label= "Name"
                mode="outlined"
-               activeOutlineColor="hotpink"
+               activeOutlineColor={colors.orange}
                placeholder="What is your name?"
                value={name}
                onChangeText={name => setName(name)}
@@ -174,9 +173,10 @@ function CreateprofileScreen({navigation, route}) {
            <TextInput
                label= "Age"
                mode="outlined"
-               activeOutlineColor="hotpink"
+               activeOutlineColor={colors.orange}
                placeholder="How old are you?"
                value={age}
+               keyboardType={"numeric"}
                onChangeText={age => setAge(age)}
                style={styles.text}
                >
@@ -186,7 +186,8 @@ function CreateprofileScreen({navigation, route}) {
                multiline
                label= "Short description"
                mode="outlined"
-               activeOutlineColor="hotpink"
+               maxLength={150}
+               activeOutlineColor={colors.orange}
                placeholder="Tell us about yourself"
                value={descrip}
                onChangeText={text => setDescrip(text)}
@@ -197,14 +198,16 @@ function CreateprofileScreen({navigation, route}) {
             <Text
                style={styles.header}> My favorite sports </Text> 
            
- 
+        <View style={styles.sportsContainer}> 
            {sports.map((sport) => (    
            <Checkbox.Item
                uncheckedColor="black"
-               color="blue"
+               color={colors.orange}
                key={sport}
                label={sport}
                status={selectedSports.includes(sport) ? 'checked' : 'unchecked'}
+               labelStyle={{width: '25%', color: colors.lightBlue}}
+               style={styles.checkbox}
  
  
                onPress={() => {
@@ -218,11 +221,11 @@ function CreateprofileScreen({navigation, route}) {
                    }
                    chooseSports(updateSports);
                }}
-               >
+               />
                   
-               </Checkbox.Item>
            ))}
            </View>
+           </KeyboardAvoidingView>
 
         <View style={styles.flexContainer}>
             <Button
@@ -239,45 +242,107 @@ function CreateprofileScreen({navigation, route}) {
 }
 const styles = StyleSheet.create({
     button: {
-        width: 200,
+        width: 300,
+        height: 50,
         alignSelf: 'center',
-        margin:7
+        padding:5,
+        backgroundColor: colors.orange,
+        margin:5,
+        marginBottom:20,
+        justifyContent: "center"
+    },
+    background: {
+        flex: 1,
+        padding: 15,
+        backgroundColor: colors.deepBlue,
+        margin: 5,
+        paddingTop:20,
+        borderRadius: 15,
     },
    container: {
-       alignItems: 'center',
+       paddingBottom: 25
+   },
+   checkbox: {
+    borderWidth:1, 
+    borderColor: colors.mediumBlue, 
+    borderRadius: 15, 
+    margin:10,
+    shadowColor: '#171717',
+    shadowOffset: {width: -2, height: 4},
+    shadowOpacity: 0.6,
+    shadowRadius: 4,
+   },
+   uploading:{
+       alignSelf: "center",
+       color: colors.lightBlue
    },
    header: {
        margin:10,
        fontSize:16,
-       fontWeight: 'bold'
+       fontWeight: 'bold',
+       alignSelf: 'center',
+       color: colors.mediumBlue
    },
    logga:{
        width: 300,
        height: 70,
        marginTop:20,
        marginBottom:10,
+       alignSelf: 'center',
    },
    flexContainer: {
         flex: 1,
+        alignSelf: 'center',
    },
    userIcon: {
        borderRadius: 200 / 2, 
-       borderWidth: 1,
-       borderColor: "black",
+       borderWidth: 2,
+       borderColor: colors.lightBlue,
        margin:10,
        width: 130,
-       height: 130
-   },
-   scroll:{
+       height: 130,
+       alignSelf: 'center',
    },
    text: {
-       height: 45,
-       width: 220,
-       margin:10,
+       height: 50,
+       margin: 7,
+       marginLeft: 13,
+       marginRight: 13,
+       shadowColor: '#171717',
+    shadowOffset: {width: -2, height: 4},
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
    },
    textBigger: {
-       height:60,
+       height:100,
    },
+   sportsContainer: {
+    flexDirection:"row", 
+    flexWrap:"wrap", 
+    justifyContent:"center",
+    marginBottom: 10,
+   },
+   scroll: {
+       width:'100%',
+       height:'100%'
+   },
+   waiting: {
+       margin:10,
+       width: 30,
+       height: 30,
+       alignSelf: 'center',
+   }, 
+   upload: {
+       width: 50,
+       height: 50,
+       alignSelf: 'center',
+       backgroundColor: 'white',
+       borderRadius: 200 / 2, 
+       borderColor: 'white',
+       marginBottom: 5
+   }
+
+
  
 })
  

@@ -8,6 +8,8 @@ import { Button,  TextInput, HelperText } from 'react-native-paper';
 import { auth } from "../config/firebase";
 import { useTranslation } from "react-i18next";
 import LangMenu from "../components/LangMenu";
+import { getAuth } from "firebase/auth";
+import firebase from '../config/firebase';
 
 
 export default function MainScreen() {
@@ -26,7 +28,7 @@ export default function MainScreen() {
             const user = userCredentials.user;
             if(user.emailVerified){
             console.log("Logged in with", user.email);
-            navigation.navigate("HomeScreen")
+            findNavigate();
             }
             else{
               alert('Please verify your email before signing in')
@@ -36,6 +38,26 @@ export default function MainScreen() {
         .catch(error => alert(error.message))
         
     }
+
+    const findNavigate = async()=> {
+      const auth = getAuth();
+      const user = auth.currentUser;
+      console.log("nu hämtar jag info!");
+      const response =firebase.firestore().collection('users');
+      const info =await response.doc(user.uid).get();
+      if (!info.exists){
+        navigation.navigate("CreateprofileScreen", {
+          name: "",
+          age: "",
+          bio: "",
+          photo: null,
+          selectedSports: []
+        })
+      }
+      else{
+        navigation.navigate("HomeScreen")
+      }
+    };
   
   const navigation= useNavigation();
   const handleForgotOnPress = () =>  navigation.navigate("ResetPassword")
