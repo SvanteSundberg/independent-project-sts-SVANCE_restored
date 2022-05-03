@@ -153,6 +153,7 @@ function Events({ events, setevents, owners }) {
 
   return (
     <SafeAreaView style={styles.main}>
+     {events.length<1 && <View style={{marginTop:30}}><Text>No events found</Text></View>}
       <ScrollView style={styles.scroller}>
         {events.map((element, index) => {
           return (

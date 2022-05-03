@@ -1,33 +1,25 @@
 import { StyleSheet,View, Text, TextInput, TouchableOpacity, ScrollView, Dimensions, SafeAreaView } from "react-native";
 import * as React from 'react';
 import { Checkbox,Menu, Divider, } from 'react-native-paper';
-import { IconButton, Colors, Button } from 'react-native-paper';
+import { IconButton, Colors, Button, Chip, Modal, Portal  } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import firebase from '../config/firebase';
 import { getAuth } from "firebase/auth";
 import { getDocs, collection, query, where, orderBy} from "firebase/firestore";
 import Events from "../components/Events";
-
-import { DatePicker } from "react-native-common-date-picker";
-import colors from "../config/colors.js";
 import SportFilter from "../components/SportFilter";
-
-
 
  
 const Timeline = () => {
     const auth = getAuth();
     const user = auth.currentUser;
     const navigation= useNavigation(); 
-   
     const [events, setevents] =React.useState([]);
     const [unfilteredEvents, setUnfilteredevents]= React.useState([]);
+    const [selectedSports, setSelectedsports] = React.useState([]);
     const sports = ['football','basket','padel','tennis','handball','bandy','volleyball','run','golf','squash','other'];
-    const [Mysports, chooseSports] = React.useState([]);
-    const [Mydates, choosedates] = React.useState([]);
     const [showSort, setShowSort]= React.useState(false);
-    const [showSportSort, setShowSportSort]= React.useState(false);
-    const [myEvents, setMyevents]= React.useState([]);
+    const [dateSorted, setDateSorted]= React.useState(false);
     const [owners, setOwners]= React.useState([]);
     const [date, setDate] = React.useState(
       new Date().getFullYear() +
@@ -37,8 +29,7 @@ const Timeline = () => {
       new Date().getDate()
     );
     const [dateOpen, setdateOpen] = React.useState(false);
-    const [isFilteredBydate, setIsfilteredBydate]= React.useState(false);
-    const [filteredDatearray, setFiltereddatearray]= React.useState([]);
+   
    
     const fetchEvents = async()=>{
       const db =firebase.firestore();
@@ -52,6 +43,7 @@ const Timeline = () => {
           let id = {eventID: item.id}
           Object.assign(data, id);
           setUnfilteredevents(events=>([...events, data]));
+          setevents(events=>([...events, data]))
           myEvents.push(data);
           }
         else if (new Date(item.data().date).getUTCDate()== new Date().getUTCDate()){
@@ -59,6 +51,7 @@ const Timeline = () => {
           let id = {eventID: item.id}
           Object.assign(data, id);
           setUnfilteredevents(events=>([...events, data]));
+          setevents(events=>([...events, data]))
           myEvents.push(data);
         }
           //if(new Date(item.data().date)< new Date()){
@@ -67,7 +60,6 @@ const Timeline = () => {
 
       });
       fetchOwners(myEvents);
-     
       
       /*events.sort(function(a,b){
         return new Date(a.date) - new Date(b.date);
@@ -113,18 +105,7 @@ const Timeline = () => {
      
     },[]);
 
-const filterBydate=(date)=>{
-  setDate(date);
-  setdateOpen(false);
-  setFiltereddatearray([]);
-  for (let event of events) {
-    
-    if (event.date === date) {
-      setFiltereddatearray(filteredDatearray=>[...filteredDatearray, event])
-    }
-  }
-  setIsfilteredBydate(true);
-}  
+ 
 
 
 
@@ -152,59 +133,33 @@ const deleteExpDate=async (element)=>{
         size={40}
         onPress={()=>setShowSort(!showSort)}
 /></View>
-{showSort&& <View><Button  onPress={()=>setShowSportSort(!showSportSort)}>sortera med sport</Button>
-{showSportSort&& <View>{sports.map((element)=>(
-         
-         <Checkbox.Item
-              uncheckedColor="black"
-              color="blue"
-              label={element}
-              status={Mysports.includes(element) ? 'checked' : 'unchecked'}
-              onPress={() => {
-                let updateSports = [...Mysports]
-               const sportIndex = updateSports.indexOf(element);
-               if (sportIndex > -1){
-                   updateSports.splice(sportIndex, 1);
-               }
-               else {
-                   updateSports.push(element)
-               }
-               chooseSports(updateSports);}}
-              >
-                
-              </Checkbox.Item>
-        
-       ))
-         }
-         </View> }
+<Portal>
+        <Modal visible={showSort} 
+              onDismiss={()=>setShowSort(!showSort)}
+              contentContainerStyle={styles.modalStyle}>
 
-
- <Button onPress={()=>setdateOpen(!dateOpen)}>sortera med dag</Button>
- {isFilteredBydate && <Button onPress={()=>setIsfilteredBydate(false)}> Clear filters </Button>}
- <SportFilter sports={sports} events={events} setevents={setevents} originalEvents={unfilteredEvents} userid={user.uid}/>
+<SportFilter
+ selectedSports={selectedSports} 
+ setSelectedsports={setSelectedsports}
+ sports={sports}
+ events={events} 
+ setevents={setevents} 
+ originalEvents={unfilteredEvents} 
+ userid={user.uid} 
+ setDateSorted={setDateSorted}
+ dateSorted={dateSorted}
+ date={date}
+ setMaxDate={setMaxDate}
+ setDate={setDate}
+ setdateOpen={setdateOpen}
+ setShowSort={setShowSort}
+ dateOpen={dateOpen}
+ showSort={showSort}/>
  
- {dateOpen && <DatePicker
-                    backgroundColor="white"
-                    minDate={new Date()}
-                    maxDate={setMaxDate(3)}
-                    monthDisplayMode={"en-short"}
-                    cancelText=""
-                    rows={5}
-                    width={350}
-                    toolBarPosition="bottom"
-                    toolBarStyle={{ width: "100%", justifyContent: "flex-end" }}
-                    toolBarConfirmStyle={{ color: colors.blue }}
-                    confirmText="OK"
-                    confirm={(date) => filterBydate(date)}
-                  />
- }
- 
-</View> }
-
-        
+ </Modal></Portal>
         <ScrollView style={styles.scroller} >
-      {!isFilteredBydate &&   <Events events={events} setevents={setevents} owners={owners}/>}
-      {isFilteredBydate &&   <Events events={filteredDatearray} setevents={setevents} owners={owners}/>}
+      <Events events={events} setevents={setevents} owners={owners}/>
+     
        
     </ScrollView>
     <SafeAreaView style ={styles.createEvent}>
@@ -223,10 +178,7 @@ const deleteExpDate=async (element)=>{
     );
   }
  
- 
- 
- 
- 
+
 const styles = StyleSheet.create({
   main:{
     flex:1,
@@ -234,6 +186,12 @@ const styles = StyleSheet.create({
 
   postContainer:{
       marginTop:10,
+  },
+
+  modalStyle:{
+    backgroundColor:'white',
+    padding:30,
+    borderRadius:20
   },
  
     header:{
