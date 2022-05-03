@@ -89,7 +89,11 @@ export default function MyEventsScreen() {
           let id = {eventID: eventID}
           Object.assign(data, id);
           myEvents.push(data);
-          setEvents(events => ([...events, data]));
+          myEvents.sort(function(a,b){
+          return new Date(a.date) - new Date(b.date);
+          });
+          
+          setEvents(myEvents);
         }
         fetchOwners(myEvents);
        })
@@ -101,11 +105,16 @@ export default function MyEventsScreen() {
     getMyEvents();
   },[isFocused]);
 
+  /*            <Text style={styles.events}> MY OWN EVENTS</Text>
+            <Events events={myEvents} setevents={setMyEvents} owners={name}/>*/
+
         
     return ( 
 
         <View style={styles.container}> 
-             <Text style={styles.header}>Upcoming events </Text>
+        <View style={styles.header}>
+             <Text style={styles.upcoming}>Upcoming events </Text>
+             </View>
             <ScrollView
                 refreshControl={
                   <RefreshControl
@@ -114,11 +123,7 @@ export default function MyEventsScreen() {
                   />
                 }>
 
-            <Text style={styles.events}> JOINED EVENTS</Text>
             <Events events={events} setevents={setEvents} owners={owners}/>
-
-            <Text style={styles.events}> MY OWN EVENTS</Text>
-            <Events events={myEvents} setevents={setMyEvents} owners={name}/>
 
             </ScrollView>
             
@@ -139,9 +144,23 @@ const styles = StyleSheet.create({
 
 header:{
   alignSelf: 'center',
+  backgroundColor: 'white',
+  height:'12%',
+  width: '100%',
+  paddingTop: 30,
+  borderBottomWidth :0.5,
+  borderBottomColor: 'lightgrey',
+  shadowColor: '#171717',
+  shadowOffset: {width: -2, height: 4},
+  shadowOpacity: 0.1,
+  shadowRadius: 9,
+  alignItems: 'center'
+},
+upcoming: {
   fontWeight: "bold",
   fontSize: 25,
-},
+
+}
  
 
 });
