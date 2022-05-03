@@ -1,11 +1,12 @@
 import React from 'react';
 import {useState, useEffect} from 'react';
-import { View, SafeAreaView, StyleSheet, Text, Image, TouchableOpacity } from 'react-native';
+import { View, SafeAreaView, StyleSheet, Text, Image, TouchableOpacity, Pressable } from 'react-native';
 import firebase from '../config/firebase';
 import { getAuth } from "firebase/auth";
 import { Button } from 'react-native-paper';
-import { collection, query, where, getDocs } from "firebase/firestore";
+import { collection, query, where, getDocs, orderBy } from "firebase/firestore";
 import BiggerEvent from './BiggerEvent';
+import colors from '../config/colors';
 
 function MyEvents({navigation, theUser, changeUser, name, ownUser}) {
 
@@ -45,7 +46,7 @@ function MyEvents({navigation, theUser, changeUser, name, ownUser}) {
         setEvents([]);
 
         const database = firebase.firestore();
-        const userEvents = query(collection(database, "events"), where("owner", "==", theUser) );
+        const userEvents = query(collection(database, "events"), where("owner", "==", theUser), orderBy("date") );
             const eventSnapshot = await getDocs(userEvents);
             eventSnapshot.forEach((item) => {
                 let data = item.data();
@@ -76,13 +77,13 @@ function MyEvents({navigation, theUser, changeUser, name, ownUser}) {
 
     return (
         <SafeAreaView>
-            <Text style={styles.headline}> Created Events </Text>
+            <Text style={styles.headline}>  </Text>
         
         {theEvents.length>0 &&
         <View style={styles.container}>
             {theEvents.map((event, index) => ( 
                 <TouchableOpacity 
-                    style={styles.event}
+                    style={[styles.event, styles.shadow]}
                     key={index}
                     onPress={() => {
                         setEvent(event);
@@ -90,10 +91,8 @@ function MyEvents({navigation, theUser, changeUser, name, ownUser}) {
                         getID(event.eventID);
                     }}>
                     <View style={styles.row}> 
-                <Button 
-                icon='calendar-today'
-                labelStyle={{fontSize: 12,
-                    color:'black'}}> {event.date} </Button>
+                <Text
+                style={styles.date}> {event.date} </Text>
                     </View>
                 <View style={styles.header}>
                 <Text style={styles.text}> {event.title}</Text>
@@ -131,14 +130,18 @@ const styles = StyleSheet.create({
         paddingTop:3,
     },
     event: {
-        width:150,
-        height:130,
-        borderRadius: 3,
+        width:160,
+        height:140,
+        borderRadius: 5,
         borderWidth: 1,
-        borderColor: "black",
+        borderColor: colors.deepBlue,
         marginLeft: 20,
         marginBottom:20,
-        marginTop:20,
+        shadowColor: '#171717',
+        shadowOffset: {width: -2, height: 4},
+        shadowOpacity: 0.6,
+        shadowRadius: 4,
+
     },
     eventsText: {
         fontStyle: 'italic',
@@ -153,11 +156,17 @@ const styles = StyleSheet.create({
         fontSize:16,
         fontWeight: 'bold',
         alignSelf: 'center',
-        marginTop:10,
+        color: colors.deepBlue
     },
     row: {
-        flexDirection:'row',
-        backgroundColor: 'lightblue',
+        alignItems: "center",
+        backgroundColor: colors.orange,
+        borderTopLeftRadius: 4,
+        borderTopRightRadius: 4,
+        borderWidth: 0,
+        borderColor: colors.deepBlue,
+        height: '18%',
+        justifyContent: "center",
     }, 
     text: {
         alignSelf:'center',
@@ -185,6 +194,18 @@ const styles = StyleSheet.create({
         margin:5,
         
     },
+    date: {
+        fontSize: 13,
+        fontWeight: 'bold',
+        color: colors.deepBlue
+    },
+    shadow:{   
+        backgroundColor: 'white',  
+        shadowColor: '#171717',
+        shadowOffset: {width: -2, height: 4},
+        shadowOpacity: 0.6,
+        shadowRadius: 4,
+            }, 
  
 })
 

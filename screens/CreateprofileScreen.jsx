@@ -1,17 +1,21 @@
-import { SafeAreaView, View, Text, TouchableOpacity, Image, ScrollView, StyleSheet, Alert } from "react-native";
+import { KeyboardAvoidingView, SafeAreaView, View, Text, TouchableOpacity, Image, ScrollView, StyleSheet, Alert } from "react-native";
 import {useState } from 'react';
 import { TextInput, Checkbox, Button } from 'react-native-paper';
 import * as ImagePicker from 'expo-image-picker';
 import { getAuth } from "firebase/auth";
 import firebase from '../config/firebase';
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import colors from "../config/colors";
  
 function CreateprofileScreen({navigation, route}) {
    const [name, setName] = useState(route.params.name);
    const [age, setAge] = useState(route.params.age);
    const [descrip, setDescrip] = useState(route.params.bio);
-   const sports = ["soccer", "padel", "basketball"];
+   const sports = ["football", "padel", "basketball", "tennis", "handball", "floorball", "volleyball", "run", "golf", "squash"];
    const [photo, setPhoto] = useState(route.params.photo);
+   const [remove, setRemove] = useState(false);
    const [selectedSports, chooseSports] = useState(route.params.selectedSports);
+   const [uploading, setUploading] = useState(false);
 
    const auth = getAuth();
    const user = auth.currentUser;
@@ -19,6 +23,7 @@ function CreateprofileScreen({navigation, route}) {
    const updateUserInfo = () => {
        if (name.length>0 && age>0 && descrip.length>0 &&
         typeof photo !== "undefined"){
+        console.log(photo);
         firebase.firestore().collection('users').doc(user.uid).set({
            name: name,
             age: age,
@@ -41,6 +46,7 @@ function CreateprofileScreen({navigation, route}) {
 
 
    const pickImage = async () => {
+       if (!uploading){
        let result = await ImagePicker.launchImageLibraryAsync({
          mediaTypes: ImagePicker.MediaTypeOptions.Images,
          allowsEditing: true,
@@ -48,37 +54,115 @@ function CreateprofileScreen({navigation, route}) {
          quality: 1,
        });
   
-       if (!result.cancelled) {
-         setPhoto(result.uri);
-       }
-     };
+       try {
+        if (!result.cancelled) {
+            if (typeof photo !==undefined){
+                setRemove(true);
+            }
+            setUploading(true);
+            const uploadUrl = await uploadImageAsync(result.uri);
+        }
+        
+        } catch (e) {
+            console.log(e);
+            alert("Upload failed, sorry :(");
+        } 
+        }
+        };
+        
+
+     async function uploadImageAsync(uri) {
+        // Why are we using XMLHttpRequest? See:
+        // https://github.com/expo/expo/issues/2402#issuecomment-443726662
+        const blob = await new Promise((resolve, reject) => {
+          const xhr = new XMLHttpRequest();
+          xhr.onload = function () {
+            resolve(xhr.response);
+          };
+          xhr.onerror = function (e) {
+            console.log(e);
+            reject(new TypeError("Network request failed"));
+          };
+          xhr.responseType = "blob";
+          xhr.open("GET", uri, true);
+          xhr.send(null);
+        });
+        
+        const fileRef = ref(getStorage(), user.uid);
+
+        if (remove){
+            deleteObject(fileRef).then(() => {
+                // File deleted successfully
+              }).catch((error) => {
+                // Uh-oh, an error occurred!
+                console.log(error);
+              });
+        }
+
+        const result = await uploadBytes(fileRef, blob);
+        blob.close();
+
+
+        const url = await getDownloadURL(fileRef);
+        setPhoto(url);
+        setUploading(false);
+
+        /*const unique = uuid.v4();
+        const fileRef = ref(getStorage(), user.uid);
+        const result = await uploadBytes(fileRef, blob);
+      
+        // We're done with the blob, close and release it
+        blob.close();
+      
+        const url = await getDownloadURL(fileRef);
+        setPhoto(url);
+        setUploading(false);
+        if (remove) {
+            deleteObject(fileRef).then(() => {
+                // File deleted successfully
+              }).catch((error) => {
+                // Uh-oh, an error occurred!
+              });
+        }*/
+
+        /*if (remove){
+            deleteObject(fileRef).then(() => {
+                // File deleted successfully
+              }).catch((error) => {
+                // Uh-oh, an error occurred!
+                console.log(error);
+              });
+        }*/
+      }
+
 
  
    return (
-       <SafeAreaView style={styles.container}>
+       <SafeAreaView style={[styles.container, styles.background]}>
            <ScrollView style={styles.scroll}>
-           <Image
-               source={require("../assets/sportaLogo.png")}
-               style={styles.logga}/>
  
-           <Text style={styles.header}>
+           <Text style={[styles.header, {marginTop:30}]}>
             FILL IN YOUR DETAILS
            </Text>
  
-           <TouchableOpacity onPress={pickImage} style={styles.container}>
+           <KeyboardAvoidingView>
+           <TouchableOpacity onPress={pickImage}>
+         {!uploading && <View>
            {photo && <Image source={{ uri: photo }} style = {styles.userIcon} />}
            {!photo && <Image source={require("../assets/icon-user.png")} style = {styles.userIcon}/>}
- 
-           <Text> Upload image</Text>
+           </View>
+        }
+           {uploading && <View style={styles.upload}> <Image source={require("../assets/waiting.png")} style = {[styles.waiting]}/></View> }
+           {!uploading && <Text style={styles.uploading}> Upload image</Text>}
+           {uploading && <Text style={styles.uploading}> Uploading image...</Text>}
 
            </TouchableOpacity>
  
  
-           <View>
            <TextInput
                label= "Name"
                mode="outlined"
-               activeOutlineColor="hotpink"
+               activeOutlineColor={colors.orange}
                placeholder="What is your name?"
                value={name}
                onChangeText={name => setName(name)}
@@ -89,9 +173,10 @@ function CreateprofileScreen({navigation, route}) {
            <TextInput
                label= "Age"
                mode="outlined"
-               activeOutlineColor="hotpink"
+               activeOutlineColor={colors.orange}
                placeholder="How old are you?"
                value={age}
+               keyboardType={"numeric"}
                onChangeText={age => setAge(age)}
                style={styles.text}
                >
@@ -101,7 +186,8 @@ function CreateprofileScreen({navigation, route}) {
                multiline
                label= "Short description"
                mode="outlined"
-               activeOutlineColor="hotpink"
+               maxLength={150}
+               activeOutlineColor={colors.orange}
                placeholder="Tell us about yourself"
                value={descrip}
                onChangeText={text => setDescrip(text)}
@@ -112,14 +198,16 @@ function CreateprofileScreen({navigation, route}) {
             <Text
                style={styles.header}> My favorite sports </Text> 
            
- 
+        <View style={styles.sportsContainer}> 
            {sports.map((sport) => (    
            <Checkbox.Item
                uncheckedColor="black"
-               color="blue"
+               color={colors.orange}
                key={sport}
                label={sport}
                status={selectedSports.includes(sport) ? 'checked' : 'unchecked'}
+               labelStyle={{width: '25%', color: colors.lightBlue}}
+               style={styles.checkbox}
  
  
                onPress={() => {
@@ -133,11 +221,11 @@ function CreateprofileScreen({navigation, route}) {
                    }
                    chooseSports(updateSports);
                }}
-               >
+               />
                   
-               </Checkbox.Item>
            ))}
            </View>
+           </KeyboardAvoidingView>
 
         <View style={styles.flexContainer}>
             <Button
@@ -154,45 +242,107 @@ function CreateprofileScreen({navigation, route}) {
 }
 const styles = StyleSheet.create({
     button: {
-        width: 200,
+        width: 300,
+        height: 50,
         alignSelf: 'center',
-        margin:7
+        padding:5,
+        backgroundColor: colors.orange,
+        margin:5,
+        marginBottom:20,
+        justifyContent: "center"
+    },
+    background: {
+        flex: 1,
+        padding: 15,
+        backgroundColor: colors.deepBlue,
+        margin: 5,
+        paddingTop:20,
+        borderRadius: 15,
     },
    container: {
-       alignItems: 'center',
+       paddingBottom: 25
+   },
+   checkbox: {
+    borderWidth:1, 
+    borderColor: colors.mediumBlue, 
+    borderRadius: 15, 
+    margin:10,
+    shadowColor: '#171717',
+    shadowOffset: {width: -2, height: 4},
+    shadowOpacity: 0.6,
+    shadowRadius: 4,
+   },
+   uploading:{
+       alignSelf: "center",
+       color: colors.lightBlue
    },
    header: {
        margin:10,
        fontSize:16,
-       fontWeight: 'bold'
+       fontWeight: 'bold',
+       alignSelf: 'center',
+       color: colors.mediumBlue
    },
    logga:{
        width: 300,
        height: 70,
        marginTop:20,
        marginBottom:10,
+       alignSelf: 'center',
    },
    flexContainer: {
         flex: 1,
+        alignSelf: 'center',
    },
    userIcon: {
        borderRadius: 200 / 2, 
-       borderWidth: 1,
-       borderColor: "black",
+       borderWidth: 2,
+       borderColor: colors.lightBlue,
        margin:10,
        width: 130,
-       height: 130
-   },
-   scroll:{
+       height: 130,
+       alignSelf: 'center',
    },
    text: {
-       height: 45,
-       width: 220,
-       margin:10,
+       height: 50,
+       margin: 7,
+       marginLeft: 13,
+       marginRight: 13,
+       shadowColor: '#171717',
+    shadowOffset: {width: -2, height: 4},
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
    },
    textBigger: {
-       height:60,
+       height:100,
    },
+   sportsContainer: {
+    flexDirection:"row", 
+    flexWrap:"wrap", 
+    justifyContent:"center",
+    marginBottom: 10,
+   },
+   scroll: {
+       width:'100%',
+       height:'100%'
+   },
+   waiting: {
+       margin:10,
+       width: 30,
+       height: 30,
+       alignSelf: 'center',
+   }, 
+   upload: {
+       width: 50,
+       height: 50,
+       alignSelf: 'center',
+       backgroundColor: 'white',
+       borderRadius: 200 / 2, 
+       borderColor: 'white',
+       marginBottom: 5
+   }
+
+
  
 })
  

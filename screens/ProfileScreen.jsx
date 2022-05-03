@@ -6,6 +6,9 @@ import firebase from '../config/firebase';
 import { useIsFocused } from '@react-navigation/native';
 import MyEvents from "../components/MyEvents";
 import DownMenu from "../components/DownMenu";
+import colors from "../config/colors";
+import { color } from "react-native-elements/dist/helpers";
+import { setStatusBarNetworkActivityIndicatorVisible } from "expo-status-bar";
 
 function ProfileScreen({navigation, route}) {
    const [name, setName] = useState('');
@@ -26,7 +29,7 @@ function ProfileScreen({navigation, route}) {
 
     useEffect(() => {
         getUserInfo();
-    }, [isFocused, userID]);
+    }, [isFocused, userID, photo]);
 
     const getUserInfo = async()=> {
         console.log("nu hämtar jag info!");
@@ -74,7 +77,7 @@ function ProfileScreen({navigation, route}) {
             </View>}*/
 
     return (
-        <SafeAreaView>
+        <SafeAreaView style={{marginTop: 30}}>
         <ScrollView>
 
         <View style={[styles.container, styles.userContainer]}>
@@ -84,26 +87,26 @@ function ProfileScreen({navigation, route}) {
             {photo && <Image source={{ uri: photo }} style = {styles.userIcon} />}
             {!photo && <Image source={require("../assets/icon-user.png")} style = {styles.userIcon}/>}
 
-            <Text style={styles.header}> {name} </Text>
-            <Text style={styles.age}> {age} years old</Text>
-
+            <View style={{flexDirection: 'row'}}>
+            <Text style={[styles.header, styles.blue]}> {name} <Text style={styles.age}>- {age} years old </Text> </Text>
             </View>
 
+            <Text style={styles.bio}> {descrip} </Text>
+
             <View style={[styles.container, styles.userInfoContainer]}> 
-                <Text style={styles.bio}> {descrip} </Text>
-                <Text style={styles.header}> Favorite Sports</Text>
                 <View style={[styles.sports]}>
+                    <Text style={styles.favorite}> Favorite Sports</Text>
                 {selectedSports.map((sport) => (
-                    sport=='padel' ? (<Image 
-                        style = {styles.sportImage}
-                        key={sport}
-                        source={require("../assets/padel.png")}/>) 
+                     sport=='padel' ? (<Image style={styles.sportImage} key={sport} source={require("../assets/padel.png")}/>)
+                     : sport=="football"  ? (<Image style={styles.sportImage} key={sport} source={require("../assets/football.png")}/>)
+                     : sport=='squash' ? (<Image style={styles.sportImage} key={sport} source={require("../assets/squash.png")}/>)
+                     : sport=='floorball' ? (<Image style={styles.sportImage} key={sport} source={require("../assets/floorball.png")}/>)
                     
                     : 
                     
                     <Button 
-                    labelStyle={{fontSize: 30,
-                    color:'black'}}
+                    labelStyle={{fontSize: 30}}
+                    color='black'
                     style={styles.icons}
                     key={sport}
                     icon={sport}/>
@@ -111,6 +114,7 @@ function ProfileScreen({navigation, route}) {
                 ))
                     
                 }
+                </View>
                 </View>
 
             </View>
@@ -126,15 +130,17 @@ function ProfileScreen({navigation, route}) {
 const styles = StyleSheet.create({
     age: {
         fontStyle: 'italic',
+        color: colors.lightBlue
+    },
+    blue: {
+        color: colors.lightBlue
     },
     
     bio: {
-        borderRadius: 3,
-        borderWidth: 1,
-        borderColor: "black",
-        padding: 15,
+        marginLeft: 10,
         width: '70%',
         marginBottom: 10,
+        color: colors.lightBlue
     },
     button: {
         width: 200,
@@ -146,12 +152,35 @@ const styles = StyleSheet.create({
     },
     container: {
         alignItems: 'center',
-        justifyContent:'center'
+        justifyContent:'center',
+        backgroundColor: colors.lightBlue,
+        padding: 10,
+        width:'100%',
+        borderRadius: 20,
+        marginTop:10,
+        shadowColor: '#171717',
+        shadowOffset: {width: -2, height: 4},
+        shadowOpacity: 0.1,
+        shadowRadius: 3,
+        borderColor: colors.orange,
+        borderWidth: 1,
+        backgroundColor: 'white'
     },
     header: {
         margin:10,
         fontSize:16,
         fontWeight: 'bold',
+    },
+    favorite: {
+        position: 'absolute',
+        top:-21,
+        right: 94,
+        fontWeight: 'bold',
+        color: colors.orange,
+        shadowColor: colors.orange,
+        shadowOffset: {width: -2, height: 4},
+        shadowOpacity: 0.5,
+        shadowRadius: 3,
     },
 
     logga:{
@@ -167,33 +196,33 @@ const styles = StyleSheet.create({
     },
     userIcon: {
         borderRadius: 200 / 2, 
-        borderWidth: 1,
-        borderColor: "black",
+        borderWidth: 5,
+        borderColor: colors.lightBlue,
         margin:10,
         marginTop:30,
-        width: 130,
-        height: 130,
+        width: 170,
+        height: 170,
         zIndex: 0,
     },
     userContainer: {
-        backgroundColor: 'indianred',
-        paddingBottom:15,
+        borderRadius: 20,
+        borderColor: colors.deepBlue,
+        backgroundColor: colors.deepBlue,
+        paddingBottom: 20,
     },
     userInfoContainer: {
-        marginTop: 10,
     },
     sports: {
         flexDirection: 'row',
-        marginBottom: 20,
-        marginTop:5,
     },
     sportImage: {
-        width: 40,
-        height: 40,
+        width: 30,
+        height: 30,
+        marginLeft:10,
+        marginRight: 10
     },
-    size: {
-        backgroundColor: 'green',
-        zIndex: 100,
+    darkBlue: {
+        color: colors.deepBlue
     }
   
  })
