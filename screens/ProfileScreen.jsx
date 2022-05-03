@@ -9,6 +9,7 @@ import DownMenu from "../components/DownMenu";
 import colors from "../config/colors";
 import { color } from "react-native-elements/dist/helpers";
 import { setStatusBarNetworkActivityIndicatorVisible } from "expo-status-bar";
+import { useTranslation } from "react-i18next";
 
 function ProfileScreen({navigation, route}) {
    const [name, setName] = useState('');
@@ -26,6 +27,7 @@ function ProfileScreen({navigation, route}) {
    const changeUser = (userID) => {
         setUserID(userID);
    }
+   const {t,i18n}=useTranslation();
 
     useEffect(() => {
         getUserInfo();
@@ -95,7 +97,7 @@ function ProfileScreen({navigation, route}) {
 
             <View style={[styles.container, styles.userInfoContainer]}> 
                 <View style={[styles.sports]}>
-                    <Text style={styles.favorite}> Favorite Sports</Text>
+                    <Text style={styles.favorite}>  {t('favSports')}</Text>
                 {selectedSports.map((sport) => (
                      sport=='padel' ? (<Image style={styles.sportImage} key={sport} source={require("../assets/padel.png")}/>)
                      : sport=="football"  ? (<Image style={styles.sportImage} key={sport} source={require("../assets/football.png")}/>)

@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, Text } from 'react-native';
-import { Menu, Divider, IconButton } from 'react-native-paper';
+import { Menu, Divider, IconButton, Button } from 'react-native-paper';
 import {useState} from 'react';
 import { getAuth, signOut } from "firebase/auth";
 import { useNavigation } from '@react-navigation/native';
@@ -9,6 +9,8 @@ import { color } from 'react-native-elements/dist/helpers';
 
 const TestMenu = ({goToEdit}) => {
   const [visible, setVisible] = useState(false);
+
+  const handleBackwards = () =>  navigation.navigate("HomeScreen")
 
   const openMenu = () => setVisible(true);
 
@@ -33,8 +35,22 @@ const TestMenu = ({goToEdit}) => {
   return (
       <View style={styles.container}>
           <View style={styles.row}>
+
+          <View style={{alignSelf:"flex-start"}}>
+
+          <Button
+          style={styles.backButton}
+          onPress={handleBackwards}
+          icon='keyboard-backspace'
+          labelStyle={{fontSize: 30,
+          color: colors.lightBlue}}>
+            </Button>
+          </View>
+
+          
           <View style={styles.menuWrapper}>
-            
+
+          
         <Menu
 
           contentStyle={{opacity: 0.9,
@@ -63,6 +79,7 @@ const TestMenu = ({goToEdit}) => {
             <Menu.Item titleStyle={{color: colors.lightBlue}} icon='logout' onPress={handleSignOut} title="Sign out" />
             </View>
         </Menu>
+        
       </View>
       <Text style={styles.header}> PROFILE</Text>
       </View>
@@ -71,6 +88,12 @@ const TestMenu = ({goToEdit}) => {
 };
 
 const styles = StyleSheet.create({
+  backButton: {
+    width:20,
+    height: 25,
+    top:35,
+},
+
     container: {
         flex: 1,
         flexDirection: 'row',
@@ -80,7 +103,6 @@ const styles = StyleSheet.create({
       row: {
         width: '100%',
         height: '80%',
-        backgroundColor: colors.deepBlue,
         borderWidth: 1,
         borderBottomColor: colors.mediumBlue,
         borderBottomWidth: 1,
