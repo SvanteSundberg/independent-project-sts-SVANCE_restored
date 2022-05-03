@@ -211,7 +211,7 @@ function Events({ events, setevents, owners}) {
           return (
             
             
-            <View style={styles.postContainer}>
+            <View key={element.eventID} style={styles.postContainer}>
             <TouchableOpacity key={element.title}
             onPress = {() => handleOnPress(element)}>
               <View style={styles.posts}>
