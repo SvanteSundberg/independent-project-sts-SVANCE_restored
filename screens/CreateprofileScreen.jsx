@@ -152,7 +152,7 @@ function CreateprofileScreen({navigation, route}) {
            {!photo && <Image source={require("../assets/icon-user.png")} style = {styles.userIcon}/>}
            </View>
         }
-           {uploading && <View style={styles.upload}> <Image source={require("../assets/waiting.png")} style = {[styles.waiting]}/></View> }
+            {uploading && <Image source={require("../assets/waiting.png")} style = {[styles.waiting]}/> } 
            {!uploading && <Text style={styles.uploading}> Upload image</Text>}
            {uploading && <Text style={styles.uploading}> Uploading image...</Text>}
 
