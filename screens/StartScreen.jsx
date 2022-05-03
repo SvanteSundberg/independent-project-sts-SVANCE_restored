@@ -1,113 +1,137 @@
 import { useNavigation } from '@react-navigation/native';
-import React from 'react'; 
+import React from 'react';
 import { useState } from "react";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text,  ImageBackground, Image, KeyboardAvoidingView, View, TouchableOpacity, Menu } from 'react-native';
-import { Button,  TextInput, HelperText } from 'react-native-paper';
+import { StyleSheet, Text, ImageBackground, Image, KeyboardAvoidingView, View, TouchableOpacity, Menu } from 'react-native';
+import { Button, TextInput, HelperText } from 'react-native-paper';
 import { auth } from "../config/firebase";
 import { useTranslation } from "react-i18next";
 import LangMenu from "../components/LangMenu";
+import { getAuth } from "firebase/auth";
+import firebase from '../config/firebase';
+import colors from '../config/colors';
 
 
 export default function MainScreen() {
 
-  const {t,i18n}=useTranslation();
+  const { t, i18n } = useTranslation();
 
-  
-    
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
 
-    const handleLogin = () => {
-        auth
-        .signInWithEmailAndPassword(email, password)
-        .then (userCredentials => {
-            const user = userCredentials.user;
-            if(user.emailVerified){
-            console.log("Logged in with", user.email);
-            navigation.navigate("HomeScreen")
-            }
-            else{
-              alert('Please verify your email before signing in')
-              auth.signOut();
-            }
-        })
-        .catch(error => alert(error.message))
-        
+
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+
+  const handleLogin = () => {
+    auth
+      .signInWithEmailAndPassword(email, password)
+      .then(userCredentials => {
+        const user = userCredentials.user;
+        if (user.emailVerified) {
+          console.log("Logged in with", user.email);
+          findNavigate();
+        }
+        else {
+          alert('Please verify your email before signing in')
+          auth.signOut();
+        }
+      })
+      .catch(error => alert(error.message))
+
+  }
+
+  const findNavigate = async () => {
+    const auth = getAuth();
+    const user = auth.currentUser;
+    console.log("nu hämtar jag info!");
+    const response = firebase.firestore().collection('users');
+    const info = await response.doc(user.uid).get();
+    if (!info.exists) {
+      navigation.navigate("CreateprofileScreen", {
+        name: "",
+        age: "",
+        bio: "",
+        photo: null,
+        selectedSports: []
+      })
     }
-  
-  const navigation= useNavigation();
-  const handleForgotOnPress = () =>  navigation.navigate("ResetPassword")
-  const handleRegisterOnPress = () =>  navigation.navigate("RegisterScreen")
+    else {
+      navigation.navigate("HomeScreen")
+    }
+  };
+
+  const navigation = useNavigation();
+  const handleForgotOnPress = () => navigation.navigate("ResetPassword")
+  const handleRegisterOnPress = () => navigation.navigate("RegisterScreen")
 
   return (
-    
-<KeyboardAvoidingView style={styles.container}>     
-<SafeAreaView>
 
- <View style={styles.background}>
- 
- 
-        <View>
-              
-          <LangMenu/>
-           <Image source={require('../assets/sportaLogo.png')}  style={styles.logo}/>
-           
-           
-          
+    <KeyboardAvoidingView style={styles.container}>
+
+      <SafeAreaView>
+        <ImageBackground source={require('../assets/logoOpac.png')} style={styles.backgroundImg}>
+          <View style={styles.background}>
+
+
+            <View>
+
+              <LangMenu />
+              <Image source={require('../assets/sportaLogoFinal.png')} style={styles.logo} />
+
+
+
             </View>
-          
-             
-            <Text style={{marginLeft:10, fontWeight:'bold'}}> {t('signIN')}</Text> 
-            
+
+
+            <Text style={{ color:'white', marginLeft: 10, fontWeight: 'bold' }}> {t('signIN')}</Text>
+
             <TextInput style={styles.textinput}
-                label= {t('email')}
-                mode="outlined"
-                activeOutlineColor="#63B5FF"
-                placeholder={t('email')}
-                value={email}
-                onChangeText = {email => setEmail(email)}/>
-                
-             
-    
-            <TextInput style={styles.textinput} secureTextEntry={true} 
-                         label= {t('password')}
-                         mode="outlined"
-                         activeOutlineColor="#63B5FF"
-                         placeholder={t('password')}
-                        value={password}
-                        onChangeText = {password => setPassword(password)}/> 
+              label={t('email')}
+              mode="outlined"
+              activeOutlineColor="#63B5FF"
+              outlineColor="white"
+              placeholder={t('email')}
+              value={email}
+              onChangeText={email => setEmail(email)} />
 
 
 
- <View style={styles.buttonsAndText}>
-            <Button  mode="contained"
-                     title="Left button"
-                    onPress={handleLogin}
-                    style={styles.loginBtn} >
-                 {t('signIN')}
+            <TextInput style={styles.textinput} secureTextEntry={true}
+              label={t('password')}
+              mode="outlined"
+              activeOutlineColor="#63B5FF"
+              outlineColor="white"
+              placeholder={t('password')}
+              value={password}
+              onChangeText={password => setPassword(password)} />
+
+
+
+            <View style={styles.buttonsAndText}>
+              <Button mode="contained"
+                title="Left button"
+                onPress={handleLogin}
+                style={styles.loginBtn} >
+                {t('signIN')}
               </Button>
-              
-             
-              
-            <View style = {styles.forgotPasswordText}>
-              <Text>{t('forgotPass')}  
-              <Text onPress={handleForgotOnPress} style = {styles.pressHere}> {t('pressHere')} </Text>
-              </Text>
+
+
+              <Button style={styles.registerBtn} mode="contained" compact="true" onPress={handleRegisterOnPress} >
+                <Text style={{color:'black'}}>{t('register')}</Text>
+              </Button>
+
+              <View style={styles.forgotPasswordText}>
+                <Text>{t('forgotPass')}
+                  <Text onPress={handleForgotOnPress} style={styles.pressHere}> {t('pressHere')} </Text>
+                </Text>
+              </View>
             </View>
-            
-      
-      <Button style={styles.registerBtn} mode="outlined" compact="true" onPress={handleRegisterOnPress} >
-      {t('register')}
-      </Button>
-      </View>
-      
-      </View>
-      
-    
-    </SafeAreaView>
-    </KeyboardAvoidingView> 
+
+          </View>
+        </ImageBackground>
+      </SafeAreaView>
+
+    </KeyboardAvoidingView>
   );
 }
 
@@ -118,55 +142,61 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 
-  
-  registerBtn:{
+
+  registerBtn: {
     backgroundColor: "#fff",
-    width:200,
-    alignSelf:'center'
+    width: 200,
+    alignSelf: 'center',
+
   },
-  loginBtn:{
-    width:200,
-    alignSelf:'center'
+  loginBtn: {
+    width: 200,
+    alignSelf: 'center',
+    marginBottom:15,
+    //backgroundColor:colors.mediumBlue,
   },
-   
+
   background: {
-    backgroundColor: '#DBF2FF' ,
-    width:'100%',
-    height:'100%',  
+    //backgroundColor: '#DBF2FF' ,
+    // width:'100%',
+    // height:'100%',  
   },
 
   logo: {
-    height:150,
-    width:250,
+    width: 350,
     resizeMode: "contain",
     marginTop: 5,
-    alignSelf:'center'
+    alignSelf: 'center'
+  },
+  backgroundImg: {
+    width: '100%',
+    height: '100%',
   },
 
- 
-  textinput:{ 
+
+  textinput: {
     margin: 10,
-    
-},
-forgotPasswordText:{
-    alignItems:'center',
-    margin:10,
-    color:'#fff'
-},
-/*test:{
-    justifyContent:'center',
-    flex:1,
-    marginBottom: 110
-},*/ //såg ingen skillnad när jag tog bort denna
 
-pressHere:{
-     color: 'blue',
-     textDecorationLine: 'underline', 
-},
+  },
+  forgotPasswordText: {
+    alignItems: 'center',
+    margin: 10,
+    color: '#fff'
+  },
+  /*test:{
+      justifyContent:'center',
+      flex:1,
+      marginBottom: 110
+  },*/ //såg ingen skillnad när jag tog bort denna
 
-buttonsAndText:{
-  marginTop: 20,
-}
+  pressHere: {
+    color: 'blue',
+    textDecorationLine: 'underline',
+  },
+
+  buttonsAndText: {
+    marginTop: 20,
+  }
 
 
 

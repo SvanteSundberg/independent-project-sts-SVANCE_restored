@@ -32,9 +32,23 @@
         "alertFields": "Vänligen fyll alla fält",
         "createdEvent": "Du har skapat ett event!",
         "backToTimeline": "Till tidslinjen",
-        "confirmpassword":"Upprepa lösenord",
+        "repeatpassword":"Upprepa lösenord",
         "createEventTitle":"SKAPA DITT SPORTA-EVENT",
-        "selectSport":"Välj Sport"
+        "selectSport":"Välj Sport",
+        "joinEvent": "DELTA I EVENT",
+        "fullEvent": "Eventet är fullt",
+        "unjoinEvent": "AVANMÄL",
+        "removeEvent": "RADERA EVENT",
+        "createdBy": "Skapat av",
+        "moreInfo": "MER INFO",
+        "peopleJoined": "Deltagare",
+        "back": "Tillbaka",
+        "favSports": "Favoritsporter",
+        "upComEvents": "Kommande event",
+        "linkPass":"Länk för att återställa ditt lösenord har skickats till din mejl.",
+        "resPassword": "Återställ lösenord", 
+        "yourEmail": "Skriv Email",
+        "reset": "Återställ"
 
     }
 }

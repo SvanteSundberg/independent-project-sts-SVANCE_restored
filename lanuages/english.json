@@ -34,7 +34,21 @@
     "backToTimeline": "Back to timeline", 
     "repeatpassword":"Repeat password",
     "createEventTitle":"CREATE YOUR SPORTA EVENT",
-    "selectSport":"Select Sport"
+    "selectSport":"Select Sport",
+    "joinEvent": "JOIN EVENT",
+    "fullEvent": "This event is full", 
+    "unjoinEvent": "UNJOIN",
+    "removeEvent": "REMOVE EVENT",
+    "createdBy": "Created by",
+     "moreInfo": "MORE INFO", 
+     "peopleJoined": "Participants:",
+      "back": "Back",
+      "favSports": "Favorite Sports",
+      "upComEvents": "Upcoming Events",
+      "linkPass":"Link to reset your password sent. Please check your inbox.", 
+      "resPassword": "Reset password", 
+      "yourEmail": "Type Email", 
+       "reset": "Reset"
 
 
 

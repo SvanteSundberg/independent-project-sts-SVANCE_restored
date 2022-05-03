@@ -29,6 +29,7 @@ import { useTranslation } from "react-i18next";
 import { getAuth } from "firebase/auth";
 import { color } from "react-native-elements/dist/helpers";
 
+
 function CreateEventScreen(props) {
   const { t, i18n } = useTranslation();
 
@@ -73,6 +74,7 @@ function CreateEventScreen(props) {
     correctTime = correctHours + ":" + correctMinutes;
     return correctTime;
   }
+
 
   const setMaxDate = (monthInterval) => {
     let current_datetime = new Date();
@@ -172,6 +174,8 @@ function CreateEventScreen(props) {
     navigation.navigate("HomeScreen");
   };
 
+  const handleBackwards = () =>  navigation.navigate("HomeScreen")
+
   return (
     <SafeAreaView style={styles.main}>
       <ScrollView
@@ -181,10 +185,22 @@ function CreateEventScreen(props) {
         listViewDisplayed={false}
         horizontal={false}
       >
-        
+         
 
         <View style={styles.form}>
+        
+        <View style={{flexDirection:"row", alignSelf: "center"}}>
+          <Button
+          style={styles.backButton}
+          onPress={handleBackwards}
+          icon='keyboard-backspace'
+          labelStyle={{fontSize: 30,
+          color: colors.lightBlue}}>
+            </Button>
         <Text style={styles.header}> {t('createEventTitle')} </Text>
+        </View>
+        
+
           <TextInput
             style={styles.input}
             label={t('title1')}
@@ -194,6 +210,7 @@ function CreateEventScreen(props) {
             outlineColor="white"
             activeOutlineColor={colors.mediumBlue}
             placeholder={t('title2')}
+            maxLength={30}
           />
           <TextInput
             style={styles.input}
@@ -376,6 +393,13 @@ function CreateEventScreen(props) {
   );
 }
 const styles = StyleSheet.create({
+  backButton: {
+    right: 10,
+    width:15,
+    height: 25,
+    
+    
+},
   main: {
     flex: 1,
     backgroundColor: "#fff",
@@ -390,10 +414,13 @@ const styles = StyleSheet.create({
   header: {
     flex: 1,
     alignSelf: "center",
-    padding: 10,
-    fontSize:18,
+    padding: 1,
+    fontSize:17,
     fontWeight:'bold',
     color:colors.mediumBlue,
+    marginBottom: 20,
+    marginTop: 30,
+    right: 20,
   },
   form: {
     flex: 1,

@@ -44,7 +44,8 @@ const AppNavigator = () => (
             </Screen> 
 
             <Screen name="TimelineScreen"
-                component={TimelineScreen}>
+                component={TimelineScreen}
+                >
             </Screen>
 
             <Screen name="CreateprofileScreen"
@@ -52,12 +53,14 @@ const AppNavigator = () => (
             </Screen>
 
             <Screen name="ProfileScreen"
-                component={ProfileScreen}>
+                component={ProfileScreen}
+                options={{headerShown:false}}
+                >
             </Screen>
 
             <Screen name="HomeScreen"
                 component={HomeScreen}
-                options={{headerLeft: () => <Text></Text>}}>
+                options={{headerShown:false}}>
 
             </Screen>
 
@@ -67,12 +70,9 @@ const AppNavigator = () => (
 
             <Screen name="CreateEventScreen"
                 component={CreateEventScreen}
+                
                 options={{
-                title: "Create Event",
-                headerTintColor: 'black',
-                headerTitleStyle: {
-                    fontWeight: 'bold',
-                },
+                headerShown:false
                 }}>
 
             </Screen>
