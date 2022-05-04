@@ -28,7 +28,8 @@ const AppNavigator = () => (
             <Screen name="RegisterScreen" 
                     component={RegisterScreen} 
                     options={{
-                    title:"Register", }}>
+                        headerShown:false
+                        }}>
             </Screen>
 
             <Screen name="LoginScreen" 
@@ -39,8 +40,7 @@ const AppNavigator = () => (
 
             <Screen name="ResetPassword" 
                     component={ResetPassword} 
-                    options={{
-                    title:null, }}>
+                    options={{headerShown:false}}>
             </Screen> 
 
             <Screen name="TimelineScreen"
@@ -49,7 +49,8 @@ const AppNavigator = () => (
             </Screen>
 
             <Screen name="CreateprofileScreen"
-                component={CreateprofileScreen}>
+                component={CreateprofileScreen}
+                    options={{headerShown:false}}>
             </Screen>
 
             <Screen name="ProfileScreen"
