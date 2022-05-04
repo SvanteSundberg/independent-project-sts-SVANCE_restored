@@ -151,7 +151,7 @@ export default function App() {
                 }}
                 title={event.title}
                 description={event.description}
-                pinColor={colors.orange}
+                pinColor={colors.deepBlue}
                 tracksInfoWindowChanges={true}
                 zIndex={100}
                 style={styles.markerStyle}
@@ -212,7 +212,6 @@ export default function App() {
                     </Callout>
                     <Callout
                       onPress={() => openGps(event.region.latitude, event.region.longitude)}
-                      style={styles.filterButton}
                       style={styles.directionsButton}
                     >
                       <Text
@@ -271,6 +270,7 @@ const styles = StyleSheet.create({
       height:10
     },
     shadowOpacity:2
+   
   },
 
   calloutHeader: {
