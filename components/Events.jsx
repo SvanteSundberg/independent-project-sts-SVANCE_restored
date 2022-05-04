@@ -21,10 +21,10 @@ import { useTranslation } from "react-i18next";
 import {useIsFocused} from '@react-navigation/native';
 
 
-function Events({ events, setevents, owners}) {
+function Events({ events, setevents, owners, joinedEvents, setJoinedEvents, onRefresh}) {
   const {t,i18n}=useTranslation();
   const [ownEvents, setOwnEvents] = useState([]);
-  const [joinedEvents, setJoinedEvents] = useState([]);
+  //const [joinedEvents, setJoinedEvents] = useState([]);
   const auth = getAuth();
   const user = auth.currentUser;
   const navigation = useNavigation();
@@ -34,10 +34,11 @@ function Events({ events, setevents, owners}) {
   const [participants, setParticipants] = useState([]); 
   const [ownUser, setOwnUser] = useState(false);
   const isFocused = useIsFocused();
+  const [photo, setPhoto] = useState(null);
 
 
   useEffect(() => {
-    fetchJoinedEvents();
+    //fetchJoinedEvents();
     fetchOwnEvents();
   }, [isFocused]);
 
@@ -110,6 +111,7 @@ function Events({ events, setevents, owners}) {
     myParticipantsnapshot.forEach(async (user)=> {
       const info =await response.doc(user.data().userID).get();
       setParticipants(users => ([...users, {
+          photo: info.get("photo"),
           name: info.get("name"),
           userID: user.data().userID }]));
     });
@@ -119,6 +121,11 @@ function Events({ events, setevents, owners}) {
       setEvent(event);
       setVisable(true);
       getID(event.eventID);
+      for (let obj of owners) {
+        if (obj.ownerid === event.owner) {
+          setPhoto(obj.photo)
+        }
+      }
     }
 
 
@@ -126,16 +133,16 @@ function Events({ events, setevents, owners}) {
       for (let obj of owners) {
         if (obj.ownerid === id) {
           return (
-            <Text
-              style={styles.ownerText}
+            <TouchableOpacity 
+              style={[styles.imageContainer]}
               onPress={() =>
                 navigation.navigate("ProfileScreen", {
                   userID: id,
                 })
               }
             >
-              {obj.name}
-            </Text>
+               <Image  style={styles.ownerImage} source= {{uri: obj.photo}}/>
+            </TouchableOpacity>
           );
         }
       }
@@ -172,6 +179,9 @@ function Events({ events, setevents, owners}) {
     let eventArray = [...events];
     eventArray[index].placesLeft = placesLeft;
     setevents(eventArray);
+    if (typeof onRefresh !== 'undefined'){
+      onRefresh();
+    }
 
     let updateJoin = [...joinedEvents];
     let i = updateJoin.indexOf(element.eventID, 0);
@@ -207,6 +217,7 @@ function Events({ events, setevents, owners}) {
                       setEvent={setEvent}
                       getID={getID}
                       setParticipants={setParticipants}
+                      photo={photo}
                     />}
 
       <ScrollView style={styles.scroller}>
@@ -226,7 +237,7 @@ function Events({ events, setevents, owners}) {
                       labelStyle={{ color: "#CCDBDC" }}
                     />
                     <Text style={styles.dateText}>
-                      {element.date} {element.time}
+                      {element.date}  kl. {element.time}
                     </Text>
                   </View>
                  
@@ -246,11 +257,9 @@ function Events({ events, setevents, owners}) {
                   </View>
                 </View>
 
-                <View
-                  style={{ justifyContent: "center", alignItems: "center" }}
-                >
                   <Text style={styles.title}>{element.title} </Text>
-                </View>
+
+                  {checkOwner(element.owner)}
 
                 <View style={{ marginLeft: 15 }}>
 
@@ -385,9 +394,19 @@ const styles = StyleSheet.create({
   owner: {
     margin: 5,
   },
-  ownerText: {
-    color: "#0081CF",
-    textDecorationLine: "underline",
+  ownerImage: {
+    /*color: "#0081CF",
+    textDecorationLine: "underline",*/
+    width: 40,
+    height: 40,
+    borderRadius: 200 / 2, 
+    marginTop:5,
+    right: '10%',
+    position: 'absolute',
+    top:-42,
+    right: 10,
+    borderWidth: 1,
+    borderColor: colors.orange
   },
   scroller: {
     alignSelf: "center",
@@ -418,12 +437,13 @@ peopleLogga:{
   dateText: {
     color: "#CCDBDC",
     alignSelf: "center",
+    left:-15
   },
 
   noPeopleText: {
     //marginRight:10,
     bottom: 0, 
-    left: 55,
+    left: 45,
     margin:5,
     color: "#CCDBDC",
 
@@ -466,7 +486,7 @@ peopleLogga:{
     width: 105,
     height: 35,
     alignSelf: "center",
-    marginTop:15,
+    marginTop:5,
 
 
   }, 
@@ -483,15 +503,23 @@ peopleLogga:{
     width: 150,
     height: 35,
     alignSelf: "center",
-    marginTop:15,
+    marginTop:5,
   },
 
   title: {
     color: colors.deepBlue,
     fontWeight: "bold",
     fontSize: 18,
-    margin: 5,
+    margin: 10,
+    alignSelf: "center",
+    marginBottom: 10
   },
+  imageContainer: {
+    shadowColor: '#171717',
+    shadowOffset: {width: -2, height: 4},
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+  }
 
 });
 export default Events;
