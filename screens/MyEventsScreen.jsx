@@ -7,6 +7,7 @@ import Events from '../components/Events';
 import { useIsFocused } from '@react-navigation/native';
 import { useTranslation } from "react-i18next";
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useFocusEffect } from '@react-navigation/native';
 
 
 export default function MyEventsScreen() {
@@ -19,10 +20,12 @@ export default function MyEventsScreen() {
     const auth = getAuth();
     const user = auth.currentUser;
     const isFocused = useIsFocused();
+    const [joinedEvents, setJoinedEvents] = React.useState([]);
 
     const onRefresh =()=>{ 
       setRefreshing(true);
       fetchComingEvents();
+      fetchJoinedEvents();
       setRefreshing(false);
     } 
     
@@ -61,8 +64,8 @@ export default function MyEventsScreen() {
       setOwners([]);
       const users =firebase.firestore().collection('users');
       myEvents.map(async (event) => {
-        const name=await users.doc(event.owner).get();
-        const obj={ownerid:event.owner, name:name.get('name')}
+        const photo=await users.doc(event.owner).get();
+        const obj={ownerid:event.owner, photo:photo.get('photo')}
         setOwners(owners=>([...owners, obj]))
       });
     }
@@ -90,24 +93,49 @@ export default function MyEventsScreen() {
         const info = await database.collection("events").doc(eventID).get();
         let data = info.data();
         if (typeof data !== 'undefined'){
-          let id = {eventID: eventID}
-          Object.assign(data, id);
-          myEvents.push(data);
-          myEvents.sort(function(a,b){
-          return new Date(a.date) - new Date(b.date);
-          });
-          
-          setEvents(myEvents);
+          if((new Date(data.date)> new Date()) || (new Date(data.date).getUTCDate()== new Date().getUTCDate())){
+            let id = {eventID: eventID}
+            Object.assign(data, id);
+            myEvents.push(data);
+            myEvents.sort(function(a,b){
+            return new Date(a.date) - new Date(b.date);
+            });
+            setEvents(myEvents);
+
+          }
         }
         fetchOwners(myEvents);
        })
   }
 
+  const fetchJoinedEvents = async () => {
+    setJoinedEvents([]);
+    const db = firebase.firestore();
+    const joinedEvents = query(
+      collection(db, "user_event"),
+      where("userID", "==", user.uid)
+    );
+    const myEventsnapshot = await getDocs(joinedEvents);
+    myEventsnapshot.forEach((event) => {
+      setJoinedEvents((events) => [...events, event.data().eventID]);
+    });
+  };
 
-  React.useEffect(() => {
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchComingEvents();
+      //getMyEvents();
+      fetchJoinedEvents();
+    }, [])
+  );
+
+
+  /*React.useEffect(() => {
+    console.log("hej");
     fetchComingEvents();
-    getMyEvents();
-  },[isFocused]);
+    //getMyEvents();
+    fetchJoinedEvents();
+  },[]);*/
 
   /*            <Text style={styles.events}> MY OWN EVENTS</Text>
             <Events events={myEvents} setevents={setMyEvents} owners={name}/>*/
@@ -127,7 +155,7 @@ export default function MyEventsScreen() {
                   />
                 }>
 
-            <Events events={events} setevents={setEvents} owners={owners}/>
+            <Events events={events} setevents={setEvents} owners={owners} joinedEvents={joinedEvents} setJoinedEvents={setJoinedEvents} onRefresh={onRefresh}/>
 
             </ScrollView>
             

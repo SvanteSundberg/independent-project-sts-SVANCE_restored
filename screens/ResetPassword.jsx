@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { StyleSheet, View, Text, Alert, ImageBackground, SafeAreaView, Image } from 'react-native';
 import { Button, TextInput} from 'react-native-paper';
 import { auth } from "../config/firebase";
+import colors from '../config/colors';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useTheme } from 'react-native-paper';
 import { useTranslation } from "react-i18next";
+import { useNavigation } from '@react-navigation/native';
 
 const ResetPassword = (props) => {
 
@@ -13,6 +15,8 @@ const ResetPassword = (props) => {
     const [isSent, setIsSent]= useState(false);
     const [email, setEmail] = useState('');
     const {t,i18n}=useTranslation();
+    const navigation= useNavigation();
+    const handleBackwards = () =>  navigation.navigate("StartScreen")
 
     const reset = async() => {
         try {
@@ -41,6 +45,15 @@ const ResetPassword = (props) => {
                 <SafeAreaView style={styles.container}>
  
                 <ImageBackground source={require('../assets/logoOpac.png')} style={styles.backgroundImg}>
+
+                <Button
+                style={styles.backButton}
+                onPress={handleBackwards}
+                icon='keyboard-backspace'
+                labelStyle={{fontSize: 35,
+                color: colors.lightBlue}}>
+                 </Button>
+
                 <Image source={require('../assets/sportaLogoFinal.png')} style={styles.logo} />
                 <Text style={{ color:'white', marginLeft: 5, fontWeight: 'bold', left: 10 }}>{t('resPassword')}</Text>
             <TextInput
@@ -79,6 +92,14 @@ const ResetPassword = (props) => {
         flex: 1,
         justifyContent:'center'
     },
+
+    backButton: {
+        width:20,
+        height: 35,
+        top:20,
+        left: 10
+    },
+
     textInput:{
         margin:10,
         

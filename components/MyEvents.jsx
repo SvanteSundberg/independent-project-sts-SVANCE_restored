@@ -69,6 +69,7 @@ function MyEvents({navigation, theUser, changeUser, name, ownUser}) {
         myParticipantsnapshot.forEach(async (user)=> {
           const info =await response.doc(user.data().userID).get();
           setParticipants(users => ([...users, {
+              photo: info.get('photo'),
               name: info.get("name"),
               userID: user.data().userID }]));
         });

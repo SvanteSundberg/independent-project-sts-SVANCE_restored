@@ -1,8 +1,9 @@
-import { SafeAreaView, StyleSheet , Text,ScrollView, Image} from "react-native";
+import { SafeAreaView, StyleSheet , Text,ScrollView, Image, View} from "react-native";
 import { Button, TextInput } from 'react-native-paper';
 import { ImageBackground } from "react-native";
 import { auth } from "../config/firebase";
 import { useState } from "react";
+import colors from '../config/colors';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from "react-i18next";
 import { color } from "react-native-elements/dist/helpers";
@@ -14,6 +15,8 @@ import { color } from "react-native-elements/dist/helpers";
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmpassword] = useState('')
     const navigation= useNavigation();
+
+    const handleBackwards = () =>  navigation.navigate("StartScreen")
    
     const handleSignUp = () => {
       if(password!=confirmPassword){
@@ -41,8 +44,17 @@ import { color } from "react-native-elements/dist/helpers";
         <SafeAreaView style={styles.container}>
  
        <ImageBackground source={require('../assets/logoOpac.png')} style={styles.backgroundImg}>
+
+
+       <Button
+       style={styles.backButton}
+       onPress={handleBackwards}
+      icon='keyboard-backspace'
+       labelStyle={{fontSize: 35,
+        color: colors.lightBlue}}>
+        </Button>
+
        <Image source={require('../assets/sportaLogoFinal.png')} style={styles.logo} />
-           
              
        <Text style={styles.header}> {t('createAccount')}  </Text>
        <TextInput mode="outlined"
@@ -92,7 +104,12 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
      
     },
- 
+    backButton: {
+      width:20,
+      height: 35,
+      top:20,
+      left: 10
+  },
     logo: {
       height:150,
       width:250,

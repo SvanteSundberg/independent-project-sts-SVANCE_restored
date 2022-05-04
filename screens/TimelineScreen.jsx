@@ -1,4 +1,4 @@
-import { StyleSheet,View, Text, Image, TextInput, TouchableOpacity, ScrollView, Dimensions, SafeAreaView } from "react-native";
+import { StyleSheet,View, Text, Image, TextInput, RefreshControl, TouchableOpacity, ScrollView, Dimensions, SafeAreaView } from "react-native";
 import * as React from 'react';
 import { Checkbox,Menu, Divider, } from 'react-native-paper';
 import { IconButton, Colors, Button, Chip, Modal, Portal  } from 'react-native-paper';
@@ -8,7 +8,9 @@ import { getAuth } from "firebase/auth";
 import { getDocs, collection, query, where, orderBy} from "firebase/firestore";
 import Events from "../components/Events";
 import SportFilter from "../components/SportFilter";
-import colors from "../config/colors.js";
+import { useFocusEffect } from '@react-navigation/native';
+import colors from "../config/colors";
+
 
  
 const Timeline = () => {
@@ -31,15 +33,37 @@ const Timeline = () => {
     );
     const [dateOpen, setdateOpen] = React.useState(false);
     const [photo, setPhoto] = React.useState(null);
+    const [joinedEvents, setJoinedEvents] = React.useState([]);
+    const [refreshing, setRefreshing] = React.useState(false);
+
+    const onRefresh =()=>{ 
+      setRefreshing(true);
+      fetchEvents();
+      fetchJoinedEvents();
+      setRefreshing(false);
+    } 
+
+    const fetchJoinedEvents = async () => {
+      setJoinedEvents([]);
+      const db = firebase.firestore();
+      const joinedEvents = query(
+        collection(db, "user_event"),
+        where("userID", "==", user.uid)
+      );
+      const myEventsnapshot = await getDocs(joinedEvents);
+      myEventsnapshot.forEach((event) => {
+        setJoinedEvents((events) => [...events, event.data().eventID]);
+      });
+    };
    
     const fetchEvents = async()=>{
       const db =firebase.firestore();
       const snapshot= query(collection(db,'events'), orderBy("date"));
       const data =await getDocs(snapshot);
       setUnfilteredevents([]);
+      setevents([]);
       let myEvents= [];
       data.docs.forEach(item =>{
-
         if (item.data().owner !== user.uid){
         if(new Date(item.data().date)> new Date()){
           let data = item.data();
@@ -99,17 +123,26 @@ const Timeline = () => {
       setOwners([]);
       const users =firebase.firestore().collection('users');
       myEvents.map(async (event) => {
-        const name=await users.doc(event.owner).get();
-        const obj={ownerid:event.owner, name:name.get('name')}
+        const photo=await users.doc(event.owner).get();
+        const obj={ownerid:event.owner, photo:photo.get('photo')}
         setOwners(owners=>([...owners, obj]))
       });
     }
 
-     React.useEffect(() => {
+    useFocusEffect(
+      React.useCallback(() => {
+        fetchEvents();
+        getUserPhoto();
+        fetchJoinedEvents();
+      }, [])
+    );
+
+     /*React.useEffect(() => {
       fetchEvents();
       getUserPhoto();
+      fetchJoinedEvents();
      
-    },[]);
+    },[]);*/
 
 
     const getUserPhoto = async()=> {
@@ -117,7 +150,6 @@ const Timeline = () => {
       const info =await response.doc(user.uid).get();
       if (info.exists){
           setPhoto(info.get("photo"));
-          console.log(info.get("photo"), "thaba");
       }
     };
      
@@ -169,14 +201,20 @@ const deleteExpDate=async (element)=>{
  
  </Modal></Portal>
 
-        <ScrollView style={styles.scroller} >
-      <Events events={events} setevents={setevents} owners={owners}/>
+        <ScrollView style={styles.scroller} refreshControl={
+                  <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={onRefresh}
+                  />
+                } >
+      <Events events={events} setevents={setevents} owners={owners} joinedEvents={joinedEvents} setJoinedEvents={setJoinedEvents}/>
      
        
     </ScrollView>
     <SafeAreaView style ={styles.createEvent}>
      
     <IconButton
+    style={{top:10}}
   icon="pencil-circle"
   color={colors.orange}
   size={85}
@@ -284,7 +322,7 @@ const styles = StyleSheet.create({
       borderWidth: 1,
       width: 48,
       height: 48,
-      borderColor: 'black'
+      borderColor: colors.orange
   },
 
 });
