@@ -20,6 +20,7 @@ import { color } from "react-native-elements/dist/helpers";
 import { Menu, Divider } from "react-native-paper";
 
 
+
 export default function App() {
   const [events, setevents] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
@@ -78,11 +79,12 @@ export default function App() {
   const closeMenu = () => setVisibleFilter(false);
 
   const openGps = (lat, lng) => {
+    
       {Platform.OS === "ios"
         ? Linking.openURL(
             `maps://app?saddr=enter the+startposition&daddr=${lat}+${lng}`
           )
-        : console.log("android")}
+        : Linking.openURL(`google.navigation:q=${lat}+${lng}`)}
   };
 
  

@@ -8,6 +8,7 @@ import { getAuth } from "firebase/auth";
 import { getDocs, collection, query, where, orderBy} from "firebase/firestore";
 import Events from "../components/Events";
 import SportFilter from "../components/SportFilter";
+import colors from "../config/colors.js";
 
  
 const Timeline = () => {
@@ -177,9 +178,18 @@ const deleteExpDate=async (element)=>{
      
     <IconButton
   icon="pencil-circle"
-  color={Colors.black}
-  size={80}
+  color={colors.orange}
+  size={85}
   onPress={() => navigation.navigate("CreateEventScreen")}
+  style = {{shadowColor: "#000",
+  shadowOffset: {
+    width: 0,
+    height: 2,
+  },
+  shadowOpacity: 0.25,
+  shadowRadius: 3.84,
+  
+  elevation: 5,}}
 />
  
   </SafeAreaView>
@@ -255,7 +265,7 @@ const styles = StyleSheet.create({
     },
 
     createEvent:{
-      bottom: 40, 
+      bottom: 22, 
       right:-5, 
       position: 'absolute'
     },
