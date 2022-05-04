@@ -11,6 +11,7 @@ import SportFilter from "../components/SportFilter";
 import { useFocusEffect } from '@react-navigation/native';
 import colors from "../config/colors";
 
+
  
 const Timeline = () => {
     const auth = getAuth();
@@ -216,8 +217,17 @@ const deleteExpDate=async (element)=>{
     style={{top:10}}
   icon="pencil-circle"
   color={colors.orange}
-  size={75}
+  size={85}
   onPress={() => navigation.navigate("CreateEventScreen")}
+  style = {{shadowColor: "#000",
+  shadowOffset: {
+    width: 0,
+    height: 2,
+  },
+  shadowOpacity: 0.25,
+  shadowRadius: 3.84,
+  
+  elevation: 5,}}
 />
  
   </SafeAreaView>
@@ -293,7 +303,7 @@ const styles = StyleSheet.create({
     },
 
     createEvent:{
-      bottom: 40, 
+      bottom: 22, 
       right:-5, 
       position: 'absolute'
     },
