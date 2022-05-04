@@ -6,6 +6,7 @@ import { getAuth } from "firebase/auth";
 import firebase from '../config/firebase';
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import colors from "../config/colors";
+
  
 function CreateprofileScreen({navigation, route}) {
    const [name, setName] = useState(route.params.name);
@@ -16,6 +17,9 @@ function CreateprofileScreen({navigation, route}) {
    const [remove, setRemove] = useState(false);
    const [selectedSports, chooseSports] = useState(route.params.selectedSports);
    const [uploading, setUploading] = useState(false);
+   
+
+   const handleBackwards = () =>  navigation.navigate("HomeScreen")
 
    const auth = getAuth();
    const user = auth.currentUser;
@@ -140,6 +144,14 @@ function CreateprofileScreen({navigation, route}) {
    return (
        <SafeAreaView style={[styles.container, styles.background]}>
            <ScrollView style={styles.scroll}>
+
+           <Button
+       style={styles.backButton}
+       onPress={handleBackwards}
+      icon='keyboard-backspace'
+       labelStyle={{fontSize: 35,
+        color: colors.lightBlue}}>
+        </Button>
  
            <Text style={[styles.header, {marginTop:30}]}>
             FILL IN YOUR DETAILS
@@ -276,6 +288,13 @@ const styles = StyleSheet.create({
        alignSelf: "center",
        color: colors.lightBlue
    },
+
+   backButton: {
+    width:20,
+    height: 35,
+    top:20,
+    left: 10
+},
    header: {
        margin:10,
        fontSize:16,
