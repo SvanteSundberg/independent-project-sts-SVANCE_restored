@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Modal, StyleSheet, Text, View, TouchableOpacity, ScrollView } from "react-native";
+import { Modal, StyleSheet, Image, Text, View, TouchableOpacity, ScrollView } from "react-native";
 import { Button } from 'react-native-paper';
 import { getAuth } from "firebase/auth";
 import firebase from '../config/firebase';
@@ -8,6 +8,7 @@ import { useIsFocused } from '@react-navigation/native';
 import { getFixedT } from "i18next";
 import { useTranslation } from "react-i18next";
 import { Icon } from "react-native-elements";
+import colors from "../config/colors";
 
 function BiggerEvent({ navigation,
   visable,
@@ -20,7 +21,8 @@ function BiggerEvent({ navigation,
   setEvent,
   getID,
   owners,
-  setParticipants }) {
+  setParticipants,
+  photo }) {
 
   const auth = getAuth();
   const { t, i18n } = useTranslation();
@@ -103,6 +105,7 @@ function BiggerEvent({ navigation,
   return (
     <View style={styles.centeredView}>
       <Modal
+        propagateSwipe={true}
         transparent={true}
         visible={visable}
         onRequestClose={() => {
@@ -179,13 +182,31 @@ function BiggerEvent({ navigation,
 
 
                 <View>
-                  <Text style={[styles.underTitle, styles.margins]}> {t('moreInfo')}</Text>
+
+                <View style={{flexDirection: "row", alignItems: "center"}}> 
+                <Text style={[styles.margins]}> Creator: </Text>
+                    <TouchableOpacity 
+                  style={[styles.imageContainer]}
+                  onPress={() =>{
+                    changeVisable();
+                    navigation.navigate("ProfileScreen", {
+                      userID: event.owner,
+                  })}
+                  }
+                >
+                  <Image  style={styles.ownerImage} source= {{uri: photo}}/>
+                </TouchableOpacity>
+                </View>
+
+                  <Text style={[styles.underTitle, styles.margins, {alignSelf: "center"}]}> {t('peopleJoined').toUpperCase()}</Text>
                   {/*<Text style={styles.margins}> There are {event.placesLeft} places left! </Text>*/}
 
-                <Text style={styles.margins}> {participants.length} {t('peopleJoined')} </Text>
-
+                {/*<Text style={styles.margins}> {/* {participants.length}}{t('peopleJoined')} </Text>*/}
+                
+                <View style={{flexDirection: 'row', }}> 
                   {participants.map((user, index) => (
                     <TouchableOpacity
+                      style={[styles.imageContainer]}
                       key={index}
                       onPress={() => {
                         changeVisable();
@@ -196,9 +217,12 @@ function BiggerEvent({ navigation,
                           userID: user.userID
                         })
                       }}>
-                      <Text style={styles.peopleJoined}> {user.name} </Text>
+               <Image  style={styles.ownerImage} source= {{uri: user.photo}}/>
+                      
+                      {/*<Text style={styles.peopleJoined}> {user.name} </Text>*/}
                     </TouchableOpacity>
                   ))}
+                  </View>
                 </View>
               </View>
             </ScrollView>
@@ -247,7 +271,7 @@ function BiggerEvent({ navigation,
 
 const styles = StyleSheet.create({
   background: {
-    borderBottomColor: 'black',
+    borderBottomColor: colors.orange,
     borderBottomWidth: 1,
     width: '100%',
   },
@@ -259,7 +283,9 @@ const styles = StyleSheet.create({
   },
 
   description: {
-    margin: 15,
+    margin:5,
+    marginTop:15,
+    marginBottom: 15,
     alignSelf:'center'
   },
 
@@ -285,11 +311,12 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     elevation: 5,
     width: '90%',
-    height: '60%',
     alignItems: 'center'
   },
 
   myButtons: {
+    borderTopWidth: 1,
+    borderTopColor: colors.orange,
     flexDirection: 'row',
     flex: 1,
     position: "absolute",
@@ -316,20 +343,39 @@ const styles = StyleSheet.create({
   // },
 
   title: {
-    marginBottom: 15,
+    marginBottom: 5,
     textAlign: "center",
     fontSize: 18,
     fontWeight: 'bold',
+    color: colors.deepBlue
   },
   underTitle: {
     fontWeight: 'bold',
+    color: colors.deepBlue
   },
 
   scrollView: {
-    marginHorizontal: 0,
     backgroundColor: 'white',
+    width: '90%',
 
   },
+  ownerImage: {
+    /*color: "#0081CF",
+    textDecorationLine: "underline",*/
+    width: 40,
+    height: 40,
+    borderRadius: 200 / 2, 
+    marginTop:5,
+    margin:5,
+    borderWidth: 1,
+    borderColor: colors.orange
+  },
+  imageContainer: {
+    shadowColor: '#171717',
+    shadowOffset: {width: -2, height: 4},
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+  }
 });
 
 export default BiggerEvent;
