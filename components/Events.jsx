@@ -284,8 +284,8 @@ function Events({ events, setevents, owners, joinedEvents, setJoinedEvents, onRe
                     {element.region.place}
                   </Button>
 
-                  <View>
-                  {/* <Text> {t('createdBy')} {checkOwner(element.owner)}</Text> */}
+                  {/*<View>
+                   <Text> {t('createdBy')} {checkOwner(element.owner)}</Text> 
 
                     {!ownEvents.includes(element.eventID) && (
                       <View>
@@ -330,7 +330,7 @@ function Events({ events, setevents, owners, joinedEvents, setJoinedEvents, onRe
                        <Text style={styles.text}>{t('removeEvent')}</Text> 
                       </Button>
                     )}
-                  </View>
+                  </View>*/}
                 </View>
               </View>
               </TouchableOpacity>
@@ -464,9 +464,9 @@ peopleLogga:{
   posts: {
     flex: 1,
     width: Dimensions.get("window").width - 20,
-    height: 200,
+    height: 150,
     //borderWidth: 0.5,
-    borderRadius: 10,
+    borderRadius: 15,
     backgroundColor:'white',//colors.lightBlue,
     //borderColor:"black",
     //backgroundColor:"#D6EAF8",
