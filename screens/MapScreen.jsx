@@ -178,6 +178,8 @@ export default function App() {
                 zIndex={100}
                 style={styles.markerStyle}
               >
+
+          {Platform.OS === "ios" ?
                 <Callout key={index} tooltip>
                   <View
                     style={styles.calloutHeader}
@@ -269,6 +271,85 @@ export default function App() {
                   <View style={styles.calloutArrowBorder} />
                   <View style={styles.calloutArrow} />
                 </Callout>
+                : <Callout key={index} tooltip onPress={() => {
+                  setVisable(true);
+                  setEvent(event);
+                  getID(event.eventID);
+                  for (let obj of owners) {
+                    if (obj.ownerid === event.owner) {
+                      setPhoto(obj.photo)
+                    }
+                  } 
+                  setOwnUser(event.owner == user.uid);
+                }}>
+                <View
+                  style={styles.calloutHeader}
+                  backgroundColor={colors.lightBlue}
+                >
+                  <View style={styles.title}>
+                    <Text
+                      style={{
+                        fontWeight: "bold",
+                        color: colors.deepBlue,
+                        fontSize: 18,
+                      }}
+                    >
+                      {event.title}
+                    </Text>
+                  </View>
+                  <View>
+                    <Text style={{ fontSize: 15 }}>{event.description}</Text>
+                  </View>
+                  <View style={{ marginTop: 8 }}>
+                    <Text
+                      style={{
+                        fontWeight: "bold",
+                        fontSize: 14,
+                      }}
+                    >
+                      Number of available slots:{" "}
+                      <Text style={{ color: colors.orange, fontSize: 17 }}>
+                        {" "}
+                        {event.placesLeft}{" "}
+                      </Text>
+                    </Text>
+                  </View>
+
+                  <Callout
+                    
+                    style={styles.calloutButton}
+                    mode="contained"
+                  >
+                    <Text
+                      style={{
+                        color: colors.lightBlue,
+                        fontSize: 14,
+                        alignSelf: "center",
+                      }}
+                    >
+                      OPEN EVENT
+                    </Text>
+                  </Callout>
+                  <BiggerEvent
+                    navigation={navigation}
+                    visable={visable}
+                    changeVisable={changeVisable}
+                    event={specificEvent}
+                    participants={participants}
+                    photo={photo}
+                    //changeUser={setUser}
+                    ownUser={ownUser}
+                    deleteEvent={deleteEvent}
+                    setEvent={setEvent}
+                    getID={getID}
+                    setParticipants={setParticipants}
+                  />
+                </View>
+                <View style={styles.calloutArrowBorder} />
+                <View style={styles.calloutArrow} />
+              </Callout>
+}
+
               </Marker>
             ))
           : null}
