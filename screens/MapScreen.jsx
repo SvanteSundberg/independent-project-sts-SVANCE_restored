@@ -18,6 +18,7 @@ import BiggerEvent from "../components/BiggerEvent";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { color } from "react-native-elements/dist/helpers";
 import { Menu, Divider } from "react-native-paper";
+import { useTranslation } from "react-i18next";
 
 
 
@@ -38,7 +39,7 @@ export default function App() {
   const [owners, setOwners] = React.useState([]);
 
   
-  
+  const { t, i18n } = useTranslation();
 
   const changeVisable = () => {
     setVisable(!visable);
@@ -204,7 +205,7 @@ export default function App() {
                           fontSize: 14,
                         }}
                       >
-                        Number of available slots:{" "}
+                        {t('avails')}{" "}
                         <Text style={{ color: colors.orange, fontSize: 17 }}>
                           {" "}
                           {event.placesLeft}{" "}
@@ -234,7 +235,7 @@ export default function App() {
                           alignSelf: "center",
                         }}
                       >
-                        OPEN EVENT
+                        {t('openEvent')}
                       </Text>
                     </Callout>
                     <Callout
@@ -248,7 +249,7 @@ export default function App() {
                           alignSelf: "center",
                         }}
                       >
-                        Get directions!
+                        {t('getDir')}
                       </Text>
                     </Callout>
                     <BiggerEvent

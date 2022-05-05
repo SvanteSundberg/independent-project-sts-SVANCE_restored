@@ -8,6 +8,7 @@ import { useIsFocused } from '@react-navigation/native';
 import { useTranslation } from "react-i18next";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
+import colors from '../config/colors';
 
 
 export default function MyEventsScreen() {
@@ -168,7 +169,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    alignItems: 'center',    
+    alignItems: 'center',   
+    marginTop:30, 
   },
   events: {
     margin: 15,
@@ -177,7 +179,7 @@ const styles = StyleSheet.create({
 
 header:{
   alignSelf: 'center',
-  backgroundColor: 'white',
+  backgroundColor: colors.orange,
   height:'12%',
   width: '100%',
   paddingTop: 30,
@@ -192,6 +194,7 @@ header:{
 upcoming: {
   fontWeight: "bold",
   fontSize: 25,
+  color:'white'
 
 }
  

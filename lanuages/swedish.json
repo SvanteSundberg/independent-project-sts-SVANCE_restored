@@ -48,7 +48,11 @@
         "linkPass":"Länk för att återställa ditt lösenord har skickats till din mejl.",
         "resPassword": "ÅTERSTÄLL LÖSENORD", 
         "yourEmail": "Skriv Email",
-        "reset": "Återställ"
+        "reset": "Återställ",
+        "events": "Event",
+        "avails": "Platser kvar:",
+        "openEvent": "Visa Event!",
+        "getDir": "Visa Vägen!"
 
     }
 }

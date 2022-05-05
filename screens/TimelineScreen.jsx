@@ -1,6 +1,6 @@
 import { StyleSheet,View, Text, Image, TextInput, RefreshControl, TouchableOpacity, ScrollView, Dimensions, SafeAreaView } from "react-native";
 import * as React from 'react';
-import { Checkbox,Menu, Divider, } from 'react-native-paper';
+import { Checkbox,Menu, Divider, FAB } from 'react-native-paper';
 import { IconButton, Colors, Button, Chip, Modal, Portal  } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import firebase from '../config/firebase';
@@ -10,6 +10,7 @@ import Events from "../components/Events";
 import SportFilter from "../components/SportFilter";
 import { useFocusEffect } from '@react-navigation/native';
 import colors from "../config/colors";
+import { useTranslation } from "react-i18next";
 
 
  
@@ -42,6 +43,8 @@ const Timeline = () => {
       fetchJoinedEvents();
       setRefreshing(false);
     } 
+
+    const { t, i18n } = useTranslation();
 
     const fetchJoinedEvents = async () => {
       setJoinedEvents([]);
@@ -167,7 +170,7 @@ const deleteExpDate=async (element)=>{
         )}>
           {/*<Image source={{ uri: photo }} style = {styles.userIcon}/>*/}
         </TouchableOpacity>
-          <Text style={styles.header}>Aktiviteter</Text>
+          <Text style={styles.header}>{t('events')}</Text>
           <IconButton
         style ={styles.sort}
         icon="filter-variant"
@@ -213,7 +216,7 @@ const deleteExpDate=async (element)=>{
     </ScrollView>
     <SafeAreaView style ={styles.createEvent}>
      
-    <IconButton
+    {/* <IconButton
   icon="pencil-circle"
   color={colors.orange}
   size={85}
@@ -227,7 +230,14 @@ const deleteExpDate=async (element)=>{
   shadowRadius: 3.84,
   top:10,
   elevation: 5,}}
-/>
+/> */}
+<FAB
+ style={styles.fab}
+ color="white"
+ small={false}
+ icon="pen"
+ onPress={() => navigation.navigate("CreateEventScreen")}
+ />
  
   </SafeAreaView>
   </SafeAreaView>
@@ -240,6 +250,7 @@ const deleteExpDate=async (element)=>{
 const styles = StyleSheet.create({
   main:{
     flex:1,
+    marginTop:30,
   },
 
   postContainer:{
@@ -255,7 +266,7 @@ const styles = StyleSheet.create({
   head: {
     flexDirection:"row", 
     justifyContent: "center", 
-    backgroundColor: 'white',
+    backgroundColor: colors.orange,
     height:'13%',
     borderBottomWidth :0.5,
     borderBottomColor: 'lightgrey',
@@ -269,6 +280,15 @@ const styles = StyleSheet.create({
       alignSelf: 'center',
       fontWeight: "bold",
       fontSize: 25,
+      color:'white'
+    },
+
+    fab: {
+      position: 'absolute',
+      margin: 25,
+      right: 0,
+      bottom: 0,
+      backgroundColor:colors.orange,
     },
     
     scroller:{

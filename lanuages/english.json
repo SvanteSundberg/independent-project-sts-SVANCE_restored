@@ -48,7 +48,11 @@
       "linkPass":"Link to reset your password sent. Please check your inbox.", 
       "resPassword": "RESET PASSWORD", 
       "yourEmail": "Type Email", 
-       "reset": "Reset"
+       "reset": "Reset",
+       "events": "EVENTS",
+       "avails": "Available spots:",
+       "openEvent": "Open Event",
+       "getDir": "Get Directions!"
 
 
 
