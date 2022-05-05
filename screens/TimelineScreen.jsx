@@ -36,6 +36,7 @@ const Timeline = () => {
     const [photo, setPhoto] = React.useState(null);
     const [joinedEvents, setJoinedEvents] = React.useState([]);
     const [refreshing, setRefreshing] = React.useState(false);
+    const [loading, setLoading] = React.useState(true);
 
     const onRefresh =()=>{ 
       setRefreshing(true);
@@ -96,6 +97,7 @@ const Timeline = () => {
       /*events.sort(function(a,b){
         return new Date(a.date) - new Date(b.date);
       });*/
+      setLoading(false);
     };
 
     
@@ -210,7 +212,7 @@ const deleteExpDate=async (element)=>{
                     onRefresh={onRefresh}
                   />
                 } >
-      <Events events={events} setevents={setevents} owners={owners} joinedEvents={joinedEvents} setJoinedEvents={setJoinedEvents}/>
+      <Events events={events} setevents={setevents} owners={owners} joinedEvents={joinedEvents} setJoinedEvents={setJoinedEvents} loading={loading} refreshing={refreshing}/>
      
        
     </ScrollView>
