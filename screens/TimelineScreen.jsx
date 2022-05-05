@@ -165,7 +165,7 @@ const deleteExpDate=async (element)=>{
         <TouchableOpacity style={styles.profile}
         onPress={() => navigation.navigate("ProfileScreen", {userID: user.uid}
         )}>
-          <Image source={{ uri: photo }} style = {styles.userIcon}/>
+          {/*<Image source={{ uri: photo }} style = {styles.userIcon}/>*/}
         </TouchableOpacity>
           <Text style={styles.header}>Aktiviteter</Text>
           <IconButton

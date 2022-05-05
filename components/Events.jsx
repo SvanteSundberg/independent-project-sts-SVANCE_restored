@@ -130,10 +130,10 @@ function Events({ events, setevents, owners, joinedEvents, setJoinedEvents, onRe
 
 
     const checkOwner = (id) => {
-      for (let obj of owners) {
+      /*for (let obj of owners) {
         if (obj.ownerid === id) {
           return (
-            <TouchableOpacity 
+              <TouchableOpacity 
               style={[styles.imageContainer]}
               onPress={() =>
                 navigation.navigate("ProfileScreen", {
@@ -145,7 +145,7 @@ function Events({ events, setevents, owners, joinedEvents, setJoinedEvents, onRe
             </TouchableOpacity>
           );
         }
-      }
+      }*/
     };
 
   const joinEvent = async (element, index) => {

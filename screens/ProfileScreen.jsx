@@ -48,7 +48,7 @@ function ProfileScreen({navigation, route}) {
             setAge(info.get("age"));
             setDescrip(info.get("bio"));
             chooseSports(info.get("sports"));
-            setPhoto(info.get("photo"));
+            //setPhoto(info.get("photo"));
         }
         else {
             navigation.navigate("CreateprofileScreen", {

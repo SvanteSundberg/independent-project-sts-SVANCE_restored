@@ -178,6 +178,8 @@ function BiggerEvent({ navigation,
 
                 <View>
 
+                {/*
+                UNCOMMENT TO SEE OWNER AND PARTICIPANTS
                 <View style={{flexDirection: "row", alignItems: "center"}}> 
                 <Text style={[styles.margins]}> Creator: </Text>
                     <TouchableOpacity 
@@ -194,9 +196,6 @@ function BiggerEvent({ navigation,
                 </View>
 
                   <Text style={[styles.underTitle, styles.margins, {alignSelf: "center"}]}> {t('peopleJoined').toUpperCase()}</Text>
-                  {/*<Text style={styles.margins}> There are {event.placesLeft} places left! </Text>*/}
-
-                {/*<Text style={styles.margins}> {/* {participants.length}}{t('peopleJoined')} </Text>*/}
                 
                 <View style={{flexDirection: "row"}}> 
                   {participants.map((user, index) => (
@@ -214,10 +213,10 @@ function BiggerEvent({ navigation,
                       }}>
                <Image  style={styles.ownerImage} source= {{uri: user.photo}}/>
                       
-                      {/*<Text style={styles.peopleJoined}> {user.name} </Text>*/}
+                      
                     </TouchableOpacity>
                   ))}
-                  </View>
+                    </View>*/}
                   <View style={{height:50}}/>
                 </View>
               </View>
