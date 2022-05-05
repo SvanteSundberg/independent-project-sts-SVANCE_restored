@@ -34,6 +34,9 @@ export default function App() {
   const auth = getAuth();
   const user = auth.currentUser;
   const [filter, setFilter] = React.useState("");
+  const [photo, setPhoto] = React.useState(null);
+  const [owners, setOwners] = React.useState([]);
+
   
   
 
@@ -69,9 +72,21 @@ export default function App() {
       const info =await response.doc(user.data().userID).get();
       setParticipants(users => ([...users, {
           name: info.get("name"),
+          photo: info.get("photo"),
           userID: user.data().userID }]));
     });
   }
+
+  const fetchOwners=async(myEvents)=> {
+    setOwners([]);
+    const users =firebase.firestore().collection('users');
+    myEvents.map(async (event) => {
+      const photo=await users.doc(event.owner).get();
+      const obj={ownerid:event.owner, photo:photo.get('photo')}
+      setOwners(owners=>([...owners, obj]))
+    });
+  }
+ 
 
   
   const openMenu = () => setVisibleFilter(true);
@@ -97,6 +112,8 @@ export default function App() {
 
     const data = await response.get();
 
+    let myEvents= [];
+    setevents([]);
     data.docs.forEach((item) => {
       //setevents((events) => [...events, item.data()]);
       let data = item.data();
@@ -104,8 +121,11 @@ export default function App() {
       Object.assign(data, id);
       setevents((events) => [...events, data]);
       setLoading(false);
+      myEvents.push(data);
       
     });
+
+    fetchOwners(myEvents);
     
     
   };
@@ -197,6 +217,11 @@ export default function App() {
                         setVisable(true);
                         setEvent(event);
                         getID(event.eventID);
+                        for (let obj of owners) {
+                          if (obj.ownerid === event.owner) {
+                            setPhoto(obj.photo)
+                          }
+                        } 
                         setOwnUser(event.owner == user.uid);
                       }}
                       style={styles.calloutButton}
@@ -232,6 +257,7 @@ export default function App() {
                       changeVisable={changeVisable}
                       event={specificEvent}
                       participants={participants}
+                      photo={photo}
                       //changeUser={setUser}
                       ownUser={ownUser}
                       deleteEvent={deleteEvent}

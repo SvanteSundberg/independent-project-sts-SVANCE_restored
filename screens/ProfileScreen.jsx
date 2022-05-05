@@ -1,9 +1,9 @@
 import { SafeAreaView, View, Image, ScrollView, StyleSheet } from "react-native";
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useCallback} from 'react';
 import { Button, Text } from 'react-native-paper';
 import { getAuth} from "firebase/auth";
 import firebase from '../config/firebase';
-import { useIsFocused } from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
 import MyEvents from "../components/MyEvents";
 import DownMenu from "../components/DownMenu";
 import colors from "../config/colors";
@@ -21,7 +21,6 @@ function ProfileScreen({navigation, route}) {
 
    const auth = getAuth();
    const user = auth.currentUser;
-   const isFocused = useIsFocused();
    const [userID, setUserID] = useState(route.params.userID);
    const ownUser = (route.params.userID==user.uid);
 
@@ -30,9 +29,15 @@ function ProfileScreen({navigation, route}) {
    }
    const {t,i18n}=useTranslation();
 
-    useEffect(() => {
+    /*useEffect(() => {
         getUserInfo();
-    }, [isFocused, userID, photo]);
+    }, [isFocused, userID, photo]);*/
+
+    useFocusEffect(
+        useCallback(() => {
+            getUserInfo();
+        }, [userID, photo])
+      );
 
     const getUserInfo = async()=> {
         console.log("nu hämtar jag info!");
@@ -123,7 +128,7 @@ function ProfileScreen({navigation, route}) {
 
             </View>
 
-            <MyEvents navigation={navigation} name={name} theUser ={userID} changeUser={changeUser} ownUser={ownUser}/>
+            <MyEvents navigation={navigation} name={name} theUser ={userID} changeUser={changeUser} ownUser={ownUser} photo={photo}/>
 
                 </ScrollView> 
             

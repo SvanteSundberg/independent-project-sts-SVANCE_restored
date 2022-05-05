@@ -214,7 +214,6 @@ const deleteExpDate=async (element)=>{
     <SafeAreaView style ={styles.createEvent}>
      
     <IconButton
-    style={{top:10}}
   icon="pencil-circle"
   color={colors.orange}
   size={85}
@@ -226,7 +225,7 @@ const deleteExpDate=async (element)=>{
   },
   shadowOpacity: 0.25,
   shadowRadius: 3.84,
-  
+  top:10,
   elevation: 5,}}
 />
  

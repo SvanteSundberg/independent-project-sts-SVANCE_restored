@@ -8,7 +8,7 @@ import { collection, query, where, getDocs, orderBy } from "firebase/firestore";
 import BiggerEvent from './BiggerEvent';
 import colors from '../config/colors';
 
-function MyEvents({navigation, theUser, changeUser, name, ownUser}) {
+function MyEvents({navigation, theUser, changeUser, name, ownUser, photo}) {
 
    const [theEvents, setEvents] = useState([]);
    const [visable, setVisable] = useState(false);
@@ -115,7 +115,7 @@ function MyEvents({navigation, theUser, changeUser, name, ownUser}) {
         }
         
         <BiggerEvent navigation={navigation} visable={visable} changeVisable={changeVisable} event={specificEvent} participants={participants}
-                    theUser={theUser} changeUser={setUser} ownUser={ownUser} deleteEvent={deleteEvent} setEvent={setEvent} getID={getID} setParticipants={setParticipants}/>
+                    theUser={theUser} changeUser={setUser} ownUser={ownUser} deleteEvent={deleteEvent} setEvent={setEvent} getID={getID} setParticipants={setParticipants} photo={photo}/>
         </SafeAreaView>
     );
 }
@@ -173,6 +173,7 @@ const styles = StyleSheet.create({
         alignSelf:'center',
         fontSize: 13,
         fontWeight: 'bold',
+        color: colors.deepBlue
     },
     smallText:{
         marginBottom:5,
