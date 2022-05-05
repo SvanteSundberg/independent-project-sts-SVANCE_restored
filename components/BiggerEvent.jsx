@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, Image, Text, View, TouchableOpacity, ScrollView } from "react-native";
+import { StyleSheet, Image, Text, View, TouchableOpacity, ScrollView,  Alert} from "react-native";
 import { Button, Modal, Portal } from 'react-native-paper';
 import { getAuth } from "firebase/auth";
 import firebase from '../config/firebase';
@@ -92,6 +92,29 @@ function BiggerEvent({ navigation,
     let amountP = placesAvail - placesLeft;
     return <Text>{amountP}</Text>;
   };
+
+const AlertFunction = () => {
+  return Alert.alert(
+    "Delete?",
+    "Are you sure you want to remove this event",
+    [
+      // The "Yes" button
+      {
+        text: "Yes",
+        onPress: () => {
+          changeVisable()
+          deleteEvent(event.eventID)
+        },
+      },
+      // The "No" button
+      // Does nothing but dismiss the dialog when tapped
+      {
+        text: "No",
+      },
+    ]
+  );
+};
+
 
   /*<Button
                   style={styles.button}
@@ -234,10 +257,8 @@ function BiggerEvent({ navigation,
                 <Button style={styles.button}
                   labelStyle={{ fontSize: 13 }}
                   color="red"
-                  onPress={() => {
-                    changeVisable()
-                    deleteEvent(event.eventID)
-                  }}>{t('removeEvent')}</Button>
+                  onPress={ AlertFunction }>
+                    {t('removeEvent')}</Button>
               </View>}
 
               {!ownUser && <View>
