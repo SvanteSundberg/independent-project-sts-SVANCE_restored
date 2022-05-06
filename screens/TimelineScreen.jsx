@@ -36,6 +36,7 @@ const Timeline = () => {
     const [photo, setPhoto] = React.useState(null);
     const [joinedEvents, setJoinedEvents] = React.useState([]);
     const [refreshing, setRefreshing] = React.useState(false);
+    const [loading, setLoading] = React.useState(true);
 
     const onRefresh =()=>{ 
       setRefreshing(true);
@@ -48,6 +49,7 @@ const Timeline = () => {
 
     const fetchJoinedEvents = async () => {
       setJoinedEvents([]);
+      console.log("hämtar joined events");
       const db = firebase.firestore();
       const joinedEvents = query(
         collection(db, "user_event"),
@@ -96,6 +98,7 @@ const Timeline = () => {
       /*events.sort(function(a,b){
         return new Date(a.date) - new Date(b.date);
       });*/
+      setLoading(false);
     };
 
     
@@ -210,7 +213,7 @@ const deleteExpDate=async (element)=>{
                     onRefresh={onRefresh}
                   />
                 } >
-      <Events events={events} setevents={setevents} owners={owners} joinedEvents={joinedEvents} setJoinedEvents={setJoinedEvents}/>
+      <Events events={events} setevents={setevents} owners={owners} joinedEvents={joinedEvents} setJoinedEvents={setJoinedEvents} loading={loading} refreshing={refreshing} myEvents={false} onRefresh={onRefresh}/>
      
        
     </ScrollView>

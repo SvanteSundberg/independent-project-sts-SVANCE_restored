@@ -115,7 +115,7 @@ function MyEvents({navigation, theUser, changeUser, name, ownUser, photo}) {
         }
         
         <BiggerEvent navigation={navigation} visable={visable} changeVisable={changeVisable} event={specificEvent} participants={participants}
-                    theUser={theUser} changeUser={setUser} ownUser={ownUser} deleteEvent={deleteEvent} setEvent={setEvent} getID={getID} setParticipants={setParticipants} photo={photo}/>
+                    theUser={theUser} changeUser={setUser} ownUser={ownUser} deleteEvent={deleteEvent} setEvent={setEvent} getID={getID} setParticipants={setParticipants} photo={photo} myEvents={false}/>
         </SafeAreaView>
     );
 }

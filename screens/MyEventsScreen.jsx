@@ -22,11 +22,12 @@ export default function MyEventsScreen() {
     const user = auth.currentUser;
     const isFocused = useIsFocused();
     const [joinedEvents, setJoinedEvents] = React.useState([]);
+    const [loading, setLoading] = React.useState(true);
 
     const onRefresh =()=>{ 
       setRefreshing(true);
       fetchComingEvents();
-      fetchJoinedEvents();
+      //fetchJoinedEvents();
       setRefreshing(false);
     } 
     
@@ -107,6 +108,8 @@ export default function MyEventsScreen() {
         }
         fetchOwners(myEvents);
        })
+       setLoading(false);
+       
   }
 
   const fetchJoinedEvents = async () => {
@@ -126,7 +129,7 @@ export default function MyEventsScreen() {
     React.useCallback(() => {
       fetchComingEvents();
       //getMyEvents();
-      fetchJoinedEvents();
+      //fetchJoinedEvents();
     }, [])
   );
 
@@ -156,7 +159,7 @@ export default function MyEventsScreen() {
                   />
                 }>
 
-            <Events events={events} setevents={setEvents} owners={owners} joinedEvents={joinedEvents} setJoinedEvents={setJoinedEvents} onRefresh={onRefresh}/>
+            <Events events={events} setevents={setEvents} owners={owners} joinedEvents={eventsID} setJoinedEvents={setEventsID} onRefresh={onRefresh} loading={loading} refreshing={refreshing} myEvents={true}/>
 
             </ScrollView>
             
