@@ -127,6 +127,7 @@ export default function MyEventsScreen() {
 
   useFocusEffect(
     React.useCallback(() => {
+      setLoading(true);
       fetchComingEvents();
       //getMyEvents();
       //fetchJoinedEvents();

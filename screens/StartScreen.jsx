@@ -53,7 +53,8 @@ export default function MainScreen() {
         age: "",
         bio: "",
         photo: null,
-        selectedSports: []
+        selectedSports: [],
+        first: 'true'
       })
     }
     else {

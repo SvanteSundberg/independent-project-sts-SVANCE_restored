@@ -226,6 +226,7 @@ function Events({ events, setevents, owners, joinedEvents, setJoinedEvents, onRe
                       setJoinedEvents = {setJoinedEvents}
                     />
 
+    {!loading &&
       <ScrollView style={styles.scroller}>
         <View style={styles.outer}>
         {events.map((element, index) => {
@@ -345,7 +346,7 @@ function Events({ events, setevents, owners, joinedEvents, setJoinedEvents, onRe
           );
         })}
         </View>
-      </ScrollView>
+      </ScrollView>}
     </SafeAreaView>
   );
 }
