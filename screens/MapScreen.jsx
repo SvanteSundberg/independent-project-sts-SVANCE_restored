@@ -53,7 +53,7 @@ export default function App() {
     setevents(eventArray);
 
 
-    /*const db = firebase.firestore();
+    const db = firebase.firestore();
     await db.collection('events').doc(eventID).delete();
     const joinedEvent_query = db.collection('user_event').where("eventID", '==', eventID);
     joinedEvent_query.get().then(function(querySnapshot){
@@ -61,7 +61,7 @@ export default function App() {
             doc.ref.delete();
     });
 
-    })*/
+    })
 }
 
 const fetchJoinedEvents = async () => {
