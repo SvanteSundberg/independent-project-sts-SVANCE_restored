@@ -49,6 +49,7 @@ const Timeline = () => {
 
     const fetchJoinedEvents = async () => {
       setJoinedEvents([]);
+      console.log("hämtar joined events");
       const db = firebase.firestore();
       const joinedEvents = query(
         collection(db, "user_event"),
@@ -212,7 +213,7 @@ const deleteExpDate=async (element)=>{
                     onRefresh={onRefresh}
                   />
                 } >
-      <Events events={events} setevents={setevents} owners={owners} joinedEvents={joinedEvents} setJoinedEvents={setJoinedEvents} loading={loading} refreshing={refreshing}/>
+      <Events events={events} setevents={setevents} owners={owners} joinedEvents={joinedEvents} setJoinedEvents={setJoinedEvents} loading={loading} refreshing={refreshing} myEvents={false} onRefresh={onRefresh}/>
      
        
     </ScrollView>

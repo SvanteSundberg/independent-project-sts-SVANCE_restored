@@ -37,6 +37,7 @@ export default function App() {
   const [filter, setFilter] = React.useState("");
   const [photo, setPhoto] = React.useState(null);
   const [owners, setOwners] = React.useState([]);
+  const [joinedEvents, setJoinedEvents] = React.useState([]);
 
   
   const { t, i18n } = useTranslation();
@@ -62,6 +63,20 @@ export default function App() {
 
     })*/
 }
+
+const fetchJoinedEvents = async () => {
+  setJoinedEvents([]);
+  console.log("hämtar joined events");
+  const db = firebase.firestore();
+  const joinedEvents = query(
+    collection(db, "user_event"),
+    where("userID", "==", user.uid)
+  );
+  const myEventsnapshot = await getDocs(joinedEvents);
+  myEventsnapshot.forEach((event) => {
+    setJoinedEvents((events) => [...events, event.data().eventID]);
+  });
+};
 
   const getID=async(eventID)=>{
     const db= firebase.firestore();
@@ -146,6 +161,7 @@ export default function App() {
 
   React.useEffect(() => {
     fetchEvents(); 
+    fetchJoinedEvents();
     
   }, []);
 
@@ -267,6 +283,9 @@ export default function App() {
                       setEvent={setEvent}
                       getID={getID}
                       setParticipants={setParticipants}
+                      myEvents={false}
+                      joinedEvents = {joinedEvents}
+                      setJoinedEvents = {setJoinedEvents}
                     />
                   </View>
                   <View style={styles.calloutArrowBorder} />

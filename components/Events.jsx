@@ -21,7 +21,7 @@ import { useTranslation } from "react-i18next";
 import {useIsFocused} from '@react-navigation/native';
 
 
-function Events({ events, setevents, owners, joinedEvents, setJoinedEvents, onRefresh, loading, refreshing}) {
+function Events({ events, setevents, owners, joinedEvents, setJoinedEvents, onRefresh, loading, refreshing, myEvents}) {
   const {t,i18n}=useTranslation();
   const [ownEvents, setOwnEvents] = useState([]);
   //const [joinedEvents, setJoinedEvents] = useState([]);
@@ -37,11 +37,11 @@ function Events({ events, setevents, owners, joinedEvents, setJoinedEvents, onRe
   const [photo, setPhoto] = useState(null);
 
 
-  useEffect(() => {
-    //fetchJoinedEvents();
+  /*useEffect(() => {
+    fetchJoinedEvents();
     //egna events används ej nu...
     fetchOwnEvents();
-  }, [isFocused]);
+  }, [isFocused]);*/
 
   const fetchJoinedEvents = async () => {
     setJoinedEvents([]);
@@ -220,6 +220,10 @@ function Events({ events, setevents, owners, joinedEvents, setJoinedEvents, onRe
                       getID={getID}
                       setParticipants={setParticipants}
                       photo={photo}
+                      myEvents={myEvents}
+                      onRefresh={onRefresh}
+                      joinedEvents = {joinedEvents}
+                      setJoinedEvents = {setJoinedEvents}
                     />
 
       <ScrollView style={styles.scroller}>

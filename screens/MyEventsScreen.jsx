@@ -27,7 +27,7 @@ export default function MyEventsScreen() {
     const onRefresh =()=>{ 
       setRefreshing(true);
       fetchComingEvents();
-      fetchJoinedEvents();
+      //fetchJoinedEvents();
       setRefreshing(false);
     } 
     
@@ -108,6 +108,7 @@ export default function MyEventsScreen() {
         }
         fetchOwners(myEvents);
        })
+       setLoading(false);
        
   }
 
@@ -122,14 +123,13 @@ export default function MyEventsScreen() {
     myEventsnapshot.forEach((event) => {
       setJoinedEvents((events) => [...events, event.data().eventID]);
     });
-    setLoading(false);
   };
 
   useFocusEffect(
     React.useCallback(() => {
       fetchComingEvents();
       //getMyEvents();
-      fetchJoinedEvents();
+      //fetchJoinedEvents();
     }, [])
   );
 
@@ -159,7 +159,7 @@ export default function MyEventsScreen() {
                   />
                 }>
 
-            <Events events={events} setevents={setEvents} owners={owners} joinedEvents={joinedEvents} setJoinedEvents={setJoinedEvents} onRefresh={onRefresh} loading={loading} refreshing={refreshing}/>
+            <Events events={events} setevents={setEvents} owners={owners} joinedEvents={eventsID} setJoinedEvents={setEventsID} onRefresh={onRefresh} loading={loading} refreshing={refreshing} myEvents={true}/>
 
             </ScrollView>
             

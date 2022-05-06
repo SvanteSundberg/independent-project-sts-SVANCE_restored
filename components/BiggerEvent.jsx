@@ -23,12 +23,17 @@ function BiggerEvent({ navigation,
   getID,
   owners,
   setParticipants,
-  photo }) {
+  photo,
+  myEvents,
+  onRefresh,
+  joinedEvents,
+  setJoinedEvents
+}) {
 
   const auth = getAuth();
   const { t, i18n } = useTranslation();
   const user = auth.currentUser;
-  const [joinedEvents, setJoinedEvents] = useState([]);
+  //const [joinedEvents, setJoinedEvents] = useState([]);
   const isFocused = useIsFocused();
   const [loading, setLoading] = useState(false);
 
@@ -45,10 +50,10 @@ function BiggerEvent({ navigation,
  
 
   useEffect(() => {
-    fetchJoinedEvents();
+    setLoading(false);
   }, []);
 
-  const fetchJoinedEvents = async () => {
+  /*const fetchJoinedEvents = async () => {
     setJoinedEvents([]);
     const db = firebase.firestore();
     const joinedEvents = query(collection(db, 'user_event'), where('userID', '==', user.uid));
@@ -56,7 +61,7 @@ function BiggerEvent({ navigation,
     myEventsnapshot.forEach((event) => {
       setJoinedEvents(events => ([...events, event.data().eventID]));
     })
-  }
+  }*/
 
   const joinEvent = async () => {
     if (event.placesLeft > 0 && !joinedEvents.includes(event.eventID)) {
@@ -65,50 +70,84 @@ function BiggerEvent({ navigation,
       const db= firebase.firestore();
       const sfDocRef = doc(db, "events", event.eventID);
       const sfPartRef = doc(db, "user_event", user.uid + '_' + event.eventID)
+      let update = false;
 
       try {
+        console.log("steg 1");
         await runTransaction(db, async (transaction) => {
           const sfDoc = await transaction.get(sfDocRef);
           const left = sfDoc.data().placesLeft;
           console.log(left);
           if (left>0){
+            console.log("steg 2");
             transaction.update(sfDocRef, { placesLeft: placesLeft });
             transaction.set(sfPartRef, {userID: user.uid, eventID: event.eventID,})
-            }
-        });
-          let updateEvent = event;
-          updateEvent.placesLeft = placesLeft;
-          setEvent(updateEvent);
+            update = true;
+              }
+            else{
+              update = false;
 
-          let updateJoin = [...joinedEvents]
-          updateJoin.push(event.eventID);
-          setJoinedEvents(updateJoin);
+            }
+            console.log("Transaction successfully committed!");
+        });
           
-          //Not update locally instead??
-          getID(event.eventID);
-          /*await firebase.firestore().collection('user_event').doc(user.uid + '_' + event.eventID).set({
-            userID: user.uid,
-            eventID: event.eventID,
-          });*/
-          setLoading(false);
-          Alert.alert(
-            "How exciting!",
-            "You have joined the event "+`${event.title}`+"!",
-              { text: "OK" }
-            
-          );
-          console.log("Transaction successfully committed!");
       } catch (e) {
-        setLoading(false);
-        Alert.alert(
-          "Sorry!",
-          "Someone was faster than you! ",
-            { text: "OK" }
-          
-        );
+        update= false;
         console.log("Transaction failed: ", e);
       }
+      if (update){
+        console.log("steg 3");
+        let updateEvent = event;
+            updateEvent.placesLeft = placesLeft;
+            setEvent(updateEvent);
+
+            let updateJoin = [...joinedEvents]
+            updateJoin.push(event.eventID);
+            setJoinedEvents(updateJoin);
+            
+            //Not update locally instead??
+            getID(event.eventID);
+            /*await firebase.firestore().collection('user_event').doc(user.uid + '_' + event.eventID).set({
+              userID: user.uid,
+              eventID: event.eventID,
+            });*/
+            setLoading(false);
+            showJoinAlert();
+      }
+      else {
+        setLoading(false);
+        showUnjoinAlert();
+        let updateEvent = event;
+        updateEvent.placesLeft = placesLeft;
+        setEvent(updateEvent);
+        getID();
+        if (typeof onRefresh !== "undefined") {
+          onRefresh();
+        }
+      }
     }
+  }
+
+  const showJoinAlert = () => {
+    Alert.alert(
+      "How exciting!",
+      "You have joined the event "+`${event.title}`+"!",
+      [
+      {text: "OK",},
+      ]
+    );
+
+    console.log("steg 4")
+  }
+
+  const showUnjoinAlert = () => {
+    Alert.alert(
+      "Sorry!",
+      "Someone was faster than you! ",
+        [{ text: "OK" }]
+      
+    );
+
   }
 
   const unjoinEvent = async () => {
@@ -125,34 +164,39 @@ function BiggerEvent({ navigation,
             if (sfPart.exists()) {
               transaction.update(sfDocRef, { placesLeft: placesLeft });
               transaction.delete(sfPartRef);
+
+              let updateEvent = event;
+              updateEvent.placesLeft = placesLeft;
+              setEvent(updateEvent);
+        
+              let updateParticipants = [...participants];
+              let index = updateParticipants.findIndex(x => x.userID === user.uid)
+              updateParticipants.splice(index, 1);
+              setParticipants(updateParticipants);
+        
+        
+              let updateJoin = [...joinedEvents];
+              let i = updateJoin.indexOf(event.eventID, 0);
+              updateJoin.splice(i, 1);
+              setJoinedEvents(updateJoin);
+                
+                //Not update locally instead??
+                getID(event.eventID);
+                /*await firebase.firestore().collection('user_event').doc(user.uid + '_' + event.eventID).set({
+                  userID: user.uid,
+                  eventID: event.eventID,
+                });*/
             }
-          });
-          let updateEvent = event;
-          updateEvent.placesLeft = placesLeft;
-          setEvent(updateEvent);
-    
-          let updateParticipants = [...participants];
-          let index = updateParticipants.findIndex(x => x.userID === user.uid)
-          updateParticipants.splice(index, 1);
-          setParticipants(updateParticipants);
-    
-    
-          let updateJoin = [...joinedEvents];
-          let i = updateJoin.indexOf(event.eventID, 0);
-          updateJoin.splice(i, 1);
-          setJoinedEvents(updateJoin);
-            
-            //Not update locally instead??
-            getID(event.eventID);
-            /*await firebase.firestore().collection('user_event').doc(user.uid + '_' + event.eventID).set({
-              userID: user.uid,
-              eventID: event.eventID,
-            });*/
             setLoading(false);
+          });
             console.log("Transaction successfully committed!");
         } catch (e) {
           setLoading(false);
           console.log("Transaction failed: ", e);
+        }
+        if (myEvents){
+          onRefresh();
+          changeVisable();
         }
 
       /*await firebase.firestore().collection('user_event').doc(user.uid + '_' + event.eventID).delete();
