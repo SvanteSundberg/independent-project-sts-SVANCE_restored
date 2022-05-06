@@ -137,6 +137,7 @@ const Timeline = () => {
 
     useFocusEffect(
       React.useCallback(() => {
+        setLoading(true);
         fetchEvents();
         getUserPhoto();
         fetchJoinedEvents();

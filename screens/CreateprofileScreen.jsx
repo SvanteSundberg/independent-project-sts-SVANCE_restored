@@ -6,6 +6,7 @@ import { getAuth } from "firebase/auth";
 import firebase from '../config/firebase';
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import colors from "../config/colors";
+import Warning from "../components/Warning";
 
  
 function CreateprofileScreen({navigation, route}) {
@@ -17,12 +18,17 @@ function CreateprofileScreen({navigation, route}) {
    const [remove, setRemove] = useState(false);
    const [selectedSports, chooseSports] = useState(route.params.selectedSports);
    const [uploading, setUploading] = useState(false);
+   const [visable, setVisable] = useState(false);
    
 
    const handleBackwards = () =>  navigation.navigate("HomeScreen")
 
    const auth = getAuth();
    const user = auth.currentUser;
+
+   const changeVisable = (value) => {
+    setVisable(value);
+  }
 
    const updateUserInfo = () => {
        if (name.length>0 && age>0 && descrip.length>0 &&
@@ -35,8 +41,13 @@ function CreateprofileScreen({navigation, route}) {
            sports: selectedSports,
             photo: photo
             });
-        navigation.navigate("ProfileScreen",
-        {userID:user.uid});
+            if (typeof route.params.first !== "undefined"){
+                navigation.navigate("ProfileScreen",
+                {userID:user.uid});
+            }
+            else{
+                changeVisable(true);
+            }
        }
        else {
         Alert.alert(
@@ -238,6 +249,8 @@ function CreateprofileScreen({navigation, route}) {
            ))}
            </View>
            </KeyboardAvoidingView>
+
+           <Warning visable={visable} changeVisable={changeVisable}/>
 
         <View style={styles.flexContainer}>
             <Button
