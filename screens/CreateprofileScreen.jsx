@@ -47,6 +47,7 @@ function CreateprofileScreen({navigation, route}) {
             }
             else{
                 changeVisable(true);
+                navigation.navigate("Homescreen");
             }
        }
        else {
