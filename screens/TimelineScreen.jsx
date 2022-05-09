@@ -144,13 +144,6 @@ const Timeline = () => {
       }, [])
     );
 
-     /*React.useEffect(() => {
-      fetchEvents();
-      getUserPhoto();
-      fetchJoinedEvents();
-     
-    },[]);*/
-
 
     const getUserPhoto = async()=> {
       const response =firebase.firestore().collection('users');
@@ -172,7 +165,8 @@ const deleteExpDate=async (element)=>{
         <TouchableOpacity style={styles.profile}
         onPress={() => navigation.navigate("ProfileScreen", {userID: user.uid}
         )}>
-          {/*<Image source={{ uri: photo }} style = {styles.userIcon}/>*/}
+          {/* KOMMENTERA UT FÖR ATT FÅ FOTO
+          <Image source={{ uri: photo }} style = {styles.userIcon}/>*/}
         </TouchableOpacity>
           <Text style={styles.header}>{t('events')}</Text>
           <IconButton

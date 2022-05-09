@@ -73,13 +73,11 @@ function BiggerEvent({ navigation,
       let update = false;
 
       try {
-        console.log("steg 1");
         await runTransaction(db, async (transaction) => {
           const sfDoc = await transaction.get(sfDocRef);
           const left = sfDoc.data().placesLeft;
           console.log(left);
           if (left>0){
-            console.log("steg 2");
             transaction.update(sfDocRef, { placesLeft: placesLeft });
             transaction.set(sfPartRef, {userID: user.uid, eventID: event.eventID,})
             update = true;
@@ -96,7 +94,6 @@ function BiggerEvent({ navigation,
         console.log("Transaction failed: ", e);
       }
       if (update){
-        console.log("steg 3");
         let updateEvent = event;
             updateEvent.placesLeft = placesLeft;
             setEvent(updateEvent);

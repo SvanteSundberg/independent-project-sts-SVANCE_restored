@@ -122,33 +122,6 @@ function CreateprofileScreen({navigation, route}) {
         const url = await getDownloadURL(fileRef);
         setPhoto(url);
         setUploading(false);
-
-        /*const unique = uuid.v4();
-        const fileRef = ref(getStorage(), user.uid);
-        const result = await uploadBytes(fileRef, blob);
-      
-        // We're done with the blob, close and release it
-        blob.close();
-      
-        const url = await getDownloadURL(fileRef);
-        setPhoto(url);
-        setUploading(false);
-        if (remove) {
-            deleteObject(fileRef).then(() => {
-                // File deleted successfully
-              }).catch((error) => {
-                // Uh-oh, an error occurred!
-              });
-        }*/
-
-        /*if (remove){
-            deleteObject(fileRef).then(() => {
-                // File deleted successfully
-              }).catch((error) => {
-                // Uh-oh, an error occurred!
-                console.log(error);
-              });
-        }*/
       }
 
 
