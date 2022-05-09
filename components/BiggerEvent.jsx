@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, Image, Text, View, TouchableOpacity, ScrollView } from "react-native";
-import { Button, Modal, Portal } from 'react-native-paper';
+import { StyleSheet, Image, Text, View, TouchableOpacity, ScrollView, Alert } from "react-native";
+import { Button, Modal, Portal, ActivityIndicator, Colors} from 'react-native-paper';
 import { getAuth } from "firebase/auth";
 import firebase from '../config/firebase';
-import { getDocs, collection, query, where } from "firebase/firestore";
+import { getDocs, collection, query, where, doc, runTransaction } from "firebase/firestore";
 import { useIsFocused } from '@react-navigation/native';
 import { getFixedT } from "i18next";
 import { useTranslation } from "react-i18next";
 import { Icon } from "react-native-elements";
 import colors from "../config/colors";
+
 
 function BiggerEvent({ navigation,
   visable,
@@ -22,19 +23,37 @@ function BiggerEvent({ navigation,
   getID,
   owners,
   setParticipants,
-  photo }) {
+  photo,
+  myEvents,
+  onRefresh,
+  joinedEvents,
+  setJoinedEvents
+}) {
 
   const auth = getAuth();
   const { t, i18n } = useTranslation();
   const user = auth.currentUser;
-  const [joinedEvents, setJoinedEvents] = useState([]);
+  //const [joinedEvents, setJoinedEvents] = useState([]);
   const isFocused = useIsFocused();
+  const [loading, setLoading] = useState(false);
+
+  const unJoinAlert = () => {
+    Alert.alert(
+      "Unjoin",
+      "Do you really want to unjoin the event "+`${event.title}`+"? ",
+      [{text: "No",},
+      {text: "Yes",
+      onPress: () => unjoinEvent()},
+      ]
+    );
+  }
+ 
 
   useEffect(() => {
-    fetchJoinedEvents();
+    setLoading(false);
   }, []);
 
-  const fetchJoinedEvents = async () => {
+  /*const fetchJoinedEvents = async () => {
     setJoinedEvents([]);
     const db = firebase.firestore();
     const joinedEvents = query(collection(db, 'user_event'), where('userID', '==', user.uid));
@@ -42,47 +61,144 @@ function BiggerEvent({ navigation,
     myEventsnapshot.forEach((event) => {
       setJoinedEvents(events => ([...events, event.data().eventID]));
     })
-  }
+  }*/
 
   const joinEvent = async () => {
-    if (event.placesLeft > 0) {
+    if (event.placesLeft > 0 && !joinedEvents.includes(event.eventID)) {
+      setLoading(true);
       let placesLeft = event.placesLeft - 1;
-      let updateEvent = event;
-      updateEvent.placesLeft = placesLeft;
-      setEvent(updateEvent);
+      const db= firebase.firestore();
+      const sfDocRef = doc(db, "events", event.eventID);
+      const sfPartRef = doc(db, "user_event", user.uid + '_' + event.eventID)
+      let update = false;
 
-      let updateJoin = [...joinedEvents]
-      updateJoin.push(event.eventID);
-      setJoinedEvents(updateJoin);
+      try {
+        await runTransaction(db, async (transaction) => {
+          const sfDoc = await transaction.get(sfDocRef);
+          const left = sfDoc.data().placesLeft;
+          console.log(left);
+          if (left>0){
+            transaction.update(sfDocRef, { placesLeft: placesLeft });
+            transaction.set(sfPartRef, {userID: user.uid, eventID: event.eventID,})
+            update = true;
+              }
+            else{
+              update = false;
 
-      getID(event.eventID);
+            }
+            console.log("Transaction successfully committed!");
+        });
+          
+      } catch (e) {
+        update= false;
+        console.log("Transaction failed: ", e);
+      }
+      if (update){
+        let updateEvent = event;
+            updateEvent.placesLeft = placesLeft;
+            setEvent(updateEvent);
 
-      await firebase.firestore().collection('user_event').doc(user.uid + '_' + event.eventID).set({
-        userID: user.uid,
-        eventID: event.eventID,
-      });
-      await firebase.firestore().collection('events').doc(event.eventID).update({ placesLeft: placesLeft });
+            let updateJoin = [...joinedEvents]
+            updateJoin.push(event.eventID);
+            setJoinedEvents(updateJoin);
+            
+            //Not update locally instead??
+            getID(event.eventID);
+            /*await firebase.firestore().collection('user_event').doc(user.uid + '_' + event.eventID).set({
+              userID: user.uid,
+              eventID: event.eventID,
+            });*/
+            setLoading(false);
+            showJoinAlert();
+      }
+      else {
+        setLoading(false);
+        showUnjoinAlert();
+        let updateEvent = event;
+        updateEvent.placesLeft = placesLeft;
+        setEvent(updateEvent);
+        getID();
+        if (typeof onRefresh !== "undefined") {
+          onRefresh();
+        }
+      }
     }
   }
+
+  const showJoinAlert = () => {
+    Alert.alert(
+      "How exciting!",
+      "You have joined the event "+`${event.title}`+"!",
+      [
+      {text: "OK",},
+      ]
+    );
+
+    console.log("steg 4")
+  }
+
+  const showUnjoinAlert = () => {
+    Alert.alert(
+      "Sorry!",
+      "Someone was faster than you! ",
+        [{ text: "OK" }]
+      
+    );
+
+  }
+
   const unjoinEvent = async () => {
-    let placesLeft = event.placesLeft + 1;
-    let updateEvent = event;
-    updateEvent.placesLeft = placesLeft;
-    setEvent(updateEvent);
+      if (joinedEvents.includes(event.eventID)){
+        setLoading(true);
+        let placesLeft = event.placesLeft + 1;
+        const db= firebase.firestore();
+        const sfDocRef = doc(db, "events", event.eventID);
+        const sfPartRef = doc(db, "user_event", user.uid + '_' + event.eventID)
 
-    let updateParticipants = [...participants];
-    let index = updateParticipants.findIndex(x => x.userID === user.uid)
-    updateParticipants.splice(index, 1);
-    setParticipants(updateParticipants);
+        try {
+          await runTransaction(db, async (transaction) => {
+            const sfPart = await transaction.get(sfPartRef);
+            if (sfPart.exists()) {
+              transaction.update(sfDocRef, { placesLeft: placesLeft });
+              transaction.delete(sfPartRef);
 
+              let updateEvent = event;
+              updateEvent.placesLeft = placesLeft;
+              setEvent(updateEvent);
+        
+              let updateParticipants = [...participants];
+              let index = updateParticipants.findIndex(x => x.userID === user.uid)
+              updateParticipants.splice(index, 1);
+              setParticipants(updateParticipants);
+        
+        
+              let updateJoin = [...joinedEvents];
+              let i = updateJoin.indexOf(event.eventID, 0);
+              updateJoin.splice(i, 1);
+              setJoinedEvents(updateJoin);
+                
+                //Not update locally instead??
+                getID(event.eventID);
+                /*await firebase.firestore().collection('user_event').doc(user.uid + '_' + event.eventID).set({
+                  userID: user.uid,
+                  eventID: event.eventID,
+                });*/
+            }
+            setLoading(false);
+          });
+            console.log("Transaction successfully committed!");
+        } catch (e) {
+          setLoading(false);
+          console.log("Transaction failed: ", e);
+        }
+        if (myEvents){
+          onRefresh();
+          changeVisable();
+        }
 
-    let updateJoin = [...joinedEvents]
-    let i = updateJoin.indexOf(event.eventID, 0);
-    updateJoin.splice(i, 1);
-    setJoinedEvents(updateJoin);
-
-    await firebase.firestore().collection('user_event').doc(user.uid + '_' + event.eventID).delete();
-    await firebase.firestore().collection('events').doc(event.eventID).update({ placesLeft: placesLeft });
+      /*await firebase.firestore().collection('user_event').doc(user.uid + '_' + event.eventID).delete();
+      await firebase.firestore().collection('events').doc(event.eventID).update({ placesLeft: placesLeft });*/
+    }
   }
 
 
@@ -92,6 +208,29 @@ function BiggerEvent({ navigation,
     let amountP = placesAvail - placesLeft;
     return <Text>{amountP}</Text>;
   };
+
+const AlertFunction = () => {
+  return Alert.alert(
+    "Delete?",
+    "Are you sure you want to remove this event",
+    [
+      // The "Yes" button
+      {
+        text: "Yes",
+        onPress: () => {
+          changeVisable()
+          deleteEvent(event.eventID)
+        },
+      },
+      // The "No" button
+      // Does nothing but dismiss the dialog when tapped
+      {
+        text: "No",
+      },
+    ]
+  );
+};
+
 
   /*<Button
                   style={styles.button}
@@ -103,6 +242,7 @@ function BiggerEvent({ navigation,
                   </Button>*/
 
   return (
+    <View> 
       <Portal>
       <Modal
         transparent={true}
@@ -234,31 +374,34 @@ function BiggerEvent({ navigation,
                 <Button style={styles.button}
                   labelStyle={{ fontSize: 13 }}
                   color="red"
-                  onPress={() => {
-                    changeVisable()
-                    deleteEvent(event.eventID)
-                  }}>{t('removeEvent')}</Button>
+                  onPress={ AlertFunction }>
+                    {t('removeEvent')}</Button>
               </View>}
 
               {!ownUser && <View>
                 {!(event.placesLeft === 0) && <View>
-                  {!joinedEvents.includes(event.eventID) && <Button
+                  {!loading && !joinedEvents.includes(event.eventID) && <Button
                     style={styles.button}
                     labelStyle={{ fontSize: 13 }}
                     onPress={() => {
                       joinEvent()
                     }}>{t('joinEvent')}</Button>}
                 </View>}
-                {joinedEvents.includes(event.eventID) && <Button
+                {!loading && joinedEvents.includes(event.eventID) && <Button
                   style={styles.button}
                   labelStyle={{ fontSize: 13 }}
-                  onPress={() => unjoinEvent()} color='red' > {t('unjoinEvent')}</Button>}
+                  onPress={() => unJoinAlert()} color='red' > {t('unjoinEvent')}</Button>}
+
+                  {loading &&<View style={{top:10, margin: 10, width:100}}> 
+                   <ActivityIndicator animating={true} color={colors.deepBlue} />
+                  </View>}
 
               </View>}
 
             </View>
       </Modal>
       </Portal>
+      </View>
   );
 }
 

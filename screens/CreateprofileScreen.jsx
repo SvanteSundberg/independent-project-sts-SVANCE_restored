@@ -6,6 +6,7 @@ import { getAuth } from "firebase/auth";
 import firebase from '../config/firebase';
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import colors from "../config/colors";
+import Warning from "../components/Warning";
 
  
 function CreateprofileScreen({navigation, route}) {
@@ -17,12 +18,17 @@ function CreateprofileScreen({navigation, route}) {
    const [remove, setRemove] = useState(false);
    const [selectedSports, chooseSports] = useState(route.params.selectedSports);
    const [uploading, setUploading] = useState(false);
+   const [visable, setVisable] = useState(false);
    
 
    const handleBackwards = () =>  navigation.navigate("HomeScreen")
 
    const auth = getAuth();
    const user = auth.currentUser;
+
+   const changeVisable = (value) => {
+    setVisable(value);
+  }
 
    const updateUserInfo = () => {
        if (name.length>0 && age>0 && descrip.length>0 &&
@@ -35,8 +41,14 @@ function CreateprofileScreen({navigation, route}) {
            sports: selectedSports,
             photo: photo
             });
-        navigation.navigate("ProfileScreen",
-        {userID:user.uid});
+            if (typeof route.params.first !== "undefined"){
+                navigation.navigate("ProfileScreen",
+                {userID:user.uid});
+            }
+            else{
+                changeVisable(true);
+                navigation.navigate("Homescreen");
+            }
        }
        else {
         Alert.alert(
@@ -110,33 +122,6 @@ function CreateprofileScreen({navigation, route}) {
         const url = await getDownloadURL(fileRef);
         setPhoto(url);
         setUploading(false);
-
-        /*const unique = uuid.v4();
-        const fileRef = ref(getStorage(), user.uid);
-        const result = await uploadBytes(fileRef, blob);
-      
-        // We're done with the blob, close and release it
-        blob.close();
-      
-        const url = await getDownloadURL(fileRef);
-        setPhoto(url);
-        setUploading(false);
-        if (remove) {
-            deleteObject(fileRef).then(() => {
-                // File deleted successfully
-              }).catch((error) => {
-                // Uh-oh, an error occurred!
-              });
-        }*/
-
-        /*if (remove){
-            deleteObject(fileRef).then(() => {
-                // File deleted successfully
-              }).catch((error) => {
-                // Uh-oh, an error occurred!
-                console.log(error);
-              });
-        }*/
       }
 
 
@@ -238,6 +223,8 @@ function CreateprofileScreen({navigation, route}) {
            ))}
            </View>
            </KeyboardAvoidingView>
+
+           <Warning visable={visable} changeVisable={changeVisable}/>
 
         <View style={styles.flexContainer}>
             <Button

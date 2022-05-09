@@ -30,7 +30,7 @@ function MyEvents({navigation, theUser, changeUser, name, ownUser, photo}) {
         setEvents(eventArray);
     
     
-        /*const db = firebase.firestore();
+        const db = firebase.firestore();
         await db.collection('events').doc(eventID).delete();
         const joinedEvent_query = db.collection('user_event').where("eventID", '==', eventID);
         joinedEvent_query.get().then(function(querySnapshot){
@@ -38,7 +38,7 @@ function MyEvents({navigation, theUser, changeUser, name, ownUser, photo}) {
                 doc.ref.delete();
         });
     
-        })*/
+        })
     }
 
     const getMyEvents = async () => {
@@ -115,7 +115,7 @@ function MyEvents({navigation, theUser, changeUser, name, ownUser, photo}) {
         }
         
         <BiggerEvent navigation={navigation} visable={visable} changeVisable={changeVisable} event={specificEvent} participants={participants}
-                    theUser={theUser} changeUser={setUser} ownUser={ownUser} deleteEvent={deleteEvent} setEvent={setEvent} getID={getID} setParticipants={setParticipants} photo={photo}/>
+                    theUser={theUser} changeUser={setUser} ownUser={ownUser} deleteEvent={deleteEvent} setEvent={setEvent} getID={getID} setParticipants={setParticipants} photo={photo} myEvents={false}/>
         </SafeAreaView>
     );
 }

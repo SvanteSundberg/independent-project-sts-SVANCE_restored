@@ -29,10 +29,6 @@ function ProfileScreen({navigation, route}) {
    }
    const {t,i18n}=useTranslation();
 
-    /*useEffect(() => {
-        getUserInfo();
-    }, [isFocused, userID, photo]);*/
-
     useFocusEffect(
         useCallback(() => {
             getUserInfo();
@@ -48,6 +44,7 @@ function ProfileScreen({navigation, route}) {
             setAge(info.get("age"));
             setDescrip(info.get("bio"));
             chooseSports(info.get("sports"));
+            //KOMMENTERA UT FÖR ATT FÅ FOTO
             //setPhoto(info.get("photo"));
         }
         else {

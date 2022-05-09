@@ -8,7 +8,7 @@ import {
   Image
 } from "react-native";
 import { useState, useEffect } from "react";
-import { Button } from "react-native-paper";
+import { Button, ActivityIndicator } from "react-native-paper";
 import firebase from "../config/firebase";
 import { getAuth } from "firebase/auth";
 import { getDocs, collection, query, where } from "firebase/firestore";
@@ -21,7 +21,7 @@ import { useTranslation } from "react-i18next";
 import {useIsFocused} from '@react-navigation/native';
 
 
-function Events({ events, setevents, owners, joinedEvents, setJoinedEvents, onRefresh}) {
+function Events({ events, setevents, owners, joinedEvents, setJoinedEvents, onRefresh, loading, refreshing, myEvents}) {
   const {t,i18n}=useTranslation();
   const [ownEvents, setOwnEvents] = useState([]);
   //const [joinedEvents, setJoinedEvents] = useState([]);
@@ -37,10 +37,11 @@ function Events({ events, setevents, owners, joinedEvents, setJoinedEvents, onRe
   const [photo, setPhoto] = useState(null);
 
 
-  useEffect(() => {
-    //fetchJoinedEvents();
+  /*useEffect(() => {
+    fetchJoinedEvents();
+    //egna events används ej nu...
     fetchOwnEvents();
-  }, [isFocused]);
+  }, [isFocused]);*/
 
   const fetchJoinedEvents = async () => {
     setJoinedEvents([]);
@@ -130,7 +131,9 @@ function Events({ events, setevents, owners, joinedEvents, setJoinedEvents, onRe
 
 
     const checkOwner = (id) => {
-      /*for (let obj of owners) {
+      /*
+      KOMMENTERA UT FÖR ATT FÅ FOTA
+      for (let obj of owners) {
         if (obj.ownerid === id) {
           return (
               <TouchableOpacity 
@@ -203,9 +206,10 @@ function Events({ events, setevents, owners, joinedEvents, setJoinedEvents, onRe
   return (
     <SafeAreaView style={styles.main}>
 
-     {events.length<1 && <View style={{marginTop:30}}><Text>No events found</Text></View>}
+    {loading && <ActivityIndicator style={{marginTop:60}} animating={true} color={colors.deepBlue} />}
+     {events.length<1 && !loading && refreshing && <View style={{ alignSelf: "center", justifyContent:"center", marginTop:60}}><Text>No events found</Text></View>} 
 
-      {visable && <BiggerEvent
+      <BiggerEvent
                       navigation={navigation}
                       visable={visable}
                       changeVisable={changeVisable}
@@ -218,8 +222,13 @@ function Events({ events, setevents, owners, joinedEvents, setJoinedEvents, onRe
                       getID={getID}
                       setParticipants={setParticipants}
                       photo={photo}
-                    />}
+                      myEvents={myEvents}
+                      onRefresh={onRefresh}
+                      joinedEvents = {joinedEvents}
+                      setJoinedEvents = {setJoinedEvents}
+                    />
 
+    {!loading &&
       <ScrollView style={styles.scroller}>
         <View style={styles.outer}>
         {events.map((element, index) => {
@@ -339,7 +348,7 @@ function Events({ events, setevents, owners, joinedEvents, setJoinedEvents, onRe
           );
         })}
         </View>
-      </ScrollView>
+      </ScrollView>}
     </SafeAreaView>
   );
 }

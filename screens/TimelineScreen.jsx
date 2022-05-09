@@ -37,6 +37,7 @@ const Timeline = () => {
     const [joinedEvents, setJoinedEvents] = React.useState([]);
     const [refreshing, setRefreshing] = React.useState(false);
     const [filterApplied, setFilterapplied]= React.useState(false);
+    const [loading, setLoading] = React.useState(true);
 
     const onRefresh =()=>{ 
       setRefreshing(true);
@@ -49,6 +50,7 @@ const Timeline = () => {
 
     const fetchJoinedEvents = async () => {
       setJoinedEvents([]);
+      console.log("hämtar joined events");
       const db = firebase.firestore();
       const joinedEvents = query(
         collection(db, "user_event"),
@@ -97,6 +99,7 @@ const Timeline = () => {
       /*events.sort(function(a,b){
         return new Date(a.date) - new Date(b.date);
       });*/
+      setLoading(false);
     };
 
     
@@ -135,18 +138,12 @@ const Timeline = () => {
 
     useFocusEffect(
       React.useCallback(() => {
+        setLoading(true);
         fetchEvents();
         getUserPhoto();
         fetchJoinedEvents();
       }, [])
     );
-
-     /*React.useEffect(() => {
-      fetchEvents();
-      getUserPhoto();
-      fetchJoinedEvents();
-     
-    },[]);*/
 
 
     const getUserPhoto = async()=> {
@@ -169,7 +166,8 @@ const deleteExpDate=async (element)=>{
         <TouchableOpacity style={styles.profile}
         onPress={() => navigation.navigate("ProfileScreen", {userID: user.uid}
         )}>
-          {/*<Image source={{ uri: photo }} style = {styles.userIcon}/>*/}
+          {/* KOMMENTERA UT FÖR ATT FÅ FOTO
+          <Image source={{ uri: photo }} style = {styles.userIcon}/>*/}
         </TouchableOpacity>
           <Text style={styles.header}>{t('events')}</Text>
           <IconButton
@@ -213,7 +211,7 @@ const deleteExpDate=async (element)=>{
                     onRefresh={onRefresh}
                   />
                 } >
-      <Events events={events} setevents={setevents} owners={owners} joinedEvents={joinedEvents} setJoinedEvents={setJoinedEvents}/>
+      <Events events={events} setevents={setevents} owners={owners} joinedEvents={joinedEvents} setJoinedEvents={setJoinedEvents} loading={loading} refreshing={refreshing} myEvents={false} onRefresh={onRefresh}/>
      
        
     </ScrollView>
