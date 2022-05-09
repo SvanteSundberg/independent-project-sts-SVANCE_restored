@@ -12,7 +12,8 @@ const SportFilter = (props) => {
         props.setevents([]);
         props.setevents([...props.originalEvents]);
         props.setDateSorted(false);
-        props.setShowSort(false)
+        props.setShowSort(false);
+        props.setFilterapplied(false);
     }
 
     const filterBydate=(date,events)=>{
@@ -52,7 +53,8 @@ const SportFilter = (props) => {
 
     const applyFilter=(sports)=>{
         filteredBysport(sports);
-        props.setShowSort(false)
+        props.setShowSort(false);
+        props.setFilterapplied(true)
     }
 
 
