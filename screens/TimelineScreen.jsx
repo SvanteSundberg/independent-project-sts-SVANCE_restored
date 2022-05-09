@@ -36,6 +36,7 @@ const Timeline = () => {
     const [photo, setPhoto] = React.useState(null);
     const [joinedEvents, setJoinedEvents] = React.useState([]);
     const [refreshing, setRefreshing] = React.useState(false);
+    const [filterApplied, setFilterapplied]= React.useState(false);
 
     const onRefresh =()=>{ 
       setRefreshing(true);
@@ -174,9 +175,10 @@ const deleteExpDate=async (element)=>{
           <IconButton
         style ={styles.sort}
         icon="filter-variant"
-        color={Colors.black}
+        color={filterApplied ? colors.deepBlue:Colors.white}
         size={40}
         onPress={()=>setShowSort(!showSort)}
+        
 
 /></View>
 <Portal>
@@ -200,7 +202,8 @@ const deleteExpDate=async (element)=>{
  setdateOpen={setdateOpen}
  setShowSort={setShowSort}
  dateOpen={dateOpen}
- showSort={showSort}/>
+ showSort={showSort}
+ setFilterapplied={setFilterapplied}/>
  
  </Modal></Portal>
 
