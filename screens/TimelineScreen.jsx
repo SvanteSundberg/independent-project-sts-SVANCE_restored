@@ -50,7 +50,6 @@ const Timeline = () => {
 
     const fetchJoinedEvents = async () => {
       setJoinedEvents([]);
-      console.log("hämtar joined events");
       const db = firebase.firestore();
       const joinedEvents = query(
         collection(db, "user_event"),
@@ -163,11 +162,9 @@ const deleteExpDate=async (element)=>{
       
 
         <View style={styles.head} >
-        <TouchableOpacity style={styles.profile}
-        onPress={() => navigation.navigate("ProfileScreen", {userID: user.uid}
-        )}>
-          {/* KOMMENTERA UT FÖR ATT FÅ FOTO
-          <Image source={{ uri: photo }} style = {styles.userIcon}/>*/}
+        <TouchableOpacity style={styles.profile} onPress={() => {navigation.navigate("ProfileScreen", {userID: user.uid}
+        )}}>
+          <Image source={{ uri: photo }} style = {styles.userIcon}/>
         </TouchableOpacity>
           <Text style={styles.header}>{t('events')}</Text>
           <IconButton

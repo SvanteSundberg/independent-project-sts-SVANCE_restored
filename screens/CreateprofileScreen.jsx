@@ -33,7 +33,6 @@ function CreateprofileScreen({navigation, route}) {
    const updateUserInfo = () => {
        if (name.length>0 && age>0 && descrip.length>0 &&
         typeof photo !== "undefined"){
-        console.log(photo);
         firebase.firestore().collection('users').doc(user.uid).set({
            name: name,
             age: age,
@@ -42,12 +41,11 @@ function CreateprofileScreen({navigation, route}) {
             photo: photo
             });
             if (typeof route.params.first !== "undefined"){
-                navigation.navigate("ProfileScreen",
-                {userID:user.uid});
+                changeVisable(true);
             }
             else{
-                changeVisable(true);
-                navigation.navigate("Homescreen");
+                navigation.navigate("ProfileScreen",
+                {userID:user.uid});
             }
        }
        else {

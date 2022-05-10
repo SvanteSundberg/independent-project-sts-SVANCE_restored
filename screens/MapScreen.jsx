@@ -66,7 +66,6 @@ export default function App() {
 
 const fetchJoinedEvents = async () => {
   setJoinedEvents([]);
-  console.log("hämtar joined events");
   const db = firebase.firestore();
   const joinedEvents = query(
     collection(db, "user_event"),
@@ -123,7 +122,6 @@ const fetchJoinedEvents = async () => {
 
 
   const fetchEvents = async () => {
-    console.log('fetching....')
     const response = firebase.firestore().collection("events");
 
     const data = await response.get();
@@ -363,6 +361,8 @@ const fetchJoinedEvents = async () => {
                     setEvent={setEvent}
                     getID={getID}
                     setParticipants={setParticipants}
+                    joinedEvents={joinedEvents}
+                    setJoinedEvents={setJoinedEvents}
                   />
                 </View>
                 <View style={styles.calloutArrowBorder} />

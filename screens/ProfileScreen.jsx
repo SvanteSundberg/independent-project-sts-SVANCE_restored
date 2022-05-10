@@ -45,7 +45,7 @@ function ProfileScreen({navigation, route}) {
             setDescrip(info.get("bio"));
             chooseSports(info.get("sports"));
             //KOMMENTERA UT FÖR ATT FÅ FOTO
-            //setPhoto(info.get("photo"));
+            setPhoto(info.get("photo"));
         }
         else {
             navigation.navigate("CreateprofileScreen", {

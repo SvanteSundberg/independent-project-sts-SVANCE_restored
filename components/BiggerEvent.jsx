@@ -333,7 +333,7 @@ const AlertFunction = () => {
                 >
                   <Image  style={styles.ownerImage} source= {{uri: photo}}/>
                 </TouchableOpacity>
-                </View>
+                </View>*/}
 
                   <Text style={[styles.underTitle, styles.margins, {alignSelf: "center"}]}> {t('peopleJoined').toUpperCase()}</Text>
                 
@@ -356,7 +356,7 @@ const AlertFunction = () => {
                       
                     </TouchableOpacity>
                   ))}
-                    </View>*/}
+                    </View>
                   <View style={{height:50}}/>
                 </View>
               </View>

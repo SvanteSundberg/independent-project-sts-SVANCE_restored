@@ -24,7 +24,7 @@ import {useIsFocused} from '@react-navigation/native';
 function Events({ events, setevents, owners, joinedEvents, setJoinedEvents, onRefresh, loading, refreshing, myEvents}) {
   const {t,i18n}=useTranslation();
   const [ownEvents, setOwnEvents] = useState([]);
-  //const [joinedEvents, setJoinedEvents] = useState([]);
+  //const [joined, setJoined] = useState([]);
   const auth = getAuth();
   const user = auth.currentUser;
   const navigation = useNavigation();
@@ -132,7 +132,7 @@ function Events({ events, setevents, owners, joinedEvents, setJoinedEvents, onRe
 
     const checkOwner = (id) => {
       /*
-      KOMMENTERA UT FÖR ATT FÅ FOTA
+      KOMMENTERA UT FÖR ATT FÅ FOTA*/
       for (let obj of owners) {
         if (obj.ownerid === id) {
           return (
@@ -148,7 +148,7 @@ function Events({ events, setevents, owners, joinedEvents, setJoinedEvents, onRe
             </TouchableOpacity>
           );
         }
-      }*/
+      }
     };
 
   const joinEvent = async (element, index) => {
@@ -268,7 +268,7 @@ function Events({ events, setevents, owners, joinedEvents, setJoinedEvents, onRe
 
                   <Text style={styles.title}>{element.title} </Text>
 
-                  {checkOwner(element.owner)}
+                  {/*UNCOMMENT TO SEE PHOTO checkOwner(element.owner)*/}
 
                 <View style={{ marginLeft: 15 }}>
 
@@ -413,7 +413,7 @@ const styles = StyleSheet.create({
     right: '10%',
     position: 'absolute',
     top:-42,
-    right: 10,
+    right: 8,
     borderWidth: 1,
     borderColor: colors.orange
   },

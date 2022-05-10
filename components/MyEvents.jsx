@@ -14,14 +14,31 @@ function MyEvents({navigation, theUser, changeUser, name, ownUser, photo}) {
    const [visable, setVisable] = useState(false);
    const [specificEvent, setEvent] = useState({});
    const [participants, setParticipants] = useState([]); 
+   const [joinedEvents, setJoinedEvents] = React.useState([]);
+   const auth = getAuth();
+   const user = auth.currentUser;
 
     useEffect(() => {
         getMyEvents();
+        fetchJoinedEvents();
     }, [theUser]);
 
     const setUser = (userID) => {
         changeUser(userID);
     };
+
+    const fetchJoinedEvents = async () => {
+        setJoinedEvents([]);
+        const db = firebase.firestore();
+        const joinedEvents = query(
+          collection(db, "user_event"),
+          where("userID", "==", user.uid)
+        );
+        const myEventsnapshot = await getDocs(joinedEvents);
+        myEventsnapshot.forEach((event) => {
+          setJoinedEvents((events) => [...events, event.data().eventID]);
+        });
+      };
 
     const deleteEvent = async (eventID) => {
         let eventArray = [...theEvents];
@@ -42,7 +59,6 @@ function MyEvents({navigation, theUser, changeUser, name, ownUser, photo}) {
     }
 
     const getMyEvents = async () => {
-        console.log("Hämtar");
         setEvents([]);
 
         const database = firebase.firestore();
@@ -66,12 +82,12 @@ function MyEvents({navigation, theUser, changeUser, name, ownUser, photo}) {
         const participants= query(collection(db,'user_event'), where('eventID','==', eventID));
         const myParticipantsnapshot= await getDocs(participants);
         setParticipants([]);
-        myParticipantsnapshot.forEach(async (user)=> {
-          const info =await response.doc(user.data().userID).get();
+        myParticipantsnapshot.forEach(async (User)=> {
+          const info =await response.doc(User.data().userID).get();
           setParticipants(users => ([...users, {
               photo: info.get('photo'),
               name: info.get("name"),
-              userID: user.data().userID }]));
+              userID: User.data().userID }]));
         });
       }
 
@@ -115,7 +131,8 @@ function MyEvents({navigation, theUser, changeUser, name, ownUser, photo}) {
         }
         
         <BiggerEvent navigation={navigation} visable={visable} changeVisable={changeVisable} event={specificEvent} participants={participants}
-                    theUser={theUser} changeUser={setUser} ownUser={ownUser} deleteEvent={deleteEvent} setEvent={setEvent} getID={getID} setParticipants={setParticipants} photo={photo} myEvents={false}/>
+                    theUser={theUser} changeUser={setUser} ownUser={ownUser} deleteEvent={deleteEvent} setEvent={setEvent} getID={getID} setParticipants={setParticipants} photo={photo} myEvents={false}
+                    joinedEvents={joinedEvents} setJoinedEvents={setJoinedEvents}/>
         </SafeAreaView>
     );
 }
