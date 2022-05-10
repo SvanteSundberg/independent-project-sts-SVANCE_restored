@@ -29,7 +29,7 @@ function Warning({visable, changeVisable}) {
                 </Text>
                 <Button 
                     style={{margin:5}}
-                    onPress={() => navigation.navigate("HomeScreen")}
+                    onPress={() => {hide(); navigation.navigate("HomeScreen");}}
                     mode={'outlined'}
                     labelStyle={{ fontSize: 13, color: colors.deepBlue }}> Let's get started</Button>
                 </Modal>
