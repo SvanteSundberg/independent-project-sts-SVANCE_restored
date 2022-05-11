@@ -284,6 +284,7 @@ const fetchJoinedEvents = async () => {
                       myEvents={false}
                       joinedEvents = {joinedEvents}
                       setJoinedEvents = {setJoinedEvents}
+                      oldEvents={[]}
                     />
                   </View>
                   <View style={styles.calloutArrowBorder} />

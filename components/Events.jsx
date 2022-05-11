@@ -226,6 +226,7 @@ function Events({ events, setevents, owners, joinedEvents, setJoinedEvents, onRe
                       onRefresh={onRefresh}
                       joinedEvents = {joinedEvents}
                       setJoinedEvents = {setJoinedEvents}
+                      oldEvents = {[]}
                     />
 
     {!loading &&
@@ -268,7 +269,7 @@ function Events({ events, setevents, owners, joinedEvents, setJoinedEvents, onRe
 
                   <Text style={styles.title}>{element.title} </Text>
 
-                  {/*UNCOMMENT TO SEE PHOTO checkOwner(element.owner)*/}
+                  {/* UNCOMMENT TO SEE OWNER PHOTO checkOwner(element.owner)*/}
 
                 <View style={{ marginLeft: 15 }}>
 

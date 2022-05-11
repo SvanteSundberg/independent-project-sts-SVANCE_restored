@@ -14,9 +14,11 @@ function MyEvents({navigation, theUser, changeUser, name, ownUser, photo}) {
    const [visable, setVisable] = useState(false);
    const [specificEvent, setEvent] = useState({});
    const [participants, setParticipants] = useState([]); 
-   const [joinedEvents, setJoinedEvents] = React.useState([]);
+   const [joinedEvents, setJoinedEvents] = useState([]);
    const auth = getAuth();
    const user = auth.currentUser;
+   const [oldEvents, setOldEvents] = useState([]);
+   const [oldEventsInfo, setOldEventsInfo] = useState([]);
 
     useEffect(() => {
         getMyEvents();
@@ -60,15 +62,34 @@ function MyEvents({navigation, theUser, changeUser, name, ownUser, photo}) {
 
     const getMyEvents = async () => {
         setEvents([]);
+        setOldEvents([]);
+        setOldEventsInfo([]);
 
         const database = firebase.firestore();
         const userEvents = query(collection(database, "events"), where("owner", "==", theUser), orderBy("date") );
             const eventSnapshot = await getDocs(userEvents);
             eventSnapshot.forEach((item) => {
-                let data = item.data();
-                let id = {eventID: item.id}
-                Object.assign(data, id);
-                setEvents(events=>([...events, data]));
+                if (!(new Date(item.data().date)> new Date())){
+                    console.log(item.data(), 'data');
+                    let id = item.id;
+                    setOldEvents(events => ([...events, id]))
+                }
+                else{
+                    let data = item.data();
+                    let id = {eventID: item.id}
+                    Object.assign(data, id);
+                    setEvents(events=>([...events, data]));
+                }
+            });
+        const pastEvents = query(collection(database, "events"), where("owner", "==", theUser), orderBy("date","desc") );
+        const snapshot = await getDocs(pastEvents);
+            snapshot.forEach((item) => {
+                if (!(new Date(item.data().date)> new Date())){
+                    let data = item.data();
+                    let id = {eventID: item.id}
+                    Object.assign(data, id);
+                    setOldEventsInfo(events=>([...events, data]));
+                }
             });
     }
 
@@ -124,15 +145,63 @@ function MyEvents({navigation, theUser, changeUser, name, ownUser, photo}) {
                 style={[styles.peopleLogga, styles.people]}/>
             </TouchableOpacity>
             ))}  
-        </View>}
+            </View>}
+            
+            {oldEvents.length>0 && <View style={{flexDirection: 'row', marginBottom: 15}}>
+            <View style={{backgroundColor: colors.deepBlue, height: 2, flex: 1, alignSelf: 'center'}} />
+            <Text style={styles.expired}> Expired events</Text>
+            <View style={{backgroundColor: colors.deepBlue, height: 2, flex: 1, alignSelf: 'center'}} />
+            </View>}
+            <View style={[styles.container]}> 
+                {oldEventsInfo.map((event, index) => ( 
+                                <TouchableOpacity 
+                                    style={[styles.event, styles.shadow]}
+                                    key={index}
+                                    onPress={() => {
+                                        setEvent(event);
+                                        setVisable(true);
+                                        getID(event.eventID);
+                                    }}>
+                                    <View style={styles.row}> 
+                                <Text
+                                style={styles.date}> {event.date} </Text>
+                                    </View>
+                                <View style={styles.header}>
+                                <Text style={styles.text}> {event.title}</Text>
+                                </View>
+                                <View style={styles.description}>
+                                <Text style={styles.smallText}
+                                numberOfLines={3}> {event.description} </Text>
+                                </View>
+                                <Text style={[styles.peopleText, styles.people]}> {event.noPeople} </Text>
+                                <Image
+                                source={require("../assets/people.png")}
+                                style={[styles.peopleLogga, styles.people]}/>
+                            </TouchableOpacity>
+                            ))}
+            </View>
 
-        {!theEvents.length>0 &&
+        {!theEvents.length>0 && !oldEvents.length>0 &&
         <Text style={styles.eventsText}> {name} has not created any events yet! </Text>
         }
         
-        <BiggerEvent navigation={navigation} visable={visable} changeVisable={changeVisable} event={specificEvent} participants={participants}
-                    theUser={theUser} changeUser={setUser} ownUser={ownUser} deleteEvent={deleteEvent} setEvent={setEvent} getID={getID} setParticipants={setParticipants} photo={photo} myEvents={false}
-                    joinedEvents={joinedEvents} setJoinedEvents={setJoinedEvents}/>
+        <BiggerEvent navigation={navigation} 
+                    visable={visable} 
+                    changeVisable={changeVisable} 
+                    event={specificEvent} 
+                    participants={participants}
+                    theUser={theUser} 
+                    changeUser={setUser} 
+                    ownUser={ownUser} 
+                    deleteEvent={deleteEvent} 
+                    setEvent={setEvent} 
+                    getID={getID} 
+                    setParticipants={setParticipants} 
+                    photo={photo} 
+                    myEvents={false}
+                    joinedEvents={joinedEvents} 
+                    setJoinedEvents={setJoinedEvents} 
+                    oldEvents={oldEvents}/>
         </SafeAreaView>
     );
 }
@@ -146,6 +215,14 @@ const styles = StyleSheet.create({
     description:{
         padding:10,
         paddingTop:3,
+    },
+    expired: {
+        fontWeight: "bold",
+        color: colors.deepBlue,
+        fontSize: 16,
+        alignSelf: "center",
+        paddingHorizontal:5,
+
     },
     event: {
         width:160,

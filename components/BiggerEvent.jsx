@@ -27,7 +27,8 @@ function BiggerEvent({ navigation,
   myEvents,
   onRefresh,
   joinedEvents,
-  setJoinedEvents
+  setJoinedEvents,
+  oldEvents
 }) {
 
   const auth = getAuth();
@@ -47,6 +48,8 @@ function BiggerEvent({ navigation,
       ]
     );
   }
+
+  console.log(oldEvents);
  
 
   useEffect(() => {
@@ -333,7 +336,7 @@ const AlertFunction = () => {
                 >
                   <Image  style={styles.ownerImage} source= {{uri: photo}}/>
                 </TouchableOpacity>
-                </View>*/}
+                </View>
 
                   <Text style={[styles.underTitle, styles.margins, {alignSelf: "center"}]}> {t('peopleJoined').toUpperCase()}</Text>
                 
@@ -357,6 +360,7 @@ const AlertFunction = () => {
                     </TouchableOpacity>
                   ))}
                     </View>
+                  */}
                   <View style={{height:50}}/>
                 </View>
               </View>
@@ -378,7 +382,7 @@ const AlertFunction = () => {
                     {t('removeEvent')}</Button>
               </View>}
 
-              {!ownUser && <View>
+              {!ownUser && !oldEvents.includes(event.eventID) && <View>
                 {!(event.placesLeft === 0) && <View>
                   {!loading && !joinedEvents.includes(event.eventID) && <Button
                     style={styles.button}
@@ -387,6 +391,9 @@ const AlertFunction = () => {
                       joinEvent()
                     }}>{t('joinEvent')}</Button>}
                 </View>}
+                {(event.placesLeft === 0) && <Text style={{margin: 10, marginTop: 17, color: "red"}}> Event is full!</Text>
+
+                }
                 {!loading && joinedEvents.includes(event.eventID) && <Button
                   style={styles.button}
                   labelStyle={{ fontSize: 13 }}
@@ -397,6 +404,8 @@ const AlertFunction = () => {
                   </View>}
 
               </View>}
+
+              {!ownUser && oldEvents.includes(event.eventID) && <Text style={{margin: 10, marginTop: 17, color: "red"}}> Event has expired! </Text>}
 
             </View>
       </Modal>
