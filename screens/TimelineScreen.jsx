@@ -44,6 +44,7 @@ const Timeline = () => {
       fetchEvents();
       fetchJoinedEvents();
       setRefreshing(false);
+      clearFilters();
     } 
 
     const { t, i18n } = useTranslation();
@@ -141,6 +142,7 @@ const Timeline = () => {
         fetchEvents();
         getUserPhoto();
         fetchJoinedEvents();
+        clearFilters();
       }, [])
     );
 
@@ -152,6 +154,15 @@ const Timeline = () => {
           setPhoto(info.get("photo"));
       }
     };
+
+    const clearFilters=()=>{
+      setSelectedsports([]);
+      setevents([]);
+      setevents([...unfilteredEvents]);
+      setDateSorted(false);
+      setShowSort(false);
+      setFilterapplied(false);
+  }
      
 
 const deleteExpDate=async (element)=>{
@@ -198,7 +209,8 @@ const deleteExpDate=async (element)=>{
  setShowSort={setShowSort}
  dateOpen={dateOpen}
  showSort={showSort}
- setFilterapplied={setFilterapplied}/>
+ setFilterapplied={setFilterapplied}
+ clearFilters={clearFilters}/>
  
  </Modal></Portal>
 

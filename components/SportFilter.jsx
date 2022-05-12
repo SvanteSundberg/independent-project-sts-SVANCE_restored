@@ -1,20 +1,11 @@
 import React from "react";
 import { View, Text, StyleSheet} from "react-native";
-import {Chip, Button, IconButton } from "react-native-paper";
+import {Chip, Button } from "react-native-paper";
 import firebase from '../config/firebase';
 import { DatePicker } from "react-native-common-date-picker";
 import colors from "../config/colors.js";
  
 const SportFilter = (props) => {            
-
-    const clearFilters=()=>{
-        props.setSelectedsports([]);
-        props.setevents([]);
-        props.setevents([...props.originalEvents]);
-        props.setDateSorted(false);
-        props.setShowSort(false);
-        props.setFilterapplied(false);
-    }
 
     const filterBydate=(date,events)=>{
         props.setDate(date);
@@ -57,13 +48,13 @@ const SportFilter = (props) => {
         props.setFilterapplied(true)
     }
 
-
   return (
     
       <View style={styles.container}>
+          <Text style={{fontWeight:'bold', alignSelf:'center', marginBottom:20, color:'#0081CF'}}>FILTER</Text>
           <Text style={styles.header}> Date </Text>
-          <View style={{flexDirection:'row', marginBottom:10, alignItems:'center'}}>
-          <IconButton  icon="calendar" color='#0081CF' onPress={()=>props.setdateOpen(!props.dateOpen)}  ></IconButton>
+          <View style={{flexDirection:'row', marginBottom:10, alignItems:'center', justifyContent:'space-between'}}>
+          <Button  icon="calendar" mode='outlined' color='#0081CF' onPress={()=>props.setdateOpen(!props.dateOpen)} >Select a date</Button>
           
           {props.dateSorted && <Text >{props.date}</Text>}
         {!props.dateSorted && <Text >No selected date </Text>}
@@ -119,7 +110,7 @@ const SportFilter = (props) => {
           
           </View>
         <View style={styles.Btns}>
-        <Button onPress={clearFilters} 
+        <Button onPress={props.clearFilters} 
                 color='#DEA01E'
                 style={styles.clearBtn}
                 mode='outlined'>
@@ -150,9 +141,7 @@ const styles = StyleSheet.create({
     },
 
     container:{
-        margin:10,
-        marginTop:20
-        
+        margin:10,        
     },
 
     clearBtn:{
