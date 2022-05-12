@@ -51,9 +51,7 @@ function BiggerEvent({ navigation,
 
   const checkOldEvents = (eventID) => {
     if (typeof oldEvents !== "undefined"){
-      if (oldEvents.includes(eventID)){
-        return true
-      }
+      return (oldEvents.includes(eventID))
     }
     return false
   }
