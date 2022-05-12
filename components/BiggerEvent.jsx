@@ -49,6 +49,15 @@ function BiggerEvent({ navigation,
     );
   }
 
+  const checkOldEvents = (eventID) => {
+    if (typeof oldEvents !== "undefined"){
+      if (oldEvents.includes(event.eventID)){
+        return true
+      }
+    }
+    return false
+  }
+
   console.log(oldEvents);
  
 
@@ -382,7 +391,7 @@ const AlertFunction = () => {
                     {t('removeEvent')}</Button>
               </View>}
 
-              {!ownUser && !oldEvents.includes(event.eventID) && <View>
+              {!ownUser && !checkOldEvents(event.eventID) && <View>
                 {!(event.placesLeft === 0) && <View>
                   {!loading && !joinedEvents.includes(event.eventID) && <Button
                     style={styles.button}
@@ -405,7 +414,7 @@ const AlertFunction = () => {
 
               </View>}
 
-              {!ownUser && oldEvents.includes(event.eventID) && <Text style={{margin: 10, marginTop: 17, color: "red"}}> Event has expired! </Text>}
+              {!ownUser && checkOldEvents(event.eventID) && <Text style={{margin: 10, marginTop: 17, color: "red"}}> Event has expired! </Text>}
 
             </View>
       </Modal>

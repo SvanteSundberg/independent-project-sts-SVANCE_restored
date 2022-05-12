@@ -52,7 +52,7 @@ function CreateprofileScreen({navigation, route}) {
         Alert.alert(
             "Failed to save",
             "You need to fill in all the fields before saving!",
-              { text: "OK" }
+              [{ text: "OK" }]
             
           );
     }
