@@ -19,9 +19,6 @@ function CreateprofileScreen({navigation, route}) {
    const [selectedSports, chooseSports] = useState(route.params.selectedSports);
    const [uploading, setUploading] = useState(false);
    const [visable, setVisable] = useState(false);
-   
-
-   const handleBackwards = () =>  navigation.navigate("HomeScreen")
 
    const auth = getAuth();
    const user = auth.currentUser;
@@ -30,9 +27,30 @@ function CreateprofileScreen({navigation, route}) {
     setVisable(value);
   }
 
+  const handleBackwards = () =>  {
+    if (name.length>0 && age>0 && descrip.length>0 && photo){
+        Alert.alert(
+            "You have not saved the changes",
+            "Do you want to go back anyway?",
+            [{text: "No",},
+            {text: "Yes",
+            onPress: () => navigation.navigate("ProfileScreen", {userID: user.uid})
+            },
+            ]
+          );
+    }
+   else {
+      Alert.alert(
+        "You are not finished!",
+        "Please fill in all details and save before going back!",
+          [{ text: "OK" }]
+      );
+
+   }
+}
+
    const updateUserInfo = () => {
-       if (name.length>0 && age>0 && descrip.length>0 &&
-        typeof photo !== "undefined"){
+       if (name.length>0 && age>0 && descrip.length>0 && photo){
         firebase.firestore().collection('users').doc(user.uid).set({
            name: name,
             age: age,
@@ -52,7 +70,7 @@ function CreateprofileScreen({navigation, route}) {
         Alert.alert(
             "Failed to save",
             "You need to fill in all the fields before saving!",
-              { text: "OK" }
+              [{ text: "OK" }]
             
           );
     }
@@ -128,13 +146,13 @@ function CreateprofileScreen({navigation, route}) {
        <SafeAreaView style={[styles.container, styles.background]}>
            <ScrollView style={styles.scroll}>
 
-           <Button
+           {!route.params.first && <Button
        style={styles.backButton}
        onPress={handleBackwards}
       icon='keyboard-backspace'
        labelStyle={{fontSize: 35,
         color: colors.lightBlue}}>
-        </Button>
+        </Button>}
  
            <Text style={[styles.header, {marginTop:30}]}>
             FILL IN YOUR DETAILS
@@ -229,7 +247,7 @@ function CreateprofileScreen({navigation, route}) {
               onPress={updateUserInfo} 
               mode={'outlined'}
               style={styles.button}
-              color={'dodgerblue'}> Save Information </Button>
+              color={colors.lightBlue}> Save Information </Button>
         </View>
            </ScrollView>
  

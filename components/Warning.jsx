@@ -28,10 +28,10 @@ function Warning({visable, changeVisable}) {
                 <Text style={{margin:5, marginBottom: 10}}> Remember to be careful when meeting strangers and make sure to only attend events in public places.
                 </Text>
                 <Button 
-                    style={{margin:5}}
+                    style={{margin:5, backgroundColor: colors.orange,}}
                     onPress={() => {hide(); navigation.navigate("HomeScreen");}}
                     mode={'outlined'}
-                    labelStyle={{ fontSize: 13, color: colors.deepBlue }}> Let's get started</Button>
+                    labelStyle={{ fontSize: 13, color: colors.lightBlue }}> Let's get started</Button>
                 </Modal>
             </Portal>
         </View>
