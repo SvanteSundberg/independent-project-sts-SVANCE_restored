@@ -57,8 +57,6 @@ function BiggerEvent({ navigation,
     }
     return false
   }
-
-  console.log(oldEvents);
  
 
   useEffect(() => {
